@@ -4,9 +4,11 @@
  */
 
 var express = require('express')
-  , routes = require('./routes');
+  , routes = require('./routes')
+  , io = require('socket.io');
 
-var app = module.exports = express.createServer();
+var app = module.exports = express.createServer()
+  , io = io.listen(app);
 
 // Configuration
 
