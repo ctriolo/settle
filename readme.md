@@ -9,7 +9,8 @@ Set Up the Environment
 **Settle** requires _node_, _npm_, _express_, and _socket.io_.
 
 From a completely fresh environment run these commands to install (use sudo where necessary):
-```bash
+
+``` bash
 brew install node
 curl http://npmjs.org/install.sh |  sh
 npm install -g express
