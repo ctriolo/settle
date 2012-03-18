@@ -21,3 +21,22 @@ Run the Server
 --------------
 
 Run with `node app` from the application root.
+
+Editing and Contributions
+-------------------------
+
+Code was written and edited with emacs with an init file containing:
+
+``` lisp
+;; Indentation
+(setq-default indent-tabs-mode nil)
+(setq-default tab-width 2)
+(setq-default c-basic-offset 2)
+
+;; Show trailing whitespace and delete on save
+(setq-default show-trailing-whitespace t)
+(add-hook 'before-save-hook 'delete-trailing-whitespace)
+
+;; Newline at EOF
+(setq require-final-newline t)
+```
