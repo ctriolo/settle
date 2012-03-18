@@ -9,7 +9,7 @@ var Connection = require('mongodb').Connection;
 var Server = require('mongodb').Server;
 var BSON = require('mongodb').BSON;
 var ObjectID = require('mongodb').ObjectID;
-var User = require('./user.js').User;
+var User = require('./User.js').User;
 
 function UserProvider(host, port) {
   this.db = new Db('settle', new Server(host, port, {auto_reconnect: true}, {}));
