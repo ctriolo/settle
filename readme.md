@@ -6,21 +6,27 @@ This repo contains the code to build Settle, a real-time muliplayer web board ga
 Set Up the Environment
 ----------------------
 
-**Settle** requires _node_ and _npm_.
+**Settle** requires _node_, _npm_ and _mongoDB_.
 
 From a completely fresh environment run these commands to install (use sudo where necessary):
 
 ``` bash
+brew install mongodb
 brew install node
 curl http://npmjs.org/install.sh |  sh
 ```
 
-After cloning the repository, run `npm install -d` from the application root to install the application dependencies.
+After cloning the repository, run these commands in the application root:
 
-Run the Server
+``` bash
+npm install -d
+mkdir data && mkdir data/db
+```
+
+Run the Site
 --------------
 
-Run with `node app` from the application root.
+In the application root, run `mongod -dbpath data/db` to start the database and then `node app` to start the server.
 
 Editing and Contributions
 -------------------------

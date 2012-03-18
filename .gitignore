@@ -1,6 +1,7 @@
 # Repository Specific #
 #######################
 /node_modules
+/data
 
 # Compiled source #
 ###################
