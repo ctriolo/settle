@@ -8,7 +8,8 @@ var express = require('express')
   , io = require('socket.io')
   , mongodb = require('mongodb')
   , UserProvider = require('./models/UserProvider.js').UserProvider
-  , User = require('./models/User.js').User;
+  , User = require('./models/User.js').User
+  , board = require('./routes/board.js');
 
 var app = module.exports = express.createServer()
   , io = io.listen(app);
@@ -50,6 +51,10 @@ app.get('/user', function(req, res){
   UserProvider.findAll(function(error, users){
     res.render('users', {'title': 'Users', 'users': users});
   });
+});
+
+app.get('/board', function(req, res){
+	board.start(req, res);
 });
 
 app.get('/testfilldb', function(req, res){

@@ -28,7 +28,7 @@ function createHexagon(colors, numbers, x,y, radius, id) {
 	}
 	*/
 	// draw hexagon image
-	poly += '<image x="' + (x - (radius) -1) + '" y="' + (y-(209/242*radius)-1) + '" width="' + (2*radius + 2) + '" height="' + (2*radius*209/242 + 2) + '" xlink:href="http://www.wprb.com/sports/wp-content/uploads/2012/03/' +  color[rand] + '" >';
+	poly += '<image x="' + (x - (radius) -1) + '" y="' + (y-(209/242*radius)-1) + '" width="' + (2*radius + 2) + '" height="' + (2*radius*209/242 + 2) + '" xlink:href="http://www.wprb.com/sports/wp-content/uploads/2012/03/' +  color[rand] + '" />';
 	
 	// don't draw circle or number for desert tiles
 	if (color[rand] === "desert1.png") return poly;
@@ -70,7 +70,7 @@ function buildVideoBoxes(width, height) {
 	output += '<rect class="playerStats" x=0 y=690 width=240 height=60 />\n';
 	
 	// draw background box, image and stats box for player 2
-	var output += '<g id="player2" drag:enable="true"><rect class="videoBackground" x =0 y = 0 width= 240 height=180 style="stroke:lime"/>\n';
+	output += '<g id="player2" drag:enable="true"><rect class="videoBackground" x =0 y = 0 width= 240 height=180 style="stroke:lime"/>\n';
 	output += '<image x=2 y=3 width=236 height=177 xlink:href="http://www.cs.princeton.edu/~dcapra/player2.jpg"/>\n';
 	output += '<rect class="playerStats" x=0 y=180 width=240 height=60 style="stroke:lime"/></g>\n';
 
@@ -153,7 +153,7 @@ function buildBoard(minSize, maxSize, width, height) {
 function createSVGheader() {
 	return '<svg version = "1.1" overflow="hidden" viewBox="0 0 1000 750" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">\n';
 }
-function start(response, postData) {
+function start(request, response) {
 	console.log("Request handler 'start' was called.");
 	var content = "empty";
 	
