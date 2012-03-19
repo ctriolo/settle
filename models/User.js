@@ -2,7 +2,7 @@
  * User.js
  *
  * Object wrapper for User documents.
- **/
+ */
 
 function User(obj) {
   this.name = "";
@@ -14,4 +14,4 @@ function User(obj) {
   for (var prop in obj) this[prop] = obj[prop];
 };
 
-exports.User = User;
+module.exports = User;

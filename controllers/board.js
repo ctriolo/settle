@@ -1,3 +1,7 @@
+/**
+ * Board Controllers
+ */
+
 var exec = require("child_process").exec;
 var queryString = require("querystring");
 
@@ -29,7 +33,7 @@ function createHexagon(colors, numbers, x,y, radius, id) {
 	*/
 	// draw hexagon image
 	poly += '<image x="' + (x - (radius) -1) + '" y="' + (y-(209/242*radius)-1) + '" width="' + (2*radius + 2) + '" height="' + (2*radius*209/242 + 2) + '" xlink:href="http://www.wprb.com/sports/wp-content/uploads/2012/03/' +  color[rand] + '" />';
-	
+
 	// don't draw circle or number for desert tiles
 	if (color[rand] === "desert1.png") return poly;
 
@@ -55,20 +59,21 @@ function createHexagon(colors, numbers, x,y, radius, id) {
 	numbers[num]--;
 	num += 2; // make between 2-12
 	var color = "black"
-	if (num > 9) 
+	if (num > 9)
 		textx -= 10; // center text if there are multiple digits
 	if (num === 8 || num === 6)
 		color = "red" // draw 6 and 8 circles in red
 	poly += '<text id="text' + id + '" x="' + textx + '" y="' + (y+10) + '" fill="' + color + '" font-size="30">' + num + '</text>'
-	
+
 	return poly;
 }
+
 function buildVideoBoxes(width, height) {
 	// draw background box, image and stats box for player 1
 	var output = '<rect class="videoBackground" x = 0 y = 510 width= 240 height=180 />\n';
 	output += '<image x=0 y=513 width=236 height=177 xlink:href="http://www.cs.princeton.edu/~dcapra/player1.jpg" />\n';
 	output += '<rect class="playerStats" x=0 y=690 width=240 height=60 />\n';
-	
+
 	// draw background box, image and stats box for player 2
 	output += '<g id="player2" drag:enable="true"><rect class="videoBackground" x =0 y = 0 width= 240 height=180 style="stroke:lime"/>\n';
 	output += '<image x=2 y=3 width=236 height=177 xlink:href="http://www.cs.princeton.edu/~dcapra/player2.jpg"/>\n';
@@ -86,6 +91,7 @@ function buildVideoBoxes(width, height) {
 
 	return output;
 }
+
 function createStyle() {
 	var output = "<style>\n\t";
 	output += '.playerStats {fill:white;stroke:black;stroke-width:7;stroke-opacity:.5}\n';
@@ -94,6 +100,7 @@ function createStyle() {
 	output += '</style>';
 	return output;
 }
+
 function buildBoard(minSize, maxSize, width, height) {
 	var size = minSize;
 	var hexCount = 0;
@@ -150,13 +157,15 @@ function buildBoard(minSize, maxSize, width, height) {
 
 	return out;
 }
+
 function createSVGheader() {
 	return '<svg version = "1.1" overflow="hidden" viewBox="0 0 1000 750" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">\n';
 }
-function start(request, response) {
+
+module.exports.view = function(request, response){
 	console.log("Request handler 'start' was called.");
 	var content = "empty";
-	
+
 	var body = '<?xml version="1.0" encoding="utf-8"?>\n<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd" [\n]>\n<html>\n<head>\n<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />\n'
 	body += createStyle();
 	body += '</head>\n<body>';
@@ -176,14 +185,12 @@ function start(request, response) {
 	response.writeHead(200, {"Content-Type": "text/html"});
   	response.write(body);
   	response.end();
-}
+};
 
-function upload(response, postData) {
+module.exports.upload = function(response, postData){
 	console.log("Request handler 'upload' was called.");
   	response.writeHead(200, {"Content-Type": "text/plain"});
   	response.write("Hello Upload: You've sent: " + queryString.parse(postData).text);
  	response.end();
 }
 
-exports.start = start
-exports.upload = upload
