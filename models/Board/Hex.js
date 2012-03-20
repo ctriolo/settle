@@ -2,11 +2,15 @@
 HexTypeEnum = {
     INACTIVE : "Inactive",
     ACTIVE : "Active",
+    
     WOOD: "Wood",
     SHEEP: "Sheep",
     WHEAT: "Wheat",
     STONE: "Stone",
     BRICK: "Brick",
+    
+    DESERT: "Desert",
+    WATER: "Water",
 }
 
 
