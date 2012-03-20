@@ -92,13 +92,14 @@ exports.Board.prototype.populateHexes = function()
                 this.hexes[i][j].type = arr[k++]; // assign next
 }
 
+// taken from: <hardcode.nl/subcategory_1/article_317-array-shuffle-function>
 Array.prototype.shuffle = function() {
  	var len = this.length;
 	var i = len;
-	 while (i--) {
+    while (i--) {
 	 	var p = parseInt(Math.random()*len);
 		var t = this[i];
-  	this[i] = this[p];
-  	this[p] = t;
+        this[i] = this[p];
+        this[p] = t;
  	}
 };
