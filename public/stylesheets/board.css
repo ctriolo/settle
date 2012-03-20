@@ -1,0 +1,105 @@
+body {
+  width: 100%;
+}
+
+svg {
+     -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+          border-radius: 5px;
+     -moz-box-shadow:0 0 20px 10px #808080;
+  -webkit-box-shadow:0 0 20px 10px #808080;
+          box-shadow:0 0 20px 10px #808080;
+  border: 5px solid black;
+  background: #f0f0f0;
+  display: block;
+  margin: 40px auto;
+}
+
+svg polygon.hex {
+  stroke-width: 5;
+}
+
+svg polygon.hex.hover {
+  fill: white;
+  stroke: white;
+}
+
+svg circle.numberToken {
+  fill: white;
+  stroke: black;
+  stroke-width: 5;
+}
+
+svg text.numberToken {
+  font-size: 36px;
+  font-family: Impact, Charcoal, sans-serif;
+  text-anchor: middle;
+  stroke-width: 10;
+}
+
+svg circle.intersection {
+  fill: black;
+  stroke-width: 0;
+}
+
+svg circle.intersection.hover {
+  fill: white;
+  stroke:white;
+}
+
+svg line.path {
+  stroke: black;
+  stroke-width: 7;
+}
+
+svg line.path.hover {
+  fill: white;
+  stroke: white;
+}
+
+.player {
+  background: #c0c0c0;
+  display: block;
+  height: 150px;
+  width: 150px;
+}
+
+#bottomRight {
+  -moz-border-radius-topleft: 20px;
+       border-top-left-radius: 20px;
+  border-left: 5px solid black;
+  border-top: 5px solid black;
+  position: fixed;
+  bottom: 0;
+  right: 0;
+}
+
+#bottomLeft {
+  -moz-border-radius-topright: 20px;
+       border-top-right-radius: 20px;
+  border-right: 5px solid black;
+  border-top: 5px solid black;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+}
+
+#topRight {
+  -moz-border-radius-bottomleft: 20px;
+       border-bottom-left-radius: 20px;
+  border-left: 5px solid black;
+  border-bottom: 5px solid black;
+  position: fixed;
+  top: 0;
+  right: 0;
+}
+
+#topLeft {
+  -moz-border-radius-bottomright: 20px;
+       border-bottom-right-radius: 20px;
+  border-right: 5px solid black;
+  border-bottom: 5px solid black;
+  position: fixed;
+  top: 0;
+  left: 0;
+}
