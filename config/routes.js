@@ -4,7 +4,8 @@
 
 var home = require('../controllers/home.js')
   , user = require('../controllers/user.js')
-  , board = require('../controllers/board.js');
+  , board = require('../controllers/board.js')
+  , newBoard = require('../controllers/newBoard.js');
 
 module.exports = function(app){
 
@@ -18,5 +19,6 @@ module.exports = function(app){
 
   // Board
   app.get('/board', board.view);
+  app.get('/board2', newBoard.view);
 
 };
