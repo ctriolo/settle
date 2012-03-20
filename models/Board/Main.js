@@ -1,6 +1,6 @@
-var board_h = require('./Board');
+var Board = require('./Board');
 
-var b = new board_h.Board(3,5);
+var b = new Board(3,5);
 console.log( b.json() );
 console.log( b.root().hexNbors(b) );
 
