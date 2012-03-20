@@ -8,7 +8,7 @@ Set Up the Environment
 
 **Settle** requires _node_, _npm_ and _mongoDB_.
 
-From a completely fresh environment run these commands to install (use sudo where necessary):
+From a completely fresh environment run these commands to install (use `sudo` where necessary):
 
 ``` bash
 brew install mongodb
@@ -26,7 +26,7 @@ mkdir data && mkdir data/db
 Run the Site
 --------------
 
-In the application root, run `mongod -dbpath data/db` to start the database and then `node app` to start the server.
+In the application root, run `mongod -dbpath data/db` to start the database and then `node app` to start the server. As node runs from privileged port 80 it is necessary to use `sudo`.
 
 Editing and Contributions
 -------------------------
