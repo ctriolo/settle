@@ -1,36 +1,34 @@
+/**
+ * Hex.js
+ *
+ * JS Object that represents a tile in the game.
+ */
 
-HexTypeEnum = {
-    INACTIVE : "Inactive",
-    ACTIVE : "Active",
-    
-    WOOD: "Wood",
-    SHEEP: "Sheep",
-    WHEAT: "Wheat",
-    STONE: "Stone",
-    BRICK: "Brick",
-    
-    DESERT: "Desert",
-    WATER: "Water",
-}
+// IMPORT / EXPORT
+require("./Globals")
+module.exports = Hex;
 
-
-exports.Hex = function(i, j) {
-    this.j = this.i = -1;
-    
+// THE PRIMARY FUNCTION
+function Hex(i, j) 
+{
+    this.j = this.i = -1; // board coordinates
     if (arguments.length > 1) {
         this.i = i;
         this.j = j;
     }
     
-    this.diceRoll = -1;
-    
-    this.type = HexTypeEnum.INACTIVE;
-}
+    this.diceRoll = -1; // dice roll number
+    this.type = HexTypeEnum.INACTIVE; // type (i.e. resource)
+};
 
-exports.Hex.prototype.isActive = function() { 
+// PROPERTIES 'N' STUFF
+
+// active hex?
+Hex.prototype.isActive = function() { 
     return this.type != HexTypeEnum.INACTIVE; 
 }
-exports.Hex.prototype.isResource = function() {
+
+Hex.prototype.isResource = function() {
     var ret = false;
     ret |= this.type == HexTypeEnum.WOOD;
     ret |= this.type == HexTypeEnum.SHEEP;
@@ -40,13 +38,12 @@ exports.Hex.prototype.isResource = function() {
     return ret;
 }
 
-exports.Hex.prototype.hexNbors = function(b) {
+Hex.prototype.hexNbors = function(b) {
     var i = this.i;
     var j = this.j;
     var w = b.width();
     var M = b.max;
     
-
     // above and below
     var nbors = new Array();
     if (j > 0)   nbors.push( [i,j-1] ); // top
@@ -68,5 +65,5 @@ exports.Hex.prototype.hexNbors = function(b) {
     if (i2 <  w && j2 <= M-1) nbors.push( [i2,j2] );
     
     return nbors;
-}
+};
 
