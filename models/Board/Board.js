@@ -23,14 +23,15 @@ function Board(mn, mx) {
 }
 
 // properties
-Board.prototype.width = function() { return 2*(this.max - this.min) + 1; }
-Board.prototype.midCol = function() { return this.max - this.min; }
-Board.prototype.colDelta = function(c) { return Math.abs( c - this.midCol() ); }
-Board.prototype.colHeight = function(c) { return this.max - this.colDelta(c); }
-Board.prototype.numTiles = function()
-    { return this.max*this.max - this.min*this.min + this.min; }
-Board.prototype.json = function() { return JSON.stringify(this); }
-Board.prototype.root = function() { return this.hexes[ this.midCol() ][0]; }
+Board.prototype = {
+  width: function() { return 2*(this.max - this.min) + 1; },
+  midCol: function() { return this.max - this.min; },
+  colDelta: function(c) { return Math.abs( c - this.midCol() ); },
+  colHeight: function(c) { return this.max - this.colDelta(c); },
+  numTiles: function() { return this.max*this.max - this.min*this.min + this.min; },
+  json: function() { return JSON.stringify(this); },
+  root: function() { return this.hexes[ this.midCol() ][0]; },
+}
 
 Board.prototype.instantiateHexes = function()
 {
