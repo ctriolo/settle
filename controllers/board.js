@@ -192,5 +192,4 @@ module.exports.upload = function(response, postData){
   	response.writeHead(200, {"Content-Type": "text/plain"});
   	response.write("Hello Upload: You've sent: " + queryString.parse(postData).text);
  	response.end();
-}
-
+};
