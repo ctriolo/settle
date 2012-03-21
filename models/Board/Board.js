@@ -41,7 +41,7 @@ Board.prototype = {
   midCol: function() { return this.max - this.min; },
   colDelta: function(c) { return Math.abs( c - this.midCol() ); },
   colHeight: function(c) { return this.max - this.colDelta(c); },
-  isOddCol: function(c) { return this.colDelta(c) % 2 == 0; },
+  isUpCol: function(c) { return this.colDelta(c) % 2 == 0; },
   numTiles: function() { return this.max*this.max - this.min*this.min + this.min; },
   
   json: function() { return JSON.stringify(this); },
@@ -55,6 +55,16 @@ Board.prototype.numResourceTiles = function() {
             if ( this.hexes[i][j].isResource() )
                 num++;
     return num;
+}
+
+Board.prototype.json2 = function() {
+    var obj = new Object();
+    
+    obj.gridWidth = this.width();
+    obj.gridHeight = this.max;
+    obj.startsUp = obj.gridWidth%4 == 1;
+    
+    return JSON.stringify(obj);
 }
 
 /*  ================= 

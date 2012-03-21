@@ -50,9 +50,9 @@ Hex.prototype.hexNbors = function(b) {
     if (j < M-1) nbors.push( [i,j+1] ); // bottom
 
     // side neighbors' rows
-    var j1 = j-1; // correct if isOddCol(i)
-    var j2 = j+1; // correct if !isOddCol(i)
-    if ( b.isOddCol(i) ) j2--;
+    var j1 = j-1; // correct if isUpCol(i)
+    var j2 = j+1; // correct if !isUpCol(i)
+    if ( b.isUpCol(i) ) j2--;
     else                 j1++;
 
     // side neighbors' columns
