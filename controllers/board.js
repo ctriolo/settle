@@ -32,7 +32,7 @@ function createHexagon(colors, numbers, x,y, radius, id) {
 	}
 	*/
 	// draw hexagon image
-	poly += '<image x="' + (x - (radius) -1) + '" y="' + (y-(209/242*radius)-1) + '" width="' + (2*radius + 2) + '" height="' + (2*radius*209/242 + 2) + '" xlink:href="http://www.wprb.com/sports/wp-content/uploads/2012/03/' +  color[rand] + '" />';
+	poly += '<image class="hex" x="' + (x - (radius) -1) + '" y="' + (y-(209/242*radius)-1) + '" width="' + (2*radius + 2) + '" height="' + (2*radius*209/242 + 2) + '" xlink:href="http://www.wprb.com/sports/wp-content/uploads/2012/03/' +  color[rand] + '" />';
 
 	// don't draw circle or number for desert tiles
 	if (color[rand] === "desert1.png") return poly;
@@ -175,7 +175,7 @@ module.exports.view = function(request, response){
 	// draw background
 	body += '<image x=0 y=0 width=1000 height=750 xlink:href="http://www.cs.princeton.edu/~dcapra/ocean.jpg"></image>\n'
 	body += buildBoard(3,5, 1000, 750);
-	body += buildVideoBoxes(1000, 750);
+	//body += buildVideoBoxes(1000, 750);
 	body += '</svg>'
 
 	/* get textbox svg */

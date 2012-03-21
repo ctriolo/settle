@@ -8,10 +8,22 @@ html
     script(src="/javascripts/jquery.svgdom.js")
     script(src="/javascripts/board.js")
   body
-    | <svg viewBox="0 0 800 600" width="800" height="600" version="1.1">
+    | <svg viewBox="0 0 800 600" overflow="hidden" position="absolute" width="97%" height="95%" version="1.1">
     | <defs>
-    |   <pattern id="forest" patternContent="objectBoundingBox" width="1" height="2" x="0" y="-100"spreadMethod = "repeat"">
-    |     <image xlink:href="http://images.travelpod.com/users/michaelsavage/1.1242034500.birds-eye-view-into-the-canyon-below.jpg" x="0" y="0" width="500" height="366" />
+    |   <pattern id="forest" patternContent="objectBoundingBox" width="1" height="2" x="0" y="-250" spreadMethod = "repeat"">
+    |     <image xlink:href="http://images.travelpod.com/users/michaelsavage/1.1242034500.birds-eye-view-into-the-canyon-below.jpg" x="0" y="-10" width="500" height="346" />
+    |   </pattern>
+    |   <pattern id="wheat" patternContent="objectBoundingBox" width="1" height="2" x="0" y="-250" spreadMethod = "repeat"">
+    |     <image xlink:href="http://fwallpapers.com/files/imagecache/content600/images/wheat-field-64.jpg" x="0" y="-10" width="600" height="450" />
+    |   </pattern>
+    |   <pattern id="sheep" patternContent="objectBoundingBox" width="1" height="2" x="200" y="-250" spreadMethod = "repeat"">
+    |     <image xlink:href="http://4.bp.blogspot.com/_W19ZkFqGT-M/SWrtEqqtnLI/AAAAAAAAAn8/9bXPy_4UC5k/s400/Sheep+moving+on+hill+SM.jpg" x="0" y="-10" width="400" height="300" />
+    |   </pattern>
+    |   <pattern id="brick" patternContent="objectBoundingBox" width="1" height="2" x="0" y="-250" spreadMethod = "repeat"">
+    |     <image xlink:href="http://www.publicdomainpictures.net/pictures/10000/nahled/1-122357738099Gn.jpg" x="0" y="-10" width="615" height="400" />
+    |   </pattern>
+    |   <pattern id="desert" patternContent="objectBoundingBox" width="1" height="2" x="0" y="0" spreadMethod = "repeat"">
+    |     <image xlink:href="http://mikyunglim.files.wordpress.com/2011/11/haglund-johnny-tuareg-nomads-with-camels-in-sand-dunes-of-sahara-desert-arakou.jpg" x="0" y="0" width="400" height="300" />
     |   </pattern>
     | </defs>
     for hex in hexes
@@ -25,7 +37,11 @@ html
       |   ">
       | </polygon>
       if (hex.number)
-        | <circle class="numberToken" cx="#{hex.center.x}" cy="#{hex.center.y}" r="25"></circle>
+        | <circle class="numberToken" cx="#{hex.center.x}" cy="#{hex.center.y}" r="25" fill="
+        if (hex.number === 6 || hex.number === 8)
+           |   red"></circle>
+        else
+           |  white"></circle>
         | <text class="numberToken" x="#{hex.center.x}" y="#{hex.center.y+12}">
         |   #{hex.number}
         | </text>

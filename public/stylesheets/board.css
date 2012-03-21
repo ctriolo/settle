@@ -1,5 +1,6 @@
 body {
-  width: 100%;
+  width: 97%;
+  height: 95%;
 }
 
 svg {
@@ -12,7 +13,7 @@ svg {
   border: 5px solid black;
   background: #f0f0f0;
   display: block;
-  margin: 40px auto;
+  margin: 10px auto;
 }
 
 svg polygon.hex {
@@ -25,7 +26,6 @@ svg polygon.hex.hover {
 }
 
 svg circle.numberToken {
-  fill: white;
   stroke: black;
   stroke-width: 5;
 }
