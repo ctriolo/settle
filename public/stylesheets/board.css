@@ -16,26 +16,51 @@ svg {
   margin: 10px auto;
 }
 
-svg polygon.hex {
-  stroke-width: 5;
+/**
+ * Hexes
+ */
+
+svg g.hex.Sheep  polygon { fill: url(#sheep); }
+svg g.hex.Wood   polygon { fill: url(#wood); }
+svg g.hex.Wheat  polygon { fill: url(#wheat); }
+svg g.hex.Stone  polygon { fill: lightslategray; }
+svg g.hex.Brick  polygon { fill: url(#brick); }
+svg g.hex.Desert polygon { fill: url(#desert); }
+svg g.hex.Water  polygon { fill: cyan; }
+svg g.hex.Sea    polygon { fill: darkcyan; stroke: darkgray; stroke-width: 5; }
+svg g.hex        polygon { stroke-width: 5; stroke: black; }
+svg g.hex.hover  polygon { fill: white; }
+
+/**
+ * Number Tokens
+ */
+
+svg g.numberToken.number6 circle,
+svg g.numberToken.number8 circle {
+  fill: salmon;
 }
 
-svg polygon.hex.hover {
+svg g.numberToken.number2 circle,
+svg g.numberToken.number12 circle {
+  fill: skyblue;
+}
+
+svg g.numberToken circle {
   fill: white;
-  stroke: white;
-}
-
-svg circle.numberToken {
   stroke: black;
   stroke-width: 5;
 }
 
-svg text.numberToken {
+svg g.numberToken text {
   font-size: 36px;
   font-family: Impact, Charcoal, sans-serif;
   text-anchor: middle;
   stroke-width: 10;
 }
+
+/**
+ * Intersections
+ */
 
 svg circle.intersection {
   fill: black;
@@ -47,6 +72,10 @@ svg circle.intersection.hover {
   stroke:white;
 }
 
+/**
+ * Paths
+ */
+
 svg line.path {
   stroke: black;
   stroke-width: 7;
@@ -56,6 +85,10 @@ svg line.path.hover {
   fill: white;
   stroke: white;
 }
+
+/**
+ * Player Stats
+ */
 
 .player {
   background: #c0c0c0;

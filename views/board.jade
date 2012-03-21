@@ -10,7 +10,7 @@ html
   body
     | <svg viewBox="0 0 800 600" overflow="hidden" position="absolute" width="97%" height="95%" version="1.1">
     | <defs>
-    |   <pattern id="forest" patternContent="objectBoundingBox" width="1" height="2" x="0" y="-250" spreadMethod = "repeat"">
+    |   <pattern id="wood" patternContent="objectBoundingBox" width="1" height="2" x="0" y="-250" spreadMethod = "repeat"">
     |     <image xlink:href="http://images.travelpod.com/users/michaelsavage/1.1242034500.birds-eye-view-into-the-canyon-below.jpg" x="0" y="-10" width="500" height="346" />
     |   </pattern>
     |   <pattern id="wheat" patternContent="objectBoundingBox" width="1" height="2" x="0" y="-250" spreadMethod = "repeat"">
@@ -27,24 +27,17 @@ html
     |   </pattern>
     | </defs>
     for hex in hexes
-      | <polygon
-      |   class="hex"
-      |   fill="#{hex.color}",
-      |   stroke="#{hex.stroke}",
-      |   points="
+      | <g class="hex #{hex.type}">
+      |   <polygon points="
       for p in hex.points
-        #{p.x},#{p.y}
-      |   ">
-      | </polygon>
+            #{p.x},#{p.y}
+      |   "></polygon>
       if (hex.number)
-        | <circle class="numberToken" cx="#{hex.center.x}" cy="#{hex.center.y}" r="25" fill="
-        if (hex.number === 6 || hex.number === 8)
-           |   red"></circle>
-        else
-           |  white"></circle>
-        | <text class="numberToken" x="#{hex.center.x}" y="#{hex.center.y+12}">
-        |   #{hex.number}
-        | </text>
+        | <g class="numberToken number#{hex.number}">
+        |   <circle cx="#{hex.center.x}" cy="#{hex.center.y}" r="25"></circle>
+        |   <text x="#{hex.center.x}" y="#{hex.center.y+12}">#{hex.number}</text>
+        | </g>
+      | </g>
     for edge in edges
       | <line class="path" x1="#{edge[0].x}" y1="#{edge[0].y}" x2="#{edge[1].x}" y2="#{edge[1].y}"></line>
     for vertex in vertices

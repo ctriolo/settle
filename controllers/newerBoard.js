@@ -66,7 +66,7 @@ function getTile(x, y, hex) {
   // Find the top left corner of the containing square
   init_x = ORIGIN_X + x * (A + C);
   init_y = ORIGIN_Y + y * 2 * B;
-  
+
   if (Math.abs(x) % 2 == 1) {
     if ((MAX-MIN) % 2 == 1)
         init_y -= B;
@@ -76,7 +76,7 @@ function getTile(x, y, hex) {
   // deal with starting on the "bottom" of the rectangle
   if ((MAX-MIN)%2 == 1)
     init_y += B;
-    
+
 
   // Add starting points
   for (var i = 0; i < 6; i++) {
@@ -89,30 +89,6 @@ function getTile(x, y, hex) {
     'x': init_x + A + C/2,
     'y': init_y + B,
   };
-
-  // HEX COLOR
-
-  stroke = 'Black';
-  switch (hex.type) {
-  case HexTypeEnum.SHEEP: color = 'url(#sheep)';/*'LightGreen'; */break;
-  case HexTypeEnum.WOOD: color = 'url(#forest)'; /**'ForestGreen';**/ break;
-  case HexTypeEnum.WHEAT: color = 'url(#wheat)'; break;/*'Gold'; break;*/
-  case HexTypeEnum.STONE: color = 'LightSlateGray'; break;
-  case HexTypeEnum.BRICK: color = 'url(#brick)';/*'OrangeRed';*/ break;
-  case HexTypeEnum.DESERT:
-    color = 'url(#desert)';/*'Khaki'; */
-    number = 0; // TODO: THIS WILL NOT BE NESSA WHEN WE HAVE ACTUAL BOARD BUILING CODE
-    break;
-  case HexTypeEnum.WATER:
-    color = 'Cyan';
-    number = 0; // TODO: THIS WILL NOT BE NESSA WHEN WE HAVE ACTUAL BOARD BUILING CODE
-    break;
-  case 'deep_water':
-  default: color = 'Black';
-    color = 'DarkCyan';
-    stroke = 'DimGrey';
-    break;
-  }
 
   // CALCULATE VERTICES
   // TODO MOVE THIS CRAP ONCE WE GET UNIQUE IDENTIFIERS FOR VERTICES
@@ -149,8 +125,7 @@ function getTile(x, y, hex) {
     'hex': {
       'points': points,
       'center': center,
-      'color': color,
-      'stroke': stroke,
+      'type': hex.type ? hex.type : 'Sea',
       'number': hex.diceRoll
     },
     'vertices': vertices,
@@ -192,7 +167,7 @@ module.exports.view = function(req, res) {
   for (var i = 0; i < GRID_WIDTH; i++) {
     for (var j = 0; j < GRID_HEIGHT; j++) {
       if (board.hexes[i][j].isActive()) {
-        
+
         tile = getTile(i, j, board.hexes[i][j]);
         hexes.push(tile.hex);
         vertices = vertices.concat(tile.vertices);
