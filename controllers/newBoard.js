@@ -4,6 +4,11 @@
  * Controller for board games
  */
 
+// Dependencies
+
+var Hex = require('../models/Board/Hex')
+  , Board = require('../models/Board/Board');
+
 // Constants
 
 var HEX_EDGE_LENGTH = 50;
@@ -37,7 +42,7 @@ function getRVD() {
  * THAT WOULD BE UNIQUE IF YOU CALLED THE FUNCTION FOR EACH TILE
  * IN A BOARD.
  */
-function getTile(x, y, type, number) {
+function getTile(x, y, hex) {
 
   // HEX COORDINATES
 
@@ -75,30 +80,31 @@ function getTile(x, y, type, number) {
   // HEX COLOR
 
   stroke = 'Black';
-  switch (type) {
-  case 'pasture':color = 'LightGreen'; break;
-  case 'forest': color = 'url(#forest)'; /**'ForestGreen';**/ break;
-  case 'field': color = 'Gold'; break;
-  case 'mountain': color = 'LightSlateGray'; break;
-  case 'hill': color = 'OrangeRed'; break;
-  case 'desert':
+  switch (hex.type) {
+  case HexTypeEnum.SHEEP: color = 'LightGreen'; break;
+  case HexTypeEnum.WOOD: color = 'url(#forest)'; /**'ForestGreen';**/ break;
+  case HexTypeEnum.WHEAT: color = 'Gold'; break;
+  case HexTypeEnum.STONE: color = 'LightSlateGray'; break;
+  case HexTypeEnum.BRICK: color = 'OrangeRed'; break;
+  case HexTypeEnum.DESERT:
     color = 'Khaki';
     number = 0; // TODO: THIS WILL NOT BE NESSA WHEN WE HAVE ACTUAL BOARD BUILING CODE
     break;
-  case 'water':
+  case HexTypeEnum.WATER:
     color = 'Cyan';
     number = 0; // TODO: THIS WILL NOT BE NESSA WHEN WE HAVE ACTUAL BOARD BUILING CODE
     break;
   case 'deep_water':
+  default: color = 'Black';
     color = 'DarkCyan';
     stroke = 'DimGrey';
     break;
-  default: color = 'Black'; break;
   }
 
   // CALCULATE VERTICES
-
+  // TODO MOVE THIS CRAP ONCE WE GET UNIQUE IDENTIFIERS FOR VERTICES
   vertices = [];
+  /* THIS DOESN'T WORK WITHOUT RECTANGULAR BOARD.
   if (x == 0) vertices.push(points[0]);
   if (y == 0) {
     vertices.push(points[1]);
@@ -107,10 +113,13 @@ function getTile(x, y, type, number) {
   if (x == GRID_WIDTH - 1) vertices.push(points[3]);
   vertices.push(points[4]);
   vertices.push(points[5]);
+  */
 
   // CALCULATE EDGES
+  // TODO MOVE THIS ONCE WE GET UNIQUE IDENTIFIERS FOR EDGES
 
   edges = [];
+  /* THIS DOESN'T WORK WITHOUT RECTANGULAR BOARD.
   if (x==0 && y!=0) edges.push([points[0], points[1]]);
   if (x==GRID_WIDTH-1 && y!=0) edges.push([points[2], points[3]]);
   if (y==0) {
@@ -121,6 +130,7 @@ function getTile(x, y, type, number) {
   edges.push([points[3], points[4]]);
   edges.push([points[4], points[5]]);
   edges.push([points[5], points[0]]);
+  */
 
   return {
     'hex': {
@@ -128,7 +138,7 @@ function getTile(x, y, type, number) {
       'center': center,
       'color': color,
       'stroke': stroke,
-      'number': number
+      'number': hex.diceRoll
     },
     'vertices': vertices,
     'edges': edges,
@@ -145,6 +155,14 @@ module.exports.view = function(req, res) {
   var vertices = [];
   var edges = [];
 
+  // TODO: CHECK IF A BOARD EXISTS AT THIS ADDRESS AND FETCH IT
+  if (false) {
+    // Fetch the board
+  } else {
+    // Create a new board
+    board = new Board();
+  }
+
   // Background Hexes
   for (var i = -1; i < GRID_WIDTH + 1; i++) {
     for (var j = -1; j < GRID_HEIGHT + 1; j++) {
@@ -153,11 +171,11 @@ module.exports.view = function(req, res) {
     }
   }
 
-  // Forground Hexes
-  for (var i = 0; i < GRID_WIDTH; i++) {
-    for (var j = 0; j < GRID_HEIGHT; j++) {
-      if (j != GRID_HEIGHT - 1 || i % 2 != 1) { // No bottom row for even columns
-        tile = getTile(i, j, getRVR(), getRVD());
+  // Foreground Hexes
+  for (var i = 0; i < board.width(); i++) {
+    for (var j = 0; j < board.max; j++) {
+      if (board.hexes[i][j].isActive()) {
+        tile = getTile(i, j, board.hexes[i][j]);
         hexes.push(tile.hex);
         vertices = vertices.concat(tile.vertices);
         edges = edges.concat(tile.edges);
