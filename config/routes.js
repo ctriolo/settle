@@ -4,11 +4,10 @@
 
 var home = require('../controllers/home.js')
   , user = require('../controllers/user.js')
-  , board = require('../controllers/board.js') // can delete
-  , newerBoard = require('../controllers/newerBoard.js')
-  , newBoard = require('../controllers/newBoard.js');
+  , board = require('../controllers/board.js')
+  , boardIO = require('../controllers/board.io.js');
 
-module.exports = function(app){
+module.exports = function(app, io){
 
   // Home
   app.get('/', home.index);
@@ -20,7 +19,6 @@ module.exports = function(app){
 
   // Board
   app.get('/board', board.view);
-  app.get('/board2', newBoard.view);
-  app.get('/board3', newerBoard.view);
+  boardIO(io.of('/board'));
 
 };
