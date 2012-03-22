@@ -10,7 +10,9 @@ window.onload = function() {
   });
 
   socket.on('message', function(message) {
-    $('#messages').html(message);
+    $('#messages').append('<p>'+message+'<p>');
+    var objDiv = $('#messages');
+    objDiv.scrollTop(objDiv.prop('scrollHeight'));
   });
 
   // On hover
@@ -29,11 +31,11 @@ window.onload = function() {
       socket.send('Someone just clicked a ' + $(this).attr('class') + '.'); // Change this to IDs once we have them
     }
   );
-  
-  $("#textBoxForm").submit(
+
+  $("#messageForm").submit(
     function() {
-      socket.send($("input.textInput").val());
-      $("input.textInput").val("");
+      socket.send($("input#messageInput").val());
+      $("input#messageInput").val("");
       return false;
     }
   );
