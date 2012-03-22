@@ -14,6 +14,10 @@ svg {
   background: #f0f0f0;
   display: block;
   margin: 10px auto;
+  overflow="hidden"
+  position="absolute"
+  width="97%"
+  height="95%"
 }
 
 /**
