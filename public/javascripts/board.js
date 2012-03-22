@@ -10,7 +10,7 @@ window.onload = function() {
   });
 
   socket.on('message', function(message) {
-    console.log(message);
+    $('#messages').html(message);
   });
 
   // On hover
@@ -26,7 +26,7 @@ window.onload = function() {
   // On click
   $(".path,.intersection,.hex").not(".Sea").click(
     function(){
-      socket.send('I just clicked a ' + $(this).attr('class')); // Change this to IDs once we have them
+      socket.send('Someone just clicked a ' + $(this).attr('class') + '.'); // Change this to IDs once we have them
     }
   );
 

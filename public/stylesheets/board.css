@@ -136,3 +136,24 @@ svg line.path.hover {
   top: 0;
   left: 0;
 }
+
+/**
+ * Messages
+ */
+
+#messages-container {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}
+
+#messages {
+  width: 50%;
+  height: 100px;
+  text-align: center;
+  margin: 0 auto;
+  color: black;
+  text-shadow: white 2px 2px 2px;
+  font-size: 36px;
+  font-family: Impact, Charcoal, sans-serif;
+}
