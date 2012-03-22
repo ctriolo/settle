@@ -29,6 +29,14 @@ window.onload = function() {
       socket.send('Someone just clicked a ' + $(this).attr('class') + '.'); // Change this to IDs once we have them
     }
   );
+  
+  $("#textBoxForm").submit(
+    function() {
+      socket.send($("input.textInput").val());
+      $("input.textInput").val("");
+      return false;
+    }
+  );
 
 };
 
