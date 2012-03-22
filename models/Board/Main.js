@@ -45,3 +45,5 @@ for (var r = 0; r < rows; r++)
 
 // print!
 console.log(output);
+
+console.log(b.json2())

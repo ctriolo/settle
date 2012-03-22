@@ -41,7 +41,7 @@ Board.prototype = {
   midCol: function() { return this.max - this.min; },
   colDelta: function(c) { return Math.abs( c - this.midCol() ); },
   colHeight: function(c) { return this.max - this.colDelta(c); },
-  isOddCol: function(c) { return this.colDelta(c) % 2 == 0; },
+  isUpCol: function(c) { return this.colDelta(c) % 2 == 0; },
   numTiles: function() { return this.max*this.max - this.min*this.min + this.min; },
   
   json: function() { return JSON.stringify(this); },
@@ -199,4 +199,51 @@ Array.prototype.shuffle = function() {
         this[p] = t;
  	}
 };
+
+/*  ===================== 
+    >> convert to JSON <<
+    =====================  */
+
+Board.prototype.makeHexObj = function(hex) 
+{
+    var hexObj = new Object();
+    
+    // basics
+    hexObj.index = hex.id;
+    hexObj.grid = { 'x':hex.i, 'y':hex.j };
+    hexObj.type = hex.type;
+    hexObj.number = hex.diceRoll;
+    
+    // neighbors
+    hexObj.intersection = new Array();
+    hexObj.edges = new Array();
+    
+    return hexObj;
+}
+
+Board.prototype.json2 = function() {
+    var obj = new Object();
+    
+    // board basics
+    obj.gridWidth = this.width();
+    obj.gridHeight = this.max;
+    obj.startsUp = this.isUpCol(0);  //obj.gridWidth%4 == 1;
+    
+    // assign hex IDs
+    var k = 0;
+    for (var i = 0; i < this.hexes.length; i++) // for each hex
+        for (var j = 0; j < this.hexes[i].length; j++)
+            this.hexes[i][j].id = k;
+    
+    // populate hexes array
+    obj.hexes = new Array();
+    for (var i = 0; i < this.hexes.length; i++) // for each hex
+        for (var j = 0; j < this.hexes[i].length; j++) 
+            obj.hexes.push( this.makeHexObj(this.hexes[i][j]) );
+    
+    obj.intersections = new Array();
+    obj.edges = new Array();
+    
+    return JSON.stringify(obj);
+}
 
