@@ -158,8 +158,8 @@ module.exports.view = function(req, res) {
   for (var i = -1; i < GRID_WIDTH + 1; i++) {
     for (var j = -1; j < GRID_HEIGHT + 1; j++) {
       if (i < 0 || i >= GRID_WIDTH || j < 0 || j >= GRID_HEIGHT) {
-        tile = getTile(i, j, 'deep_water');
-        hexes.push(tile.hex);
+       // tile = getTile(i, j, 'deep_water');
+       // hexes.push(tile.hex);
       }
     }
   }
@@ -175,9 +175,8 @@ module.exports.view = function(req, res) {
         edges = edges.concat(tile.edges);
       }
       else {
-        board.hexes[i][j].type = HexTypeEnum.WATER // PROBABLY UNNECESSARY
-        tile = getTile(i, j, 'deep_water');
-        hexes.push(tile.hex);
+        //tile = getTile(i, j, 'deep_water');
+        //hexes.push(tile.hex);
       }
     }
   }
