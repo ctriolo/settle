@@ -20,12 +20,12 @@ svg {
  * Hexes
  */
 
-svg g.hex.Sheep  polygon { fill: url(#sheep); }
-svg g.hex.Wood   polygon { fill: url(#wood); }
-svg g.hex.Wheat  polygon { fill: url(#wheat); }
-svg g.hex.Stone  polygon { fill: url(#ore); }
-svg g.hex.Brick  polygon { fill: url(#brick); }
-svg g.hex.Desert polygon { fill: url(#desert); }
+svg g.hex.Sheep  polygon { fill: url(#sheep) lightgreen; }
+svg g.hex.Wood   polygon { fill: url(#wood) forestgreen; }
+svg g.hex.Wheat  polygon { fill: url(#wheat) khaki; }
+svg g.hex.Stone  polygon { fill: url(#ore) lightgrey; }
+svg g.hex.Brick  polygon { fill: url(#brick) orangered; }
+svg g.hex.Desert polygon { fill: url(#desert) gold; }
 svg g.hex.Water  polygon { fill: cyan; }
 svg g.hex.Sea    polygon { fill: darkcyan; stroke: darkgray; stroke-width: 1; }
 svg g.hex        polygon { stroke-width: 3; stroke: black; }
