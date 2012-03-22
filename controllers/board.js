@@ -126,7 +126,8 @@ function getTile(x, y, hex) {
       'points': points,
       'center': center,
       'type': hex.type ? hex.type : 'Sea',
-      'number': hex.diceRoll
+      'number': hex.diceRoll,
+      'radius': HEX_EDGE_LENGTH
     },
     'vertices': vertices,
     'edges': edges,
@@ -152,7 +153,7 @@ module.exports.view = function(req, res) {
   GRID_WIDTH = board.width();
   GRID_HEIGHT = board.max;
   HEX_EDGE_LENGTH = Math.min((SVG_HEIGHT)/(GRID_HEIGHT+1)/(2*Math.sin(Math.PI/3)), SVG_WIDTH/(GRID_WIDTH+2)/1.5);
-  ORIGIN_X = (SVG_WIDTH-ORIGIN_X)/2 - (MAX-MIN)*1.5*HEX_EDGE_LENGTH;
+  ORIGIN_X = (SVG_WIDTH)/2 - HEX_EDGE_LENGTH - (MAX -MIN)*1.5*HEX_EDGE_LENGTH;
   // Background Hexes
   for (var i = -1; i < GRID_WIDTH + 1; i++) {
     for (var j = -1; j < GRID_HEIGHT + 1; j++) {
