@@ -6,45 +6,42 @@ html
     script(src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js", type="text/javascript")
     script(src="/javascripts/jquery.svg.js")
     script(src="/javascripts/jquery.svgdom.js")
+    script(src="/socket.io/socket.io.js")
     script(src="/javascripts/board.js")
   body
     | <svg viewBox="0 0 800 600" overflow="hidden" position="absolute" width="97%" height="95%" version="1.1">
     | <defs>
-    |   <pattern id="forest" patternContent="objectBoundingBox" width="1" height="2" x="0" y="-250" spreadMethod = "repeat"">
+    |   <pattern id="wood" patternContent="objectBoundingBox" width="1" height="2" x="0" y="0" spreadMethod = "repeat"">
     |     <image xlink:href="http://images.travelpod.com/users/michaelsavage/1.1242034500.birds-eye-view-into-the-canyon-below.jpg" x="0" y="-10" width="500" height="346" />
     |   </pattern>
-    |   <pattern id="wheat" patternContent="objectBoundingBox" width="1" height="2" x="0" y="-250" spreadMethod = "repeat"">
-    |     <image xlink:href="http://fwallpapers.com/files/imagecache/content600/images/wheat-field-64.jpg" x="0" y="-10" width="600" height="450" />
+    |   <pattern id="wheat" patternContent="objectBoundingBox" width="1" height="2" x="0" y="0" spreadMethod = "repeat"">
+    |     <image xlink:href="http://md.all.biz/img/md/catalog/18096.jpeg" x="-50" y="-50" width="400" height="300" />
     |   </pattern>
-    |   <pattern id="sheep" patternContent="objectBoundingBox" width="1" height="2" x="200" y="-250" spreadMethod = "repeat"">
-    |     <image xlink:href="http://4.bp.blogspot.com/_W19ZkFqGT-M/SWrtEqqtnLI/AAAAAAAAAn8/9bXPy_4UC5k/s400/Sheep+moving+on+hill+SM.jpg" x="0" y="-10" width="400" height="300" />
+    |   <pattern id="sheep" patternContent="objectBoundingBox" width="1" height="2" x="0" y="0" spreadMethod = "repeat"">
+    |     <image xlink:href="http://4.bp.blogspot.com/_W19ZkFqGT-M/SWrtEqqtnLI/AAAAAAAAAn8/9bXPy_4UC5k/s400/Sheep+moving+on+hill+SM.jpg" x="0" y="-200" width="400" height="300" />
     |   </pattern>
-    |   <pattern id="brick" patternContent="objectBoundingBox" width="1" height="2" x="0" y="-250" spreadMethod = "repeat"">
-    |     <image xlink:href="http://www.publicdomainpictures.net/pictures/10000/nahled/1-122357738099Gn.jpg" x="0" y="-10" width="615" height="400" />
+    |   <pattern id="brick" patternContent="objectBoundingBox" width="1" height="2" x="0" y="0" spreadMethod = "repeat"">
+    |     <image xlink:href="http://www.publicdomainpictures.net/pictures/10000/nahled/1-122357738099Gn.jpg" x="-50" y="-250" width="615" height="400" />
     |   </pattern>
     |   <pattern id="desert" patternContent="objectBoundingBox" width="1" height="2" x="0" y="0" spreadMethod = "repeat"">
-    |     <image xlink:href="http://mikyunglim.files.wordpress.com/2011/11/haglund-johnny-tuareg-nomads-with-camels-in-sand-dunes-of-sahara-desert-arakou.jpg" x="0" y="0" width="400" height="300" />
+    |     <image xlink:href="http://3.bp.blogspot.com/-87-vnzGa9Po/TiRR2qFWprI/AAAAAAAAAF0/KsfRQhoL5Ds/s1600/SandUDunesUSoft.jpg" x="-80" y="0" width="400" height="300" />
+    |   </pattern>
+    |   <pattern id="ore" patternContent="objectBoundingBox" width="1" height="2" x="0" y="0" spreadMethod = "repeat"">
+    |     <image xlink:href="http://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Olivine_basalt2.jpg/220px-Olivine_basalt2.jpg" x="0" y="0" width="220" height="220" />
     |   </pattern>
     | </defs>
     for hex in hexes
-      | <polygon
-      |   class="hex"
-      |   fill="#{hex.color}",
-      |   stroke="#{hex.stroke}",
-      |   points="
+      | <g class="hex #{hex.type}">
+      |   <polygon points="
       for p in hex.points
-        #{p.x},#{p.y}
-      |   ">
-      | </polygon>
+            #{p.x},#{p.y}
+      |   "></polygon>
       if (hex.number)
-        | <circle class="numberToken" cx="#{hex.center.x}" cy="#{hex.center.y}" r="25" fill="
-        if (hex.number === 6 || hex.number === 8)
-           |   red"></circle>
-        else
-           |  white"></circle>
-        | <text class="numberToken" x="#{hex.center.x}" y="#{hex.center.y+12}">
-        |   #{hex.number}
-        | </text>
+        | <g class="numberToken number#{hex.number}">
+        |   <circle cx="#{hex.center.x}" cy="#{hex.center.y}" r="#{hex.radius/2.4}"></circle>
+        |   <text x="#{hex.center.x}" y="#{hex.center.y+12}">#{hex.number}</text>
+        | </g>
+      | </g>
     for edge in edges
       | <line class="path" x1="#{edge[0].x}" y1="#{edge[0].y}" x2="#{edge[1].x}" y2="#{edge[1].y}"></line>
     for vertex in vertices
@@ -54,3 +51,6 @@ html
     div.player#bottomLeft
     div.player#topRight
     div.player#topLeft
+    div#messages-container
+      div#messages
+

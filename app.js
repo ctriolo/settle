@@ -10,7 +10,7 @@ var express = require('express')
   , routes = require('./config/routes');
 
 environment(app, express);
-routes(app);
+routes(app, io);
 app.listen(80);
 
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
