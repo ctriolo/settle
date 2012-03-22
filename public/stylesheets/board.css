@@ -37,7 +37,7 @@ svg g.hex.hover  polygon { fill: white; }
 
 svg g.numberToken.number6 circle,
 svg g.numberToken.number8 circle {
-  fill: salmon;
+  fill: tomato;
 }
 
 svg g.numberToken.number2 circle,

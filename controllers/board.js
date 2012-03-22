@@ -19,7 +19,7 @@ var GRID_WIDTH = 0;
 var MIN = 3;
 var MAX = 5;
 var SVG_WIDTH = 800;
-var SVG_HEIGHT = 600;
+var SVG_HEIGHT = 800;
 // DUMBY FUNCTION: get random valid resource
 function getRVR() {
   // STUPID SILLY FUNCTION THAT WONT ACTUALLY EXISTS
@@ -158,8 +158,8 @@ module.exports.view = function(req, res) {
   for (var i = -1; i < GRID_WIDTH + 1; i++) {
     for (var j = -1; j < GRID_HEIGHT + 1; j++) {
       if (i < 0 || i >= GRID_WIDTH || j < 0 || j >= GRID_HEIGHT) {
-       // tile = getTile(i, j, 'deep_water');
-       // hexes.push(tile.hex);
+        tile = getTile(i, j, 'deep_water');
+        //hexes.push(tile.hex);
       }
     }
   }
@@ -175,7 +175,7 @@ module.exports.view = function(req, res) {
         edges = edges.concat(tile.edges);
       }
       else {
-        //tile = getTile(i, j, 'deep_water');
+        tile = getTile(i, j, 'deep_water');
         //hexes.push(tile.hex);
       }
     }

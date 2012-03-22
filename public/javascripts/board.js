@@ -24,7 +24,7 @@ window.onload = function() {
       $(this).removeClass("hover");
     }
   );
-
+  
   // On click
   $(".path,.intersection,.hex").not(".Sea").click(
     function(){
