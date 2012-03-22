@@ -23,7 +23,7 @@ svg {
 svg g.hex.Sheep  polygon { fill: url(#sheep) lightgreen; }
 svg g.hex.Wood   polygon { fill: url(#wood) forestgreen; }
 svg g.hex.Wheat  polygon { fill: url(#wheat) khaki; }
-svg g.hex.Stone  polygon { fill: url(#ore) lightgrey; }
+svg g.hex.Stone  polygon { fill: url(#ore) rgb(36, 36, 36); }
 svg g.hex.Brick  polygon { fill: url(#brick) orangered; }
 svg g.hex.Desert polygon { fill: url(#desert) gold; }
 svg g.hex.Water  polygon { fill: cyan; }
