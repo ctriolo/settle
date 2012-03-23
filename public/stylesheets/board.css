@@ -47,6 +47,7 @@ svg g.numberToken.number12 circle {
 
 svg g.numberToken circle {
   fill: moccasin;
+  fill-opacity: .6; 
   stroke: black;
   stroke-width: 3;
 }
@@ -55,7 +56,7 @@ svg g.numberToken text {
   font-size: 28px;
   font-family: Arial Black;
   text-anchor: middle;
-  stroke-width: 4;
+  stroke-width: 1;
 }
 
 /**
