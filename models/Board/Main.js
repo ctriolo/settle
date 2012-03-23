@@ -9,7 +9,7 @@ if (process.argv.length > 3) {
 
 // make a board and print its JSON string
 var b = new Board(min, max);
-console.log( b.json() );
+console.log( b.json() + "\n" );
 //console.log( b.root().hexNbors(b) );
 
 /*  ================= 
@@ -45,5 +45,8 @@ for (var r = 0; r < rows; r++)
 
 // print!
 console.log(output);
+console.log("\n" + b.json2() + "\n")
+//console.log(b.prettyprint());
+console.log(b.prettyprint2());
 
-console.log(b.json2())
+console.log( b.inters[1][2].hNeighbors(b) );

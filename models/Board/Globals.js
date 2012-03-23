@@ -6,14 +6,20 @@
 
 // Hex Types
 
-HexTypeEnum = {
+HexTypeEnum = 
+{
+    // most basic
     INACTIVE : "Inactive",
     ACTIVE : "Active",
+    
+    // resources
     WOOD: "Wood",
     SHEEP: "Sheep",
     WHEAT: "Wheat",
     STONE: "Stone",
     BRICK: "Brick",
+    
+    // non-resources
     DESERT: "Desert",
     WATER: "Water",
 };

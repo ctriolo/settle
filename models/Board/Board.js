@@ -7,6 +7,7 @@
 
 // IMPORT / EXPORT
 var Hex = require("./Hex");
+var Intersection = require("./Intersection");
 module.exports = Board;
 
 // THE PRIMARY FUNCTION
@@ -16,6 +17,9 @@ function Board(mn, mx) {
 
     if (arguments.length > 1)
     {
+        if (mx < mn)
+            throw "Min must be less than max! What the hell, bro?!"
+            
         this.min = mn;
         this.max = mx;
     }
@@ -23,11 +27,13 @@ function Board(mn, mx) {
     if (this.numTiles() < 19)
         throw "Board too small! Must be at least 19 tiles."
         
-    // construction work
+    // Hex.js construction work
     this.instantiateHexes();
     this.activateHexes();
     this.populateHexes();
     this.numerateHexes();
+    
+    this.instantiateInters();
 }
 
 
@@ -43,9 +49,10 @@ Board.prototype = {
   colHeight: function(c) { return this.max - this.colDelta(c); },
   isUpCol: function(c) { return this.colDelta(c) % 2 == 0; },
   numTiles: function() { return this.max*this.max - this.min*this.min + this.min; },
+  root: function() { return this.hexes[ this.midCol() ][0]; },
   
   json: function() { return JSON.stringify(this); },
-  root: function() { return this.hexes[ this.midCol() ][0]; },
+  prettyprint: function() { return JSON.stringify(this,null,4); },
 }
 
 Board.prototype.numResourceTiles = function() {
@@ -57,17 +64,33 @@ Board.prototype.numResourceTiles = function() {
     return num;
 }
 
-/*  ================= 
-    >> Tile Basics <<
-    =================  */
+/*  ======================
+    >> Intersection Basics
+    ======================  */
+
+Board.prototype.instantiateInters = function()
+{
+    this.inters = new Array(this.width() + 1);
+    for (var i = 0; i < this.inters.length; i++)
+    {
+        this.inters[i] = new Array(2*this.max + 2);
+        for (var j = 0; j < this.inters[i].length; j++)
+            this.inters[i][j] = new Intersection(i,j);
+    }
+}
+
+/*  ================ 
+    >> Hex Basics <<
+    ================  */
 
 
 Board.prototype.instantiateHexes = function()
 {
+    // this.width() -x- this.max
     this.hexes = new Array(this.width()); // array of hex columns
-    for (var i = 0; i < this.width(); i++) { // for each column
+    for (var i = 0; i < this.hexes.length; i++) { // for each column
         this.hexes[i] = new Array(this.max) // array of hexes
-        for (var j = 0; j < this.max; j++) // for each hex
+        for (var j = 0; j < this.hexes[i].length; j++) // for each hex
             this.hexes[i][j] = new Hex(i,j); // new hex
     }
 }
@@ -126,9 +149,9 @@ Board.prototype.populateHexes = function()
                 this.hexes[i][j].type = arr[k++]; // assign next
 }
 
-/*  ================== 
-    >> Number Tiles <<
-    ==================  */
+/*  ===================== 
+    >> Numbering Hexes <<
+    =====================  */
 
 Board.prototype.numerateHexes = function()
 {
@@ -215,10 +238,36 @@ Board.prototype.makeHexObj = function(hex)
     hexObj.number = hex.diceRoll;
     
     // neighbors
-    hexObj.intersection = new Array();
+    hexObj.intersections = new Object();
+    var nbors = hex.iNeighbors(this);
+    for (n in nbors) {
+        var a = nbors[n];
+        var u = a[0], v = a[1];
+        hexObj.intersections[n] = this.inters[u][v].id;
+    }
+    
     hexObj.edges = new Array();
     
     return hexObj;
+}
+
+Board.prototype.makeInterObj = function(inter)
+{
+    var interObj = new Object();
+    
+    interObj.index = inter.id;
+    interObj.token = inter.token;
+    
+    interObj.hexes = new Object();
+    var nbors = inter.hNeighbors(this);
+    for (n in nbors) {
+        var a = nbors[n];
+        var u = a[0], v = a[1];
+        interObj.hexes[n] = this.hexes[u][v].id;
+    }
+    
+    interObj.edges = new Array();
+    return interObj;
 }
 
 Board.prototype.json2 = function() {
@@ -233,17 +282,39 @@ Board.prototype.json2 = function() {
     var k = 0;
     for (var i = 0; i < this.hexes.length; i++) // for each hex
         for (var j = 0; j < this.hexes[i].length; j++)
-            this.hexes[i][j].id = k;
+            this.hexes[i][j].id = k++;
+    var numHexes = k;
+    
+    // assign intersection IDs
+    k = 0;
+    for (var i = 0; i < this.inters.length; i++)
+        for (var j = 0; j < this.inters[i].length; j++)
+            this.inters[i][j].id = k++;
+    var numInters = k;
     
     // populate hexes array
-    obj.hexes = new Array();
+    obj.hexes = new Array(numHexes);    
     for (var i = 0; i < this.hexes.length; i++) // for each hex
-        for (var j = 0; j < this.hexes[i].length; j++) 
-            obj.hexes.push( this.makeHexObj(this.hexes[i][j]) );
+        for (var j = 0; j < this.hexes[i].length; j++) {
+            var hex = this.hexes[i][j];
+            obj.hexes[ hex.id ] = this.makeHexObj( hex );
+        }
     
-    obj.intersections = new Array();
+    // populate intersections array
+    obj.intersections = new Array(numInters);
+    for (var i = 0; i < this.inters.length; i++)
+        for (var j = 0; j < this.inters[i].length; j++) {
+            var inter = this.inters[i][j];
+            obj.intersections[ inter.id ] = this.makeInterObj( inter );
+        }
+    
     obj.edges = new Array();
     
     return JSON.stringify(obj);
+}
+
+Board.prototype.prettyprint2 = function() {
+    var obj = JSON.parse(this.json2());
+    return JSON.stringify(obj, null, 4);
 }
 

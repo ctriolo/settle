@@ -52,7 +52,7 @@ Hex.prototype.hexNbors = function(b) {
     // side neighbors' rows
     var j1 = j-1; // correct if isUpCol(i)
     var j2 = j+1; // correct if !isUpCol(i)
-    if ( b.isUpCol(i) ) j2--;
+    if ( b.isUpCol(i) ) j2--; // only use of b
     else                 j1++;
 
     // side neighbors' columns
@@ -66,4 +66,31 @@ Hex.prototype.hexNbors = function(b) {
 
     return nbors;
 };
+
+Hex.prototype.iNeighbors = function(b) 
+{
+    var c1 = this.i;
+    var c2 = c1 + 1;
+    
+    var r1 = 2*this.j;
+    if ( !b.isUpCol(this.i) ) // only use of b
+        r1++;
+    var r2 = r1+1;
+    var r3 = r2+1;
+    
+    var nbors = new Object;
+    // clockwise now, ya'll
+    
+    // down the right
+    nbors.NE = [c2, r1];
+    nbors.E  = [c2, r2];
+    nbors.SE = [c2, r3];
+    
+    // up the left
+    nbors.SW = [c1, r3];
+    nbors.W  = [c1, r2];
+    nbors.NW = [c1, r1];
+    
+    return nbors;
+}
 
