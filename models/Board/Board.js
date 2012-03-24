@@ -350,7 +350,9 @@ Board.prototype.makeHexObj = function(hex)
     var nbors = hex.iNeighbors(this);
     for (n in nbors) {
         var a = nbors[n];
-        var u = a[0], v = a[1];
+        var u = a.i, v = a.j;
+        //console.log(this.inters);
+        console.log(u + " " + v);
         hexObj.intersections[n] = this.inters[u][v].id;
     }
     
