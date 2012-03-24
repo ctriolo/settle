@@ -418,7 +418,7 @@ Board.prototype.json2 = function() {
     
     obj.edges = new Array();
     
-    return JSON.stringify(obj);
+    return obj;
 }
 
 Board.prototype.prettyprint2 = function() {

@@ -8,7 +8,7 @@
 
 var Hex = require('../models/Board/Hex')
   , Board = require('../models/Board/Board');
-
+var directions = ["W", "NW", "NE", "E", "SE", "SW"]
 // Constants
 
 var HEX_EDGE_LENGTH = 50;
@@ -45,7 +45,7 @@ function getRVD() {
  * THAT WOULD BE UNIQUE IF YOU CALLED THE FUNCTION FOR EACH TILE
  * IN A BOARD.
  */
-function getTile(x, y, hex) {
+function getTile(x, y, hex, vertices) {
 
   // HEX COORDINATES
 
@@ -77,11 +77,15 @@ function getTile(x, y, hex) {
   if ((MAX-MIN)%2 == 1)
     init_y += B;
 
-
   // Add starting points
   for (var i = 0; i < 6; i++) {
+
     points[i].x += init_x;
     points[i].y += init_y;
+    if (hex !== "deep_water") {
+      vertices[hex.intersections[directions[i]]].x = points[i].x;
+      vertices[hex.intersections[directions[i]]].y = points[i].y;
+    }
   }
 
   // Find the hex's center
@@ -126,8 +130,9 @@ function getTile(x, y, hex) {
       'points': points,
       'center': center,
       'type': hex.type ? hex.type : 'Sea',
-      'number': hex.diceRoll,
-      'radius': HEX_EDGE_LENGTH
+      'number': hex.number,
+      'radius': HEX_EDGE_LENGTH,
+      'index': hex.index
     },
     'vertices': vertices,
     'edges': edges,
@@ -148,10 +153,11 @@ module.exports.view = function(req, res) {
     // Fetch the board
   } else {
     // Create a new board
-    board = new Board(MIN, MAX);
+    b = new Board(MIN, MAX);
   }
-  GRID_WIDTH = board.width();
-  GRID_HEIGHT = board.max;
+  board = b.json2();
+  GRID_WIDTH = board.gridWidth;
+  GRID_HEIGHT = board.gridHeight;
   HEX_EDGE_LENGTH = Math.min((SVG_HEIGHT)/(GRID_HEIGHT+1)/(2*Math.sin(Math.PI/3)), SVG_WIDTH/(GRID_WIDTH+2)/1.5);
   ORIGIN_X = (SVG_WIDTH)/2 - HEX_EDGE_LENGTH - (MAX -MIN)*1.5*HEX_EDGE_LENGTH;
   // Background Hexes
@@ -163,23 +169,29 @@ module.exports.view = function(req, res) {
       }
     }
   }
-
+  for (var i = 0; i < board.intersections.length; i++) {
+    intersection = board.intersections[i];
+    int_object = {
+            'index': intersection.index,
+            'x': 0,
+            'y': 0
+            };
+    vertices.push(int_object);
+  }
   // Foreground Hexes
-  for (var i = 0; i < GRID_WIDTH; i++) {
-    for (var j = 0; j < GRID_HEIGHT; j++) {
-      if (board.hexes[i][j].isActive()) {
-
-        tile = getTile(i, j, board.hexes[i][j]);
+  for (var i = 0; i < board.hexes.length; i++) {
+      fore_hex = board.hexes[i];
+      if (fore_hex.type !== "Inactive") {
+        tile = getTile(fore_hex.grid.x, fore_hex.grid.y, fore_hex,vertices);
         hexes.push(tile.hex);
-        vertices = vertices.concat(tile.vertices);
+        //vertices = vertices.concat(tile.vertices);
         edges = edges.concat(tile.edges);
       }
       else {
-        tile = getTile(i, j, 'deep_water');
+        tile = getTile(fore_hex.grid.x, fore_hex.grid.y, 'deep_water');
         //hexes.push(tile.hex);
       }
     }
-  }
 
   res.render('board', {'layout':false, 'title':'Settle','hexes':hexes,'vertices':vertices,'edges':edges});
 };
