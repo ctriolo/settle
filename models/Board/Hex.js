@@ -6,6 +6,7 @@
 
 // IMPORT / EXPORT
 require("./Globals")
+require("./Edge")
 module.exports = Hex;
 
 // THE PRIMARY FUNCTION
@@ -44,6 +45,17 @@ Hex.prototype.isWater = function() {
 
 Hex.prototype.isLand = function() {
     return !this.isWater();
+}
+
+Hex.prototype.isCoastal = function(b) 
+{
+    var ret = false;
+    
+    var edges = this.eNeighbors(b);
+    for (e in edges)
+        ret = ret || edges[e].isCoastal(b);
+    
+    return ret;
 }
 
 Hex.prototype.hNeighbors = function(b) 
