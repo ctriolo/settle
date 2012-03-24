@@ -192,6 +192,6 @@ module.exports.view = function(req, res) {
         //hexes.push(tile.hex);
       }
     }
-
+    
   res.render('board', {'layout':false, 'title':'Settle','hexes':hexes,'vertices':vertices,'edges':edges});
 };
