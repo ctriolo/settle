@@ -138,3 +138,23 @@ svg line.path.hover {
   width: 100%;
   margin:0;
 }
+
+/**
+ * Debugging Info
+ */
+
+.debug.hex          circle { fill: pink; }
+.debug.path         circle { fill: orange; }
+.debug.intersection circle { fill: yellow; }
+.debug.port         circle { fill: lightblue; }
+.debug              circle { stroke: black; stroke-width: 1; fill-opacity: 1; }
+
+.debug.hex text { font-size: 36px; }
+.debug     text {
+  fill: black;
+  font-size: 11px;
+  font-family: Arial Black;
+  text-anchor: middle;
+}
+
+.debug { display: none; }

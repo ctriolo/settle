@@ -2,6 +2,8 @@
  * Board Client Side Javascript
  */
 
+var debug = false;
+
 window.onload = function() {
 
   var socket = io.connect('/board');
@@ -39,6 +41,17 @@ window.onload = function() {
       return false;
     }
   );
+
+  $(document).keypress(function(event) {
+    switch (event.which) {
+    case 68:  // d
+    case 100: // D
+      if (debug) $('.debug').hide();
+      else $('.debug').show();
+      debug = !debug;
+      break;
+    }
+  });
 
 };
 
