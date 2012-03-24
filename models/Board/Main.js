@@ -58,23 +58,5 @@ console.log();
 //console.log(b.prettyprint());
 //console.log(b.prettyprint2());
 
-//console.log( b.inters[1][2].hNeighbors(b) );
-//console.log( b.root().eNeighbors(b) );
-
-console.log( b.root().hNeighbors(b) );
-console.log( b.root().iNeighbors(b) );
-console.log( b.root().eNeighbors(b) );
-console.log();
-
-console.log( b.inters[2][1].hNeighbors(b) );
-console.log( b.inters[2][1].iNeighbors(b) );
-console.log( b.inters[2][1].eNeighbors(b) );
-console.log();
-
-var e = b.root().eNeighbors(b).S;
-console.log( e.hNeighbors(b) );
-console.log( e.iNeighbors(b) );
-console.log( e.eNeighbors(b) );
-
 
 
