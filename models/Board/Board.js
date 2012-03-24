@@ -345,16 +345,17 @@ Board.prototype.makeHexObj = function(hex)
     hexObj.type = hex.type;
     hexObj.number = hex.diceRoll;
     
-    // neighbors
+    // iNeighbors
     hexObj.intersections = new Object();
     var nbors = hex.iNeighbors(this);
-    for (n in nbors) {
-        var a = nbors[n];
-        var u = a[0], v = a[1];
-        hexObj.intersections[n] = this.inters[u][v].id;
-    }
+    for (n in nbors)
+        hexObj.intersections[n] = nbors[n].id;
     
-    hexObj.edges = new Array();
+    // eNeighbors
+    hexObj.edges = new Object();
+    nbors = hex.eNeighbors(this);
+    for (n in nbors)
+        hexObj.edges[n] = nbors[n].id;
     
     return hexObj;
 }
@@ -363,19 +364,47 @@ Board.prototype.makeInterObj = function(inter)
 {
     var interObj = new Object();
     
+    // basics
     interObj.index = inter.id;
     interObj.token = inter.token;
     
+    // hNeighbors
     interObj.hexes = new Object();
     var nbors = inter.hNeighbors(this);
-    for (n in nbors) {
-        var a = nbors[n];
-        var u = a.i, v = a.j;
-        interObj.hexes[n] = this.hexes[u][v].id;
-    }
+    for (n in nbors)
+        interObj.hexes[n] = nbors[n].id;
     
-    interObj.edges = new Array();
+    // eNeighbors
+    interObj.edges = new Object();
+    var nbors = inter.eNeighbors(this);
+    for (n in nbors)
+        interObj.edges[n] = nbors[n].id;
+    
     return interObj;
+}
+
+Board.prototype.makeEdgeObj = function(edge)
+{
+    var edgeObj = new Object();
+    
+    // basics
+    edgeObj.index = edge.id;
+    edgeObj.token = edge.token;
+    edgeObj.port = edge.port;
+    
+    // hNeighbors
+    edgeObj.hexes = new Object(); // repetitive; shrink down
+    var nbors = edge.hNeighbors(this);
+    for (n in nbors)
+        edgeObj.hexes[n] = nbors[n].id;
+    
+    // iNeighbors
+    edgeObj.intersections = new Object(); // repetitive; shrink down
+    var nbors = edge.iNeighbors(this);
+    for (n in nbors)
+        edgeObj.intersections[n] = nbors[n].id;
+    
+    return edgeObj;
 }
 
 Board.prototype.json2 = function() {
@@ -400,6 +429,13 @@ Board.prototype.json2 = function() {
             this.inters[i][j].id = k++;
     var numInters = k;
     
+    // assign edge IDs
+    k = 0;
+    var allEdges = this.allEdges();
+    for (var i = 0; i < allEdges.length; i++)
+        allEdges[i].id = k++;
+    var numEdges = k;
+    
     // populate hexes array
     obj.hexes = new Array(numHexes);    
     for (var i = 0; i < this.hexes.length; i++) // for each hex
@@ -416,13 +452,15 @@ Board.prototype.json2 = function() {
             obj.intersections[ inter.id ] = this.makeInterObj( inter );
         }
     
-    obj.edges = new Array();
-    
+    // populate edges array
+    obj.edges = new Array(numEdges);
+    for (var i = 0; i < allEdges.length; i++)
+        obj.edges[ allEdges[i].id ] = this.makeEdgeObj( allEdges[i] );
+        
     return obj;
 }
 
 Board.prototype.prettyprint2 = function() {
-    var obj = JSON.parse(this.json2());
-    return JSON.stringify(obj, null, 4);
+    return JSON.stringify(this.json2(), null, 4);
 }
 

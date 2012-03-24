@@ -5,7 +5,8 @@
 // put all function declars in class; define outside
 // allHexes, allInters
 // better ports algorithm (pre-distributed)
-
+// StandardBoard class that inherits Board class
+// separate uiBoard class
 
 var Board = require('./Board');
 
@@ -62,7 +63,7 @@ if (process.argv.length > 3) {
 
 // make a board and print its JSON string
 var b = new Board(min, max);
-console.log(b.prettyprint());
+console.log(b.prettyprint2());
 printBoard(b);
 //console.log( b.json() + "\n" );
 //console.log( b.root().hexNbors(b) );
