@@ -29,7 +29,7 @@ svg g.hex.Desert polygon { fill: url(#desert) gold; }
 svg g.hex.Water  polygon { fill: cyan; }
 svg g.hex.Sea    polygon { fill: darkcyan; stroke: darkgray; stroke-width: 1; }
 svg g.hex        polygon { stroke-width: 3; stroke: black; }
-svg g.hex.hover  polygon { fill: white; }
+svg g.hex.hover  polygon { fill-opacity: .5; }
 
 /**
  * Number Tokens
@@ -65,6 +65,7 @@ svg g.numberToken text {
 
 svg circle.intersection {
   fill: black;
+  fill-opacity: .65;
   stroke-width: 0;
 }
 
