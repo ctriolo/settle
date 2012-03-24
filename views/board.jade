@@ -29,7 +29,7 @@ html
                 | </g>
               | </g>
             for edge in edges
-              | <line class="path" x1="#{edge[0].x}" y1="#{edge[0].y}" x2="#{edge[1].x}" y2="#{edge[1].y}"></line>
+              | <line class="path" x1="#{edge.x0}" y1="#{edge.y0}" x2="#{edge.x1}" y2="#{edge.y1}" id="#{edge.index}"></line>
             for vertex in vertices
               | <circle class="intersection" id="#{vertex.index}" cx="#{vertex.x}" cy="#{vertex.y}" r="6"></circle>
             | </svg>

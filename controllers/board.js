@@ -8,7 +8,8 @@
 
 var Hex = require('../models/Board/Hex')
   , Board = require('../models/Board/Board');
-var directions = ["W", "NW", "NE", "E", "SE", "SW"]
+var int_directions = ["W", "NW", "NE", "E", "SE", "SW"]
+var edge_directions = ["NW", "N", "NE", "SE", "S", "SW"]
 // Constants
 
 var HEX_EDGE_LENGTH = 50;
@@ -45,7 +46,7 @@ function getRVD() {
  * THAT WOULD BE UNIQUE IF YOU CALLED THE FUNCTION FOR EACH TILE
  * IN A BOARD.
  */
-function getTile(x, y, hex, vertices) {
+function getTile(x, y, hex, vertices, edges) {
 
   // HEX COORDINATES
 
@@ -83,8 +84,15 @@ function getTile(x, y, hex, vertices) {
     points[i].x += init_x;
     points[i].y += init_y;
     if (hex !== "deep_water") {
-      vertices[hex.intersections[directions[i]]].x = points[i].x;
-      vertices[hex.intersections[directions[i]]].y = points[i].y;
+      vertices[hex.intersections[int_directions[i]]].x = points[i].x;
+      vertices[hex.intersections[int_directions[i]]].y = points[i].y;
+      edges[hex.edges[edge_directions[i]]].x0 = points[i].x;
+      edges[hex.edges[edge_directions[i]]].y0 = points[i].y;
+      previous = i - 1;
+      if (previous < 0) 
+        previous = 5;
+      edges[hex.edges[edge_directions[previous]]].x1 = points[i].x;
+      edges[hex.edges[edge_directions[previous]]].y1 = points[i].y;
     }
   }
 
@@ -96,7 +104,7 @@ function getTile(x, y, hex, vertices) {
 
   // CALCULATE VERTICES
   // TODO MOVE THIS CRAP ONCE WE GET UNIQUE IDENTIFIERS FOR VERTICES
-  vertices = [];
+  //vertices = [];
   /* THIS DOESN'T WORK WITHOUT RECTANGULAR BOARD.
   if (x == 0) vertices.push(points[0]);
   if (y == 0) {
@@ -111,7 +119,7 @@ function getTile(x, y, hex, vertices) {
   // CALCULATE EDGES
   // TODO MOVE THIS ONCE WE GET UNIQUE IDENTIFIERS FOR EDGES
 
-  edges = [];
+  //edges = [];
   /* THIS DOESN'T WORK WITHOUT RECTANGULAR BOARD.
   if (x==0 && y!=0) edges.push([points[0], points[1]]);
   if (x==GRID_WIDTH-1 && y!=0) edges.push([points[2], points[3]]);
@@ -169,6 +177,7 @@ module.exports.view = function(req, res) {
       }
     }
   }
+  // initialize intersections
   for (var i = 0; i < board.intersections.length; i++) {
     intersection = board.intersections[i];
     int_object = {
@@ -178,14 +187,28 @@ module.exports.view = function(req, res) {
             };
     vertices.push(int_object);
   }
+  
+  // initialize edges
+  for (var i = 0; i < board.edges.length; i++) {
+    edge = board.edges[i];
+    edge_object = {
+            'index': edge.index,
+            'x0': 0,
+            'y0': 0,
+            'x1': 0,
+            'y1': 0
+            };
+    edges.push(edge_object);
+  }
+  
   // Foreground Hexes
   for (var i = 0; i < board.hexes.length; i++) {
       fore_hex = board.hexes[i];
       if (fore_hex.type !== "Inactive") {
-        tile = getTile(fore_hex.grid.x, fore_hex.grid.y, fore_hex,vertices);
+        tile = getTile(fore_hex.grid.x, fore_hex.grid.y, fore_hex,vertices, edges);
         hexes.push(tile.hex);
         //vertices = vertices.concat(tile.vertices);
-        edges = edges.concat(tile.edges);
+        //edges = edges.concat(tile.edges);
       }
       else {
         tile = getTile(fore_hex.grid.x, fore_hex.grid.y, 'deep_water');

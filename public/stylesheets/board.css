@@ -80,6 +80,7 @@ svg circle.intersection.hover {
 
 svg line.path {
   stroke: black;
+  stroke-opacity: .6;
   stroke-width: 7;
 }
 
