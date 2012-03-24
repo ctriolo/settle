@@ -1,3 +1,10 @@
+// ToDos:
+// exhaustive neighbor test; esp. board boundary
+// remove board param from function calls; make variable
+// change !isUpCol --> isDownCol
+// put all function declars in class; define outside
+
+
 var Board = require('./Board');
 
 // grab command line args
@@ -9,7 +16,7 @@ if (process.argv.length > 3) {
 
 // make a board and print its JSON string
 var b = new Board(min, max);
-console.log( b.json() + "\n" );
+//console.log( b.json() + "\n" );
 //console.log( b.root().hexNbors(b) );
 
 /*  ================= 
@@ -44,9 +51,30 @@ for (var r = 0; r < rows; r++)
     }
 
 // print!
+console.log();
 console.log(output);
-console.log("\n" + b.json2() + "\n")
+console.log();
+//console.log("\n" + b.json2() + "\n")
 //console.log(b.prettyprint());
-console.log(b.prettyprint2());
+//console.log(b.prettyprint2());
 
-console.log( b.inters[1][2].hNeighbors(b) );
+//console.log( b.inters[1][2].hNeighbors(b) );
+//console.log( b.root().eNeighbors(b) );
+
+console.log( b.root().hNeighbors(b) );
+console.log( b.root().iNeighbors(b) );
+console.log( b.root().eNeighbors(b) );
+console.log();
+
+console.log( b.inters[2][1].hNeighbors(b) );
+console.log( b.inters[2][1].iNeighbors(b) );
+console.log( b.inters[2][1].eNeighbors(b) );
+console.log();
+
+var e = b.root().eNeighbors(b).S;
+console.log( e.hNeighbors(b) );
+console.log( e.iNeighbors(b) );
+console.log( e.eNeighbors(b) );
+
+
+

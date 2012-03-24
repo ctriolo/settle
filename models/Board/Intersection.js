@@ -1,7 +1,7 @@
 /**
  * Intersection.js
  *
- * JS Object that represents a tile in the game.
+ * JS Object that represents an intersection in the game.
  */
 
 // IMPORT / EXPORT
@@ -20,33 +20,60 @@ function Intersection(i, j)
     this.token = null; // for now
 };
 
-Intersection.prototype.hNeighbors = function(b)
+Intersection.prototype.iNeighbors = function(b)
 {
-    // this method uses brute force
-    // get each hex's iNeighbors; 
-    // if this intersection is included, then the hex is an hNeighbor
+    var eNbors = this.eNeighbors(b);
+    var iNbors = new Object();
     
-    var nbors = new Object;
+    for (dir in eNbors)
+        iNbors[dir] = eNbors[dir].iNeighbors(b)[dir];
     
-    var arr = [this.i, this.j];
-    for (var u = 0; u < b.hexes.length; u++)
-        for (var v = 0; v < b.hexes[u].length; v++) 
-        {
-            var iNbors = b.hexes[u][v].iNeighbors(b);
-            
-            // ANY IDEAS ON HOW TO CLEAN THIS UP ?!?!?!?!
-            if ( iNbors.NE.equals(arr) ) nbors.SW = [u,v];
-            if ( iNbors.E.equals(arr) ) nbors.W = [u,v];
-            if ( iNbors.SE.equals(arr) ) nbors.NW = [u,v];
-            if ( iNbors.SW.equals(arr) ) nbors.NE = [u,v];
-            if ( iNbors.W.equals(arr) ) nbors.E = [u,v];
-            if ( iNbors.NW.equals(arr) ) nbors.SE = [u,v];
-        }
-    
-    return nbors;
+    return iNbors;
 }
 
-// ARRAY EQUALITY FUNCTION
+Intersection.prototype.hNeighbors = function(b)
+{
+    return this.neighborsNeighbor( [b.hexes], b );
+}
+
+Intersection.prototype.eNeighbors = function(b)
+{
+    var arrs = [b.horizEdges, b.diagEdges];
+    return this.neighborsNeighbor( arrs, b );
+}
+    
+Intersection.prototype.neighborsNeighbor = function(arrs, b)
+{
+    // this method uses brute force
+    // get each obj's iNeighbors; 
+    // if this intersection is included, then the obj is an xNeighbor
+        
+    var my_nbors = new Object();
+    var me = this;
+        
+    for (var a = 0; a < arrs.length; a++) {
+        var arr = arrs[a];
+        
+        for (var u = 0; u < arr.length; u++) {            
+            for (var v = 0; v < arr[u].length; v++)
+            {
+                var them = arr[u][v];
+                var their_iNbors = them.iNeighbors(b);
+                
+                for (dir in their_iNbors) // quid pro quo
+                    if ( their_iNbors[dir] == me )
+                        my_nbors[ oppositeDir(dir) ] = them;
+            }
+        }
+        
+    }
+    
+    return my_nbors;
+}
+
+/*  ================== 
+    >> Array add-on <<
+    ==================  */
 
 Array.prototype.equals = function(that)
 {
