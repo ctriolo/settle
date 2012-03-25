@@ -187,7 +187,7 @@ module.exports.view = function(req, res) {
             };
     vertices.push(int_object);
   }
-  
+
   // initialize edges
   for (var i = 0; i < board.edges.length; i++) {
     edge = board.edges[i];
@@ -196,8 +196,11 @@ module.exports.view = function(req, res) {
             'x0': 0,
             'y0': 0,
             'x1': 0,
-            'y1': 0
+            'y1': 0,
+            'port': "None"
             };
+    if (edge.port)
+        edge_object.port = edge.port;
     edges.push(edge_object);
   }
   
