@@ -367,6 +367,7 @@ Board.prototype.makeInterObj = function(inter)
     // basics
     interObj.index = inter.id;
     interObj.token = inter.token;
+    interObj.isActive = inter.isActive(this);
     
     // hNeighbors
     interObj.hexes = new Object();
@@ -391,6 +392,7 @@ Board.prototype.makeEdgeObj = function(edge)
     edgeObj.index = edge.id;
     edgeObj.token = edge.token;
     edgeObj.port = edge.port;
+    edgeObj.isActive = edge.isActive(this);
     
     // hNeighbors
     edgeObj.hexes = new Object(); // repetitive; shrink down

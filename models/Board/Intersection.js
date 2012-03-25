@@ -20,6 +20,16 @@ function Intersection(i, j)
     this.token = null; // for now
 };
 
+Intersection.prototype.isActive = function(b)
+{
+    var hNbors = this.hNeighbors(b);
+    for (n in hNbors)
+        if ( hNbors[n].isActive() )
+            return true;
+    
+    return false;
+}
+
 Intersection.prototype.iNeighbors = function(b)
 {
     var eNbors = this.eNeighbors(b);

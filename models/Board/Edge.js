@@ -22,6 +22,16 @@ function Edge(i, j, type)
     this.port = null;
 };
 
+Edge.prototype.isActive = function(b)
+{
+    var hNbors = this.hNeighbors(b);
+    for (n in hNbors)
+        if ( hNbors[n].isActive() )
+            return true;
+    
+    return false;
+}
+
 Edge.prototype.hasNoPort = function()
 {
     return this.port == null || this.port == PortTypeEnum.NONE;
