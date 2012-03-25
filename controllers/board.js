@@ -139,10 +139,12 @@ module.exports.view = function(req, res) {
   }
 
   // Add ports, TODO: get this in addTile
-  for (var edge in board.edges)
-    if (edge.isActive && edge.port)
-      edges[edge.index].port = edge.port
-
+  for (var i = 0; i < board.edges.length; i++) {
+    edge = board.edges[i];
+    if (edge.isActive && edge.port) {
+      edges[edge.index].port = edge.port;
+    }
+  }
 
   // TO CLEAN UP THE ARRAYS PASSED TO THE VIEW RENDERER. TODO: HAVE BOARD ONLY INDEX AND GIVE US ACTIVE ELEMENTS
   var temp;
