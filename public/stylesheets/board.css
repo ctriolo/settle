@@ -85,8 +85,8 @@ svg circle.port {
 svg circle.port.Any31 {  fill: white; }
 svg circle.port.Sheep21 {  fill: url(#sheep) orangered; }
 svg circle.port.Wood21 {  fill: url(#wood) forestgreen; }
-svg circle.port.Brick21 {  fill: url(#brick); }
-svg circle.port.Stone21 {  fill: url(#ore) darkgray; }
+svg circle.port.Brick21 {  fill: url(#brick) redorange; }
+svg circle.port.Stone21 {  fill: url(#ore) black; }
 svg circle.port.Wheat21 {  fill: url(#wheat) yellow; }
 
 svg text.port{
@@ -95,6 +95,8 @@ svg text.port{
   text-anchor: middle;
   fill: white;
 }
+
+svg text.port.Wheat21,
 svg text.port.Any31{
   fill: black;
 }
@@ -110,12 +112,12 @@ svg line.path {
 }
 
 
-svg line.path.Any31 { stroke: white; }
-svg line.path.Sheep21 {  stroke: white; }
-svg line.path.Wood21 {  stroke: white; }
-svg line.path.Brick21 {  stroke: white; }
-svg line.path.Stone21 {  stroke: white; }
-svg line.path.Wheat21 {  stroke: white; }
+svg line.path.Any31 { stroke: red; }
+svg line.path.Sheep21 {  stroke: red; }
+svg line.path.Wood21 {  stroke: red; }
+svg line.path.Brick21 {  stroke: red; }
+svg line.path.Stone21 {  stroke: red; }
+svg line.path.Wheat21 {  stroke: red; }
 
 
 svg line.path.hover {

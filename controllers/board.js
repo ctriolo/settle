@@ -90,6 +90,7 @@ function getTile(x, y, hex, vertices, edges) {
     if (hex !== "deep_water") {
       vertices[hex.intersections[int_directions[i]]].x = points[i].x;
       vertices[hex.intersections[int_directions[i]]].y = points[i].y;
+      console.log(edges[hex.edges[edge_directions[i]]]);
       edges[hex.edges[edge_directions[i]]].x0 = points[i].x;
       edges[hex.edges[edge_directions[i]]].y0 = points[i].y;
       previous = i - 1;
@@ -105,37 +106,6 @@ function getTile(x, y, hex, vertices, edges) {
     'x': init_x + A + C/2,
     'y': init_y + B,
   };
-
-  // CALCULATE VERTICES
-  // TODO MOVE THIS CRAP ONCE WE GET UNIQUE IDENTIFIERS FOR VERTICES
-  //vertices = [];
-  /* THIS DOESN'T WORK WITHOUT RECTANGULAR BOARD.
-  if (x == 0) vertices.push(points[0]);
-  if (y == 0) {
-    vertices.push(points[1]);
-    vertices.push(points[2]);
-  }
-  if (x == GRID_WIDTH - 1) vertices.push(points[3]);
-  vertices.push(points[4]);
-  vertices.push(points[5]);
-  */
-
-  // CALCULATE EDGES
-  // TODO MOVE THIS ONCE WE GET UNIQUE IDENTIFIERS FOR EDGES
-
-  //edges = [];
-  /* THIS DOESN'T WORK WITHOUT RECTANGULAR BOARD.
-  if (x==0 && y!=0) edges.push([points[0], points[1]]);
-  if (x==GRID_WIDTH-1 && y!=0) edges.push([points[2], points[3]]);
-  if (y==0) {
-    edges.push([points[0], points[1]]);
-    edges.push([points[1], points[2]]);
-    edges.push([points[2], points[3]]);
-  }
-  edges.push([points[3], points[4]]);
-  edges.push([points[4], points[5]]);
-  edges.push([points[5], points[0]]);
-  */
 
   return {
     'hex': {
@@ -188,18 +158,21 @@ module.exports.view = function(req, res) {
   // initialize intersections
   for (var i = 0; i < board.intersections.length; i++) {
     intersection = board.intersections[i];
+    if (!intersection.isActive) continue;
     int_object = {
             'index': intersection.index,
             'x': 0,
             'y': 0
             };
-    vertices.push(int_object);
+    vertices[intersection.index] = int_object;
   }
 
   // initialize edges
   for (var i = 0; i < board.edges.length; i++) {
     edge = board.edges[i];
-    edge_object = {
+    console.log(edge);
+    if (edge.isActive) {
+      edge_object = {
             'index': edge.index,
             'x0': 0,
             'y0': 0,
@@ -207,9 +180,10 @@ module.exports.view = function(req, res) {
             'y1': 0,
             'port': "None"
             };
-    if (edge.port)
-        edge_object.port = edge.port;
-    edges.push(edge_object);
+      if (edge.port)
+          edge_object.port = edge.port;
+      edges[edge.index] = edge_object;
+    }
   }
 
   // Foreground Hexes
