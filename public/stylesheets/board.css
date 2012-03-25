@@ -89,23 +89,33 @@ svg circle.port.Brick21 {  fill: url(#brick); }
 svg circle.port.Stone21 {  fill: url(#ore) darkgray; }
 svg circle.port.Wheat21 {  fill: url(#wheat) yellow; }
 
+svg text.port{
+  font-size: 14px;
+  font-family: Arial Black;
+  text-anchor: middle;
+  fill: white;
+}
+svg text.port.Any31{
+  fill: black;
+}
+
 /**
  * Paths
  */
 
 svg line.path {
   stroke: black;
-  stroke-opacity: .6;
+  stroke-opacity: .8;
   stroke-width: 7;
 }
 
 
-svg line.path.Any31 {  stroke: blue; }
-svg line.path.Sheep21 {  stroke: lime; }
-svg line.path.Wood21 {  stroke: forestgreen; }
-svg line.path.Brick21 {  stroke: orangered; }
-svg line.path.Stone21 {  stroke: darkgray; }
-svg line.path.Wheat21 {  stroke: yellow; }
+svg line.path.Any31 { stroke: white; }
+svg line.path.Sheep21 {  stroke: white; }
+svg line.path.Wood21 {  stroke: white; }
+svg line.path.Brick21 {  stroke: white; }
+svg line.path.Stone21 {  stroke: white; }
+svg line.path.Wheat21 {  stroke: white; }
 
 
 svg line.path.hover {
