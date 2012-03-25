@@ -13,31 +13,12 @@ var Hex = require('../models/Board/Hex')
 var boards = {}; // will be moved into BoardProvider
 
 // Constants
-var int_directions = ["W", "NW", "NE", "E", "SE", "SW"];
-var edge_directions = ["NW", "N", "NE", "SE", "S", "SW"];
-var HEX_EDGE_LENGTH = 50;
-var ORIGIN_X = 50; // This maybe should be fixed with padding in the view....
-var ORIGIN_Y = 40; // This maybe should be fixed with padding in the view....
-var GRID_HEIGHT = 0;
-var GRID_WIDTH = 0;
+var INT_DIRECTIONS = ["W", "NW", "NE", "E", "SE", "SW"];
+var EDGE_DIRECTIONS = ["NW", "N", "NE", "SE", "S", "SW"];
 var MIN = 3;
 var MAX = 5;
 var SVG_WIDTH = 800;
 var SVG_HEIGHT = 800;
-
-// DUMBY FUNCTION: get random valid resource
-function getRVR() {
-  // STUPID SILLY FUNCTION THAT WONT ACTUALLY EXISTS
-  var resources = ['field', 'pasture', 'mountain', 'hill', 'forest', 'desert', 'water'];
-  var r = resources[Math.floor(Math.random()*7)];
-  return r;
-}
-
-// DUMBY FUNCTION: get random valid dice
-function getRVD() {
-  // STUPID SILLY FUNCTION THAT WONT ACTUALLY EXISTS
-  return Math.floor(Math.random()*11) + 2;
-}
 
 /**
  * getTile
@@ -50,11 +31,11 @@ function getRVD() {
  * THAT WOULD BE UNIQUE IF YOU CALLED THE FUNCTION FOR EACH TILE
  * IN A BOARD.
  */
-function getTile(x, y, hex, vertices, edges) {
+function getTile(hexEdgeLength, originX, originY, x, y, hex, vertices, edges) {
 
   // HEX COORDINATES
 
-  var C = HEX_EDGE_LENGTH
+  var C = hexEdgeLength
     , A = .5 * C
     , B = .866 * C;
 
@@ -69,8 +50,8 @@ function getTile(x, y, hex, vertices, edges) {
   ];
 
   // Find the top left corner of the containing square
-  init_x = ORIGIN_X + x * (A + C);
-  init_y = ORIGIN_Y + y * 2 * B;
+  init_x = originX + x * (A + C);
+  init_y = originY + y * 2 * B;
 
   if (Math.abs(x) % 2 == 1) {
     if ((MAX-MIN) % 2 == 1)
@@ -88,16 +69,15 @@ function getTile(x, y, hex, vertices, edges) {
     points[i].x += init_x;
     points[i].y += init_y;
     if (hex !== "deep_water") {
-      vertices[hex.intersections[int_directions[i]]].x = points[i].x;
-      vertices[hex.intersections[int_directions[i]]].y = points[i].y;
-      console.log(edges[hex.edges[edge_directions[i]]]);
-      edges[hex.edges[edge_directions[i]]].x0 = points[i].x;
-      edges[hex.edges[edge_directions[i]]].y0 = points[i].y;
+      vertices[hex.intersections[INT_DIRECTIONS[i]]].x = points[i].x;
+      vertices[hex.intersections[INT_DIRECTIONS[i]]].y = points[i].y;
+      edges[hex.edges[EDGE_DIRECTIONS[i]]].x0 = points[i].x;
+      edges[hex.edges[EDGE_DIRECTIONS[i]]].y0 = points[i].y;
       previous = i - 1;
       if (previous < 0)
         previous = 5;
-      edges[hex.edges[edge_directions[previous]]].x1 = points[i].x;
-      edges[hex.edges[edge_directions[previous]]].y1 = points[i].y;
+      edges[hex.edges[EDGE_DIRECTIONS[previous]]].x1 = points[i].x;
+      edges[hex.edges[EDGE_DIRECTIONS[previous]]].y1 = points[i].y;
     }
   }
 
@@ -113,7 +93,7 @@ function getTile(x, y, hex, vertices, edges) {
       'center': center,
       'type': hex.type ? hex.type : 'Sea',
       'number': hex.number,
-      'radius': HEX_EDGE_LENGTH,
+      'radius': hexEdgeLength,
       'index': hex.index
     },
     'vertices': vertices,
@@ -142,19 +122,7 @@ module.exports.view = function(req, res) {
   }
 
   var board = b.json2();
-  GRID_WIDTH = board.gridWidth;
-  GRID_HEIGHT = board.gridHeight;
-  HEX_EDGE_LENGTH = Math.min((SVG_HEIGHT)/(GRID_HEIGHT+1)/(2*Math.sin(Math.PI/3)), SVG_WIDTH/(GRID_WIDTH+2)/1.5);
-  ORIGIN_X = (SVG_WIDTH)/2 - HEX_EDGE_LENGTH - (MAX -MIN)*1.5*HEX_EDGE_LENGTH;
-  // Background Hexes
-  for (var i = -1; i < GRID_WIDTH + 1; i++) {
-    for (var j = -1; j < GRID_HEIGHT + 1; j++) {
-      if (i < 0 || i >= GRID_WIDTH || j < 0 || j >= GRID_HEIGHT) {
-        tile = getTile(i, j, 'deep_water');
-        //hexes.push(tile.hex);
-      }
-    }
-  }
+
   // initialize intersections
   for (var i = 0; i < board.intersections.length; i++) {
     intersection = board.intersections[i];
@@ -170,7 +138,6 @@ module.exports.view = function(req, res) {
   // initialize edges
   for (var i = 0; i < board.edges.length; i++) {
     edge = board.edges[i];
-    console.log(edge);
     if (edge.isActive) {
       edge_object = {
             'index': edge.index,
@@ -186,18 +153,16 @@ module.exports.view = function(req, res) {
     }
   }
 
+  var hexEdgeLength = Math.min((SVG_HEIGHT)/(board.gridHeight+1)/(2*Math.sin(Math.PI/3)), SVG_WIDTH/(board.gridWidth+2)/1.5);
+  var originX = (SVG_WIDTH)/2 - hexEdgeLength - (MAX -MIN)*1.5*hexEdgeLength;
+  var originY = 40;
+
   // Foreground Hexes
   for (var i = 0; i < board.hexes.length; i++) {
       fore_hex = board.hexes[i];
       if (fore_hex.type !== "Inactive") {
-        tile = getTile(fore_hex.grid.x, fore_hex.grid.y, fore_hex,vertices, edges);
+        tile = getTile(hexEdgeLength, originX, originY, fore_hex.grid.x, fore_hex.grid.y, fore_hex, vertices, edges);
         hexes.push(tile.hex);
-        //vertices = vertices.concat(tile.vertices);
-        //edges = edges.concat(tile.edges);
-      }
-      else {
-        tile = getTile(fore_hex.grid.x, fore_hex.grid.y, 'deep_water');
-        //hexes.push(tile.hex);
       }
     }
 
