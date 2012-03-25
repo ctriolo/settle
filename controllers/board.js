@@ -8,10 +8,13 @@
 
 var Hex = require('../models/Board/Hex')
   , Board = require('../models/Board/Board');
-var int_directions = ["W", "NW", "NE", "E", "SE", "SW"]
-var edge_directions = ["NW", "N", "NE", "SE", "S", "SW"]
-// Constants
 
+// Global Memory
+var boards = {}; // will be moved into BoardProvider
+
+// Constants
+var int_directions = ["W", "NW", "NE", "E", "SE", "SW"];
+var edge_directions = ["NW", "N", "NE", "SE", "S", "SW"];
 var HEX_EDGE_LENGTH = 50;
 var ORIGIN_X = 50; // This maybe should be fixed with padding in the view....
 var ORIGIN_Y = 40; // This maybe should be fixed with padding in the view....
@@ -21,6 +24,7 @@ var MIN = 3;
 var MAX = 5;
 var SVG_WIDTH = 800;
 var SVG_HEIGHT = 800;
+
 // DUMBY FUNCTION: get random valid resource
 function getRVR() {
   // STUPID SILLY FUNCTION THAT WONT ACTUALLY EXISTS
@@ -89,7 +93,7 @@ function getTile(x, y, hex, vertices, edges) {
       edges[hex.edges[edge_directions[i]]].x0 = points[i].x;
       edges[hex.edges[edge_directions[i]]].y0 = points[i].y;
       previous = i - 1;
-      if (previous < 0) 
+      if (previous < 0)
         previous = 5;
       edges[hex.edges[edge_directions[previous]]].x1 = points[i].x;
       edges[hex.edges[edge_directions[previous]]].y1 = points[i].y;
@@ -156,14 +160,18 @@ module.exports.view = function(req, res) {
   var hexes = [];
   var vertices = [];
   var edges = [];
-  // TODO: CHECK IF A BOARD EXISTS AT THIS ADDRESS AND FETCH IT
-  if (false) {
-    // Fetch the board
+
+  var id = req.params.id?req.params.id:'default';
+  if (id in boards) {
+    // Fetch an existing board
+    var b = boards[id];
   } else {
     // Create a new board
-    b = new Board(MIN, MAX);
+    var b = new Board(MIN, MAX);
+    boards[id] = b;
   }
-  board = b.json2();
+
+  var board = b.json2();
   GRID_WIDTH = board.gridWidth;
   GRID_HEIGHT = board.gridHeight;
   HEX_EDGE_LENGTH = Math.min((SVG_HEIGHT)/(GRID_HEIGHT+1)/(2*Math.sin(Math.PI/3)), SVG_WIDTH/(GRID_WIDTH+2)/1.5);
@@ -203,7 +211,7 @@ module.exports.view = function(req, res) {
         edge_object.port = edge.port;
     edges.push(edge_object);
   }
-  
+
   // Foreground Hexes
   for (var i = 0; i < board.hexes.length; i++) {
       fore_hex = board.hexes[i];
@@ -218,6 +226,6 @@ module.exports.view = function(req, res) {
         //hexes.push(tile.hex);
       }
     }
-    
+
   res.render('board', {'layout':false, 'title':'Settle','hexes':hexes,'vertices':vertices,'edges':edges});
 };

@@ -18,6 +18,7 @@ module.exports = function(app, io){
   app.get('/userfilltest', user.filltest);
 
   // Board
+  app.get('/board/:id', board.view);
   app.get('/board', board.view);
   boardIO(io.of('/board'));
 
