@@ -21,17 +21,12 @@ var SVG_WIDTH = 800;
 var SVG_HEIGHT = 800;
 
 /**
- * getTile
+ * addTile
  *
- * Get the elements associated with a tile to help build a board.
- * Returns an object with keys 'hex', 'edges', and 'vertices'
- * WARNING: THIS SHOULD ONLY BE USED TO BUILD THE BOARD.
- * THE FUNCTION DOES NOT RETURN EVERY EDGE AND VERTEX
- * ASSOCIATED WITH A GIVEN TILE. IT ONLY RETURNS THE VERTICES
- * THAT WOULD BE UNIQUE IF YOU CALLED THE FUNCTION FOR EACH TILE
- * IN A BOARD.
+ * Add the unique elements associated with a tile to `hexes`, `edges`,
+ * and `vertices` to help build a board.
  */
-function getTile(hexEdgeLength, originX, originY, x, y, hex, vertices, edges) {
+function addTile(hexEdgeLength, originX, originY, x, y, hex, hexes, edges, vertices) {
 
   // HEX COORDINATES
 
@@ -65,20 +60,21 @@ function getTile(hexEdgeLength, originX, originY, x, y, hex, vertices, edges) {
 
   // Add starting points
   for (var i = 0; i < 6; i++) {
-
     points[i].x += init_x;
     points[i].y += init_y;
-    if (hex !== "deep_water") {
-      vertices[hex.intersections[INT_DIRECTIONS[i]]].x = points[i].x;
-      vertices[hex.intersections[INT_DIRECTIONS[i]]].y = points[i].y;
-      edges[hex.edges[EDGE_DIRECTIONS[i]]].x0 = points[i].x;
-      edges[hex.edges[EDGE_DIRECTIONS[i]]].y0 = points[i].y;
-      previous = i - 1;
-      if (previous < 0)
-        previous = 5;
-      edges[hex.edges[EDGE_DIRECTIONS[previous]]].x1 = points[i].x;
-      edges[hex.edges[EDGE_DIRECTIONS[previous]]].y1 = points[i].y;
-    }
+
+    // Add the vertex
+    vertices[hex.intersections[INT_DIRECTIONS[i]]].x = points[i].x;
+    vertices[hex.intersections[INT_DIRECTIONS[i]]].y = points[i].y;
+
+    // Add the edge
+    edges[hex.edges[EDGE_DIRECTIONS[i]]].x0 = points[i].x;
+    edges[hex.edges[EDGE_DIRECTIONS[i]]].y0 = points[i].y;
+    previous = i - 1;
+    if (previous < 0)
+      previous = 5;
+    edges[hex.edges[EDGE_DIRECTIONS[previous]]].x1 = points[i].x;
+    edges[hex.edges[EDGE_DIRECTIONS[previous]]].y1 = points[i].y;
   }
 
   // Find the hex's center
@@ -87,17 +83,14 @@ function getTile(hexEdgeLength, originX, originY, x, y, hex, vertices, edges) {
     'y': init_y + B,
   };
 
-  return {
-    'hex': {
-      'points': points,
-      'center': center,
-      'type': hex.type ? hex.type : 'Sea',
-      'number': hex.number,
-      'radius': hexEdgeLength,
-      'index': hex.index
-    },
-    'vertices': vertices,
-    'edges': edges,
+  // Add the hex
+  hexes[hex.index] = {
+    'points': points,
+    'center': center,
+    'type': hex.type ? hex.type : 'Sea',
+    'number': hex.number,
+    'radius': hexEdgeLength,
+    'index': hex.index
   };
 }
 
@@ -159,12 +152,17 @@ module.exports.view = function(req, res) {
 
   // Foreground Hexes
   for (var i = 0; i < board.hexes.length; i++) {
-      fore_hex = board.hexes[i];
-      if (fore_hex.type !== "Inactive") {
-        tile = getTile(hexEdgeLength, originX, originY, fore_hex.grid.x, fore_hex.grid.y, fore_hex, vertices, edges);
-        hexes.push(tile.hex);
-      }
+    fore_hex = board.hexes[i];
+    if (fore_hex.type !== "Inactive") {
+      addTile(hexEdgeLength, originX, originY, fore_hex.grid.x, fore_hex.grid.y, fore_hex, hexes, edges, vertices);
     }
+  }
+
+  // TO CLEAN UP THE ARRAYS PASSED TO THE VIEW RENDERER. TODO: HAVE BOARD ONLY INDEX AND GIVE US ACTIVE ELEMENTS
+  var temp;
+  temp = []; for (var i = 0; i < hexes.length; i++) if (hexes[i]) temp.push(hexes[i]); hexes = temp;
+  temp = []; for (var i = 0; i < edges.length; i++) if (edges[i]) temp.push(edges[i]); edges = temp;
+  temp = []; for (var i = 0; i < vertices.length; i++) if (vertices[i]) temp.push(vertices[i]); vertices = temp;
 
   res.render('board', {'layout':false, 'title':'Settle','hexes':hexes,'vertices':vertices,'edges':edges});
 };
