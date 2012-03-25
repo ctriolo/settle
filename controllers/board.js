@@ -62,19 +62,6 @@ function addTile(hexEdgeLength, originX, originY, x, y, hex, hexes, edges, verti
   for (var i = 0; i < 6; i++) {
     points[i].x += init_x;
     points[i].y += init_y;
-
-    // Add the vertex
-    vertices[hex.intersections[INT_DIRECTIONS[i]]].x = points[i].x;
-    vertices[hex.intersections[INT_DIRECTIONS[i]]].y = points[i].y;
-
-    // Add the edge
-    edges[hex.edges[EDGE_DIRECTIONS[i]]].x0 = points[i].x;
-    edges[hex.edges[EDGE_DIRECTIONS[i]]].y0 = points[i].y;
-    previous = i - 1;
-    if (previous < 0)
-      previous = 5;
-    edges[hex.edges[EDGE_DIRECTIONS[previous]]].x1 = points[i].x;
-    edges[hex.edges[EDGE_DIRECTIONS[previous]]].y1 = points[i].y;
   }
 
   // Find the hex's center
@@ -83,6 +70,29 @@ function addTile(hexEdgeLength, originX, originY, x, y, hex, hexes, edges, verti
     'y': init_y + B,
   };
 
+  // ADD VERTICES, EDGES, AND HEX
+
+  for (var i = 0; i < 6; i++) {
+    // Add the vertex
+    var vIndex = hex.intersections[INT_DIRECTIONS[i]];
+    vertices[vIndex] = {
+      'index': vIndex,
+      'x': points[i].x,
+      'y': points[i].y,
+    };
+
+    // Add the edge
+    var eIndex = hex.edges[EDGE_DIRECTIONS[i]];
+    edges[hex.edges[EDGE_DIRECTIONS[i]]] = {
+      'index': eIndex,
+      'x0': points[i].x,
+      'y0': points[i].y,
+      'x1': points[(i+1)%6].x,
+      'y1': points[(i+1)%6].y,
+      'port': "None",
+    };
+  }
+
   // Add the hex
   hexes[hex.index] = {
     'points': points,
@@ -90,7 +100,7 @@ function addTile(hexEdgeLength, originX, originY, x, y, hex, hexes, edges, verti
     'type': hex.type ? hex.type : 'Sea',
     'number': hex.number,
     'radius': hexEdgeLength,
-    'index': hex.index
+    'index': hex.index,
   };
 }
 
@@ -100,10 +110,6 @@ function addTile(hexEdgeLength, originX, originY, x, y, hex, hexes, edges, verti
  * Renders a rectangular board.
  */
 module.exports.view = function(req, res) {
-  var hexes = [];
-  var vertices = [];
-  var edges = [];
-
   var id = req.params.id?req.params.id:'default';
   if (id in boards) {
     // Fetch an existing board
@@ -114,38 +120,12 @@ module.exports.view = function(req, res) {
     boards[id] = b;
   }
 
+  // Everything below renders a board. Should be put into a UIBoard object.
+
   var board = b.json2();
-
-  // initialize intersections
-  for (var i = 0; i < board.intersections.length; i++) {
-    intersection = board.intersections[i];
-    if (!intersection.isActive) continue;
-    int_object = {
-            'index': intersection.index,
-            'x': 0,
-            'y': 0
-            };
-    vertices[intersection.index] = int_object;
-  }
-
-  // initialize edges
-  for (var i = 0; i < board.edges.length; i++) {
-    edge = board.edges[i];
-    if (edge.isActive) {
-      edge_object = {
-            'index': edge.index,
-            'x0': 0,
-            'y0': 0,
-            'x1': 0,
-            'y1': 0,
-            'port': "None"
-            };
-      if (edge.port)
-          edge_object.port = edge.port;
-      edges[edge.index] = edge_object;
-    }
-  }
-
+  var hexes = [];
+  var vertices = [];
+  var edges = [];
   var hexEdgeLength = Math.min((SVG_HEIGHT)/(board.gridHeight+1)/(2*Math.sin(Math.PI/3)), SVG_WIDTH/(board.gridWidth+2)/1.5);
   var originX = (SVG_WIDTH)/2 - hexEdgeLength - (MAX -MIN)*1.5*hexEdgeLength;
   var originY = 40;
@@ -157,6 +137,12 @@ module.exports.view = function(req, res) {
       addTile(hexEdgeLength, originX, originY, fore_hex.grid.x, fore_hex.grid.y, fore_hex, hexes, edges, vertices);
     }
   }
+
+  // Add ports, TODO: get this in addTile
+  for (var edge in board.edges)
+    if (edge.isActive && edge.port)
+      edges[edge.index].port = edge.port
+
 
   // TO CLEAN UP THE ARRAYS PASSED TO THE VIEW RENDERER. TODO: HAVE BOARD ONLY INDEX AND GIVE US ACTIVE ELEMENTS
   var temp;
