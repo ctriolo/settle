@@ -30,7 +30,7 @@ window.onload = function() {
   // On click
   $(".path,.intersection,.hex,.port").not(".Sea").click(
     function(){
-      socket.send('Someone just clicked a ' + $(this).attr('class') + ' with index ' + $(this).attr('id') + '.'); // Change this to IDs once we have them
+      socket.send('Someone just clicked ' + $(this).attr('id') + '.');
     }
   );
 
