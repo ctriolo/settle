@@ -101,17 +101,17 @@ svg circle.intersection.hover {
  * Ports
  */
 
-.port.Any31   path { fill: url(#market) pink; }
-.port.Sheep21 path { fill: url(#sheep)  orangered; }
-.port.Wood21  path { fill: url(#wood)   forestgreen; }
-.port.Brick21 path { fill: url(#brick)  redorange; }
-.port.Stone21 path { fill: url(#ore)    black; }
-.port.Wheat21 path { fill: url(#wheat)  yellow; }
-.port         path { stroke: black; stroke-width: 7; }
-.port.hover   path { fill-opacity: .6; }
-
+.port.Any31   circle{ fill: url(#market) pink; }
+.port.Sheep21 circle { fill: url(#sheep)  orangered; }
+.port.Wood21  circle { fill: url(#wood)   forestgreen; }
+.port.Brick21 circle { fill: url(#brick)  redorange; }
+.port.Stone21 circle { fill: url(#ore)    black; }
+.port.Wheat21 circle { fill: url(#wheat)  yellow; }
+.port         path { stroke: black; stroke-width: 7;stroke-opacity:.6; fill:white }
+.port.hover   path { stroke-opacity: .4; }
+.port.hover   circle { fill-opacity:.6 }
 .port circle {
-  fill-opacity: .6;
+  fill-opacity: .9;
   fill: black;
   stroke: black;
   stroke-width: 2;

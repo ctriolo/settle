@@ -37,7 +37,7 @@ html
               - var text = (port.type == 'Any31') ? '3:1' : '2:1';
               | <g id="port#{port.index}" class="port #{port.type}">
               |   <path d="M #{p[0].x} #{p[0].y} S #{p[1].x} #{p[1].y} #{p[2].x} #{p[2].y}" />
-              |   <circle cx="#{port.label.x}" cy="#{port.label.y}" r="16" />
+              |   <circle cx="#{port.label.x}" cy="#{port.label.y}" r="18" />
               |   <text x="#{port.label.x}" y="#{port.label.y+4}">#{text}</text>
               | </g>
             for edge in board.edges

@@ -168,7 +168,7 @@ UIBoard.prototype._addTile = function(hex, hexes, edges, intersections, ports) {
       var point0 = {'x': points[i].x, 'y': points[i].y};
       var point2 = {'x': points[(i+1)%6].x, 'y': points[(i+1)%6].y};
       var point1 = this._getReflection(this._getHexCenter(hex.grid.x, hex.grid.y), point0, point2, 1.6);
-      var label = this._getReflection(this._getHexCenter(hex.grid.x, hex.grid.y), point0, point2, .35);
+      var label = this._getReflection(this._getHexCenter(hex.grid.x, hex.grid.y), point0, point2, .7);
       ports[eIndex] = {
         'index': eIndex,
         'type': this.board.edges[eIndex].port,
