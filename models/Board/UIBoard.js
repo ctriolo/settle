@@ -9,11 +9,13 @@
  *   var rendered = uib.render();
  */
 
+
 // Constants
 var INT_DIRECTIONS = ["W", "NW", "NE", "E", "SE", "SW"];
 var EDGE_DIRECTIONS = ["NW", "N", "NE", "SE", "S", "SW"];
 var SVG_WIDTH = 800;
 var SVG_HEIGHT = 800;
+
 
 /**
  * UIBoard
@@ -31,7 +33,8 @@ function UIBoard(board) {
   this.C = hexEdgeLength
   this.A = .5 * hexEdgeLength
   this.B = .866 * hexEdgeLength;
-}
+};
+
 
 /**
  * _getHexCenter (private)
@@ -82,6 +85,7 @@ UIBoard.prototype._getHexCoordinates = function(x, y) {
   ];
 };
 
+
 /**
  * _getHexCenter (private)
  *
@@ -99,6 +103,7 @@ UIBoard.prototype._getHexCenter = function(x, y) {
     'y': T.y + B,
   };
 };
+
 
 /**
  * _addTile (private)
@@ -149,7 +154,7 @@ UIBoard.prototype._addTile = function(hex, hexes, edges, intersections) {
     'radius': this.C,
     'index': hex.index,
   };
-}
+};
 
 
 /**
@@ -181,4 +186,20 @@ UIBoard.prototype.render = function() {
   }
 };
 
-module.exports = UIBoard;
+
+/**
+ * main
+ *
+ * Prints a rendered Board object
+ */
+function main() {
+  var Board = require('./Board');
+  var board = new Board();
+  var uiBoard = new UIBoard(board);
+  var renderedBoard = uiBoard.render();
+  console.log(JSON.stringify(renderedBoard, null, 4));
+};
+
+
+if (require.main === module) main();
+else module.exports = UIBoard;
