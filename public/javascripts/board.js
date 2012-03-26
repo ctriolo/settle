@@ -6,9 +6,13 @@ var debug = false;
 
 window.onload = function() {
 
+  var CONFIG = {
+    room: document.location.pathname.substring('board'.length+1), // current room
+  };
+
   var socket = io.connect('/board');
   socket.on('connect', function() {
-    socket.emit('message', 'A client connected.');
+    socket.emit('join', CONFIG.room);
   });
 
   socket.on('message', function(message) {
@@ -17,15 +21,13 @@ window.onload = function() {
     objDiv.scrollTop(objDiv.prop('scrollHeight'));
   });
 
-  // On hover
+  // Hovering
   $(".path,.intersection,.hex,.port").not(".Sea").hover(
-    function(){
-      $(this).addClass("hover");
-    },
-    function(){
-      $(this).removeClass("hover");
-    }
+    function(){ socket.emit('hoverOn', $(this).attr('id')); },
+    function(){ socket.emit('hoverOff', $(this).attr('id')); }
   );
+  socket.on('hoverOn',  function(id) { $('#'+id).addClass("hover"); });
+  socket.on('hoverOff', function(id) { $('#'+id).removeClass("hover"); });
 
   // On click
   $(".path,.intersection,.hex,.port").not(".Sea").click(
