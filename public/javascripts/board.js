@@ -16,7 +16,7 @@ window.onload = function() {
   });
 
   // On hover
-  $(".path,.intersection,.hex").not(".Sea").hover(
+  $(".path,.intersection,.hex,.port").not(".Sea").hover(
     function(){
       $(this).addClass("hover");
     },
@@ -24,9 +24,9 @@ window.onload = function() {
       $(this).removeClass("hover");
     }
   );
-  
+
   // On click
-  $(".path,.intersection,.hex").not(".Sea").click(
+  $(".path,.intersection,.hex,.port").not(".Sea").click(
     function(){
       socket.send('Someone just clicked a ' + $(this).attr('class') + ' with index ' + $(this).attr('id') + '.'); // Change this to IDs once we have them
     }

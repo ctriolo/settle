@@ -29,7 +29,7 @@ function UIBoard(board) {
   this.board.min = board.min;
   var hexEdgeLength = Math.min((SVG_HEIGHT)/(this.board.gridHeight+1)/(2*Math.sin(Math.PI/3)), SVG_WIDTH/(this.board.gridWidth+2)/1.5);
   this.originX = (SVG_WIDTH)/2 - hexEdgeLength - (this.board.max - this.board.min) * 1.5 * hexEdgeLength;
-  this.originY = 40;
+  this.originY = 60;
   this.C = hexEdgeLength
   this.A = .5 * hexEdgeLength
   this.B = .866 * hexEdgeLength;
@@ -106,6 +106,27 @@ UIBoard.prototype._getHexCenter = function(x, y) {
 
 
 /**
+ * _getReflection (private)
+ *
+ * Gets the reflection of `point` from the line made by `line0` and `line1`.
+ * (TODO: Make this do what it says it doesnt instead of being a reflection
+ *        through the midpoint of the line.)
+ *
+ * @param  point     object  the point to be reflected, in the form of {'x': x, 'y': y}
+ * @param  line0     object  the first point of the reflection line, in the form of {'x': x, 'y': y}
+ * @param  line1     object  the second point of the reflection line, in the form of {'x': x, 'y': y}
+ * @param  modifier  num     the scale factor, null is assumed 1;
+ * @param            object  the reflected point, in the form of {'x': x, 'y': y}
+ */
+UIBoard.prototype._getReflection = function(point, line0, line1, modifier) {
+  modifier = modifier?modifier:1;
+  var mid = {'x': (line0.x + line1.x)/2 , 'y': (line0.y + line1.y)/2};
+  var delta = {'x': point.x - mid.x, 'y': point.y - mid.y};
+  return {'x': mid.x - modifier*delta.x, 'y': mid.y - modifier*delta.y};
+}
+
+
+/**
  * _addTile (private)
  *
  * Add the unique elements associated with a tile to the `hexes`, `edges`,
@@ -116,7 +137,7 @@ UIBoard.prototype._getHexCenter = function(x, y) {
  * @param  edges          array   the array to place rendered edges in
  * @param  intersections  array   the array to place rendered intersections in
  */
-UIBoard.prototype._addTile = function(hex, hexes, edges, intersections) {
+UIBoard.prototype._addTile = function(hex, hexes, edges, intersections, ports) {
   if (hex.type === "Inactive") return;
 
   var points = this._getHexCoordinates(hex.grid.x, hex.grid.y);
@@ -140,9 +161,21 @@ UIBoard.prototype._addTile = function(hex, hexes, edges, intersections) {
       'y0': points[i].y,
       'x1': points[(i+1)%6].x,
       'y1': points[(i+1)%6].y,
-      'port': "None",
     };
-    if (this.board.edges[eIndex].port) edges[eIndex].port = this.board.edges[eIndex].port;
+
+    // Add the port
+    if (this.board.edges[eIndex].port && this.board.edges[eIndex].port !== 'None') {
+      var point0 = {'x': points[i].x, 'y': points[i].y};
+      var point2 = {'x': points[(i+1)%6].x, 'y': points[(i+1)%6].y};
+      var point1 = this._getReflection(this._getHexCenter(hex.grid.x, hex.grid.y), point0, point2, 1.6);
+      var label = this._getReflection(this._getHexCenter(hex.grid.x, hex.grid.y), point0, point2, .35);
+      ports[eIndex] = {
+        'index': eIndex,
+        'type': this.board.edges[eIndex].port,
+        'points': [ point0, point1, point2 ],
+        'label': label,
+      };
+    }
   }
 
   // Add the hex
@@ -168,22 +201,25 @@ UIBoard.prototype.render = function() {
   var hexes = [];
   var intersections = [];
   var edges = [];
+  var ports = [];
 
   // Go through every hex and add it and its related elements to our arrays
   for (var i = 0; i < this.board.hexes.length; i++)
-    this._addTile(this.board.hexes[i], hexes, edges, intersections);
+    this._addTile(this.board.hexes[i], hexes, edges, intersections, ports);
 
   // TODO: HAVE BOARD ONLY INDEX AND GIVE US ACTIVE ELEMENTS
   var temp; // used to clean up `hexes`, `edges`, and `intersections`.
   temp = []; for (var i = 0; i < hexes.length; i++) if (hexes[i]) temp.push(hexes[i]); hexes = temp;
   temp = []; for (var i = 0; i < edges.length; i++) if (edges[i]) temp.push(edges[i]); edges = temp;
   temp = []; for (var i = 0; i < intersections.length; i++) if (intersections[i]) temp.push(intersections[i]); intersections = temp;
+  temp = []; for (var i = 0; i < ports.length; i++) if (ports[i]) temp.push(ports[i]); ports = temp;
 
   return {
     'hexes': hexes,
     'edges': edges,
     'intersections': intersections,
-  }
+    'ports': ports,
+  };
 };
 
 
