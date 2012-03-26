@@ -7,6 +7,7 @@
 // better ports algorithm (pre-distributed)
 // StandardBoard class that inherits Board class
 // separate uiBoard class
+// move id assignment from json2 conversion method to initial constructor
 
 var Board = require('./Board');
 
