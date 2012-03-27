@@ -11,7 +11,7 @@ module.exports = function(sockets) {
     socket.on('join', function(room) {
       socket.join(room);
       rooms[socket.id] = room;
-      sockets.to(rooms[socket.id]).emit('message', 'A cliet just connected.');
+      sockets.to(rooms[socket.id]).emit('message', 'A client just connected.');
     });
 
     socket.on('message', function(message) {
