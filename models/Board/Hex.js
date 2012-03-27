@@ -19,28 +19,22 @@ function Hex(i, j)
     }
 
     this.diceRoll = 0; // dice roll number
-    this.type = HexTypeEnum.INACTIVE; // type (i.e. resource)
+    this.type = HEX_TYPE.INACTIVE; // type (i.e. resource)
 };
 
 // PROPERTIES 'N' STUFF
 
 // active hex?
 Hex.prototype.isActive = function() {
-    return this.type != HexTypeEnum.INACTIVE;
+    return this.type != HEX_TYPE.INACTIVE;
 }
 
 Hex.prototype.isResource = function() {
-    var ret = false;
-    ret |= this.type == HexTypeEnum.WOOD;
-    ret |= this.type == HexTypeEnum.SHEEP;
-    ret |= this.type == HexTypeEnum.WHEAT;
-    ret |= this.type == HexTypeEnum.STONE;
-    ret |= this.type == HexTypeEnum.BRICK;
-    return ret;
+    return this.type in HEX_TYPE_TO_RESOURCE;
 }
 
 Hex.prototype.isWater = function() {
-    return this.type == HexTypeEnum.WATER || this.type == HexTypeEnum.INACTIVE;
+    return this.type == HEX_TYPE.WATER || this.type == HEX_TYPE.INACTIVE;
 }
 
 Hex.prototype.isLand = function() {

@@ -209,7 +209,7 @@ Board.prototype.activateHexes = function()
     // set all as active
     for (var i = 0; i < this.width(); i++)
         for (var j = 0; j < this.max; j++)
-            this.hexes[i][j].type = HexTypeEnum.ACTIVE;
+            this.hexes[i][j].type = HEX_TYPE.ACTIVE;
 
     // deactivate from bottom/top
     for (var i = 0; i < this.width(); i++)
@@ -218,12 +218,12 @@ Board.prototype.activateHexes = function()
         var top = -1, bot = this.max-1;
         while ( numActive > this.colHeight(i) )
         {
-            if ( this.hexes[i][bot].type == HexTypeEnum.ACTIVE ) {
-                this.hexes[i][bot].type = HexTypeEnum.INACTIVE;
+            if ( this.hexes[i][bot].type == HEX_TYPE.ACTIVE ) {
+                this.hexes[i][bot].type = HEX_TYPE.INACTIVE;
                 top++;
             }
             else {
-                this.hexes[i][top].type = HexTypeEnum.INACTIVE;
+                this.hexes[i][top].type = HEX_TYPE.INACTIVE;
                 bot--;
             }
             numActive--;
@@ -235,10 +235,10 @@ Board.prototype.activateHexes = function()
 Board.prototype.populateHexes = function()
 {
     // resource frequencies
-    var resources = [HexTypeEnum.WOOD, HexTypeEnum.SHEEP, HexTypeEnum.WHEAT,
-                     HexTypeEnum.STONE, HexTypeEnum.BRICK];
+    var resources = [HEX_TYPE.FOREST, HEX_TYPE.PASTURE, HEX_TYPE.FIELD,
+                     HEX_TYPE.MOUNTAIN, HEX_TYPE.HILL];
     resources = resources.concat(resources);
-    resources.push(HexTypeEnum.DESERT);
+    resources.push(HEX_TYPE.DESERT);
 
     // build array of resources
     var arr = new Array();

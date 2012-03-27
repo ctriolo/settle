@@ -40,16 +40,16 @@ svg {
  * Hexes
  */
 
-svg g.hex.Sheep  polygon { fill: url(#sheep) lightgreen; }
-svg g.hex.Wood   polygon { fill: url(#wood) forestgreen; }
-svg g.hex.Wheat  polygon { fill: url(#wheat) khaki; }
-svg g.hex.Stone  polygon { fill: url(#ore) rgb(36, 36, 36); }
-svg g.hex.Brick  polygon { fill: url(#brick) orangered; }
-svg g.hex.Desert polygon { fill: url(#desert) gold; }
-svg g.hex.Water  polygon { fill: cyan; }
-svg g.hex.Sea    polygon { fill: darkcyan; stroke: darkgray; stroke-width: 1; }
-svg g.hex        polygon { stroke-width: 3; stroke: black; }
-svg g.hex.hover  polygon { fill-opacity: .5; }
+.hex.Pasture  polygon { fill: url(#sheep)  lightgreen; }
+.hex.Forest   polygon { fill: url(#wood)   forestgreen; }
+.hex.Field    polygon { fill: url(#wheat)  khaki; }
+.hex.Mountain polygon { fill: url(#ore)    rgb(36, 36, 36); }
+.hex.Hill     polygon { fill: url(#brick)  orangered; }
+.hex.Desert   polygon { fill: url(#desert) gold; }
+.hex.Water    polygon { fill:              cyan; }
+.hex.Sea      polygon { fill:              darkcyan; stroke: darkgray; stroke-width: 1; }
+.hex          polygon { stroke-width: 3; stroke: black; }
+.hex.hover    polygon { fill-opacity: .5; }
 
 
 /**

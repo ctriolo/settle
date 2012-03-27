@@ -6,22 +6,29 @@
 
 // Hex Types
 
-HexTypeEnum =
+HEX_TYPE =
 {
     // most basic
     INACTIVE : "Inactive",
     ACTIVE : "Active",
 
-    // resources
-    WOOD: "Wood",
-    SHEEP: "Sheep",
-    WHEAT: "Wheat",
-    STONE: "Stone",
-    BRICK: "Brick",
+    // less basic
+    FOREST:   "Forest",
+    PASTURE:  "Pasture",
+    FIELD:    "Field",
+    MOUNTAIN: "Mountain",
+    HILL:     "Hill",
+    DESERT:   "Desert",
+    WATER:    "Water",
+};
 
-    // non-resources
-    DESERT: "Desert",
-    WATER: "Water",
+HEX_TYPE_TO_RESOURCE =
+{
+    "Forest":   "Wood",
+    "Pasture":  "Sheep",
+    "Field":    "Wheat",
+    "Mountain": "Stone",
+    "Hill":     "Brick",
 };
 
 // Edge Types
