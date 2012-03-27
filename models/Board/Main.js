@@ -12,7 +12,7 @@
 var Board = require('./Board');
 
 
-/*  ================= 
+/*  =================
     >> Print Board <<
     =================  */
 
@@ -20,7 +20,7 @@ printBoard = function(b)
 {
     var rows = b.max*2;
     var cols = b.width();
-    
+
     // output array
     var output = new Array(rows);
     for (var r = 0; r < rows; r++) {
@@ -28,30 +28,30 @@ printBoard = function(b)
         for (var c = 0; c < cols; c++)
             output[r][c] = "  ";
     }
-    
+
     // for each output cell
     for (var r = 0; r < rows; r++)
         for (var c = b.colDelta(r) % 2; c < cols; c += 2) {
             if ( !b.hexes[c][ Math.floor(r/2) ].isActive() )
                 continue;
-            
+
             // if tile is active; add dice roll (other options included)
             output[r][c] = '' + b.hexes[c][ Math.floor(r/2) ].diceRoll;
             //.hexNbors(b).length;
             //.type.substr(0,2);
-            
+
             // if field is too short, add space before
             while (output[r][c].length < 2)
                 output[r][c] = ' ' + output[r][c];
         }
-    
+
     // print!
     console.log();
     console.log(output);
     console.log();
 }
 
-/*  ========== 
+/*  ==========
     >> Main <<
     ==========  */
 
@@ -73,14 +73,14 @@ printBoard(b);
 
 /*
 for (var i = 0; i < b.hexes.length; i++) {
-    for (var j = 0; j < b.hexes[i].length; j++) 
+    for (var j = 0; j < b.hexes[i].length; j++)
     {
         var hex = b.hexes[i][j];
         if ( !hex.isCoastal(b) ) continue;
-        
+
         console.log(hex);
         console.log(hex.eNeighbors(b));
-            
+
     }
 }
 */

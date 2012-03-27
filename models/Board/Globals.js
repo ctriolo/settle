@@ -6,19 +6,19 @@
 
 // Hex Types
 
-HexTypeEnum = 
+HexTypeEnum =
 {
     // most basic
     INACTIVE : "Inactive",
     ACTIVE : "Active",
-    
+
     // resources
     WOOD: "Wood",
     SHEEP: "Sheep",
     WHEAT: "Wheat",
     STONE: "Stone",
     BRICK: "Brick",
-    
+
     // non-resources
     DESERT: "Desert",
     WATER: "Water",
@@ -50,11 +50,11 @@ oppositeDir = function(s)
 {
     arr = ['N', 'E', 'S', 'W'];
     opp = ['s', 'w', 'n', 'e'];
-    
+
     var t = s;
     for (var i = 0; i < arr.length; i++)
         t = t.replace( arr[i], arr[ (i+2)%4 ].toLowerCase() );
-    
+
     return t.toUpperCase();
 }
 

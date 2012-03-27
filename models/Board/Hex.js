@@ -47,18 +47,18 @@ Hex.prototype.isLand = function() {
     return !this.isWater();
 }
 
-Hex.prototype.isCoastal = function(b) 
+Hex.prototype.isCoastal = function(b)
 {
     var ret = false;
-    
+
     var edges = this.eNeighbors(b);
     for (e in edges)
         ret = ret || edges[e].isCoastal(b);
-    
+
     return ret;
 }
 
-Hex.prototype.hNeighbors = function(b) 
+Hex.prototype.hNeighbors = function(b)
 {
     var i = this.i;
     var j = this.j;
@@ -88,30 +88,30 @@ Hex.prototype.hNeighbors = function(b)
     return nbors;
 };
 
-Hex.prototype.iNeighbors = function(b) 
+Hex.prototype.iNeighbors = function(b)
 {
     var c1 = this.i;
     var c2 = c1 + 1;
-    
+
     var r1 = 2*this.j;
     if ( !b.isUpCol(this.i) ) // only use of b
         r1++;
     var r2 = r1+1;
     var r3 = r2+1;
-    
+
     var nbors = new Object;
     // clockwise now, ya'll
-    
+
     // down the right
     nbors.NE = b.inters[c2][r1];
     nbors.E  = b.inters[c2][r2];
     nbors.SE = b.inters[c2][r3];
-    
+
     // up the left
     nbors.SW = b.inters[c1][r3];
     nbors.W  = b.inters[c1][r2];
     nbors.NW = b.inters[c1][r1];
-    
+
     return nbors;
 }
 
@@ -119,25 +119,25 @@ Hex.prototype.eNeighbors = function(b)
 {
     var i = this.i;
     var j = this.j;
-    
+
     var nbors = new Object;
-    
+
     nbors.N = b.horizEdges[i][j];
     nbors.S = b.horizEdges[i][j+1];
-    
+
     var i1 = i;
     var i2 = i+1;
-    
+
     var j1 = 2*j;
     if ( !b.isUpCol(this.i) )
         j1++;
     var j2 = j1 + 1;
-    
+
     nbors.NE = b.diagEdges[i2][j1];
     nbors.SE = b.diagEdges[i2][j2];
     nbors.SW = b.diagEdges[i1][j2];
     nbors.NW = b.diagEdges[i1][j1];
-    
+
     return nbors;
 }
 

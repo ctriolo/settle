@@ -20,28 +20,28 @@ function Board(mn, mx) {
     {
         if (mx < mn)
             throw "Min must be less than max! What the hell, bro?!"
-            
+
         this.min = mn;
         this.max = mx;
     }
-    
+
     if (this.numTiles() < 19)
         throw "Board too small! Must be at least 19 tiles."
-        
+
     // Hex.js construction work
     this.instantiateHexes();
     this.activateHexes();
     this.populateHexes();
     this.numerateHexes();
-    
+
     this.instantiateInters();
-    
+
     this.instantiateEdges();
     this.assignPorts();
 }
 
 
-/*  ================ 
+/*  ================
     >> Properties <<
     ================  */
 
@@ -55,7 +55,7 @@ Board.prototype = {
   startsUp: function() { return this.isUpCol(0); },
   numTiles: function() { return this.max*this.max - this.min*this.min + this.min; },
   root: function() { return this.hexes[ this.midCol() ][0]; },
-  
+
   json: function() { return JSON.stringify(this); },
   prettyprint: function() { return JSON.stringify(this,null,4); },
 }
@@ -83,7 +83,7 @@ Board.prototype.instantiateEdges = function()
         for (var j = 0; j < this.horizEdges[i].length; j++)
             this.horizEdges[i][j] = new Edge(i, j, EdgeTypeEnum.HORIZONTAL); // "horiz"
     }
-    
+
     // (w + 1) -x- (2M + 1)
     this.diagEdges = new Array( this.width() + 1 );
     for (var i = 0; i < this.diagEdges.length; i++)
@@ -97,29 +97,29 @@ Board.prototype.instantiateEdges = function()
 Board.prototype.allEdges = function()
 {
     var arr = new Array();
-    
+
     for (var i = 0; i < this.horizEdges.length; i++)
         for (var j = 0; j < this.horizEdges[i].length; j++)
             arr.push( this.horizEdges[i][j] );
-    
+
     for (var i = 0; i < this.diagEdges.length; i++)
         for (var j = 0; j < this.diagEdges[i].length; j++)
             arr.push( this.diagEdges[i][j] );
-    
+
     return arr;
 }
 
 Board.prototype.assignPorts = function()
 {
     var numCoasts = 0;
-    
+
     var allEdges = this.allEdges();
     for (var i = 0; i < allEdges.length; i++)
         numCoasts += allEdges[i].isCoastal(this);
-        
+
     var numPorts = Math.floor(numCoasts / 3) - 1;
     var ports = this.generatePortArray(numPorts, numCoasts);
-    
+
     do {
         ports.shuffle();
         var k = 0;
@@ -131,21 +131,21 @@ Board.prototype.assignPorts = function()
 
 Board.prototype.generatePortArray = function(numPorts, numCoasts)
 {
-    var ports = [PortTypeEnum.SHEEP_2_1, 
-                 PortTypeEnum.WOOD_2_1, 
+    var ports = [PortTypeEnum.SHEEP_2_1,
+                 PortTypeEnum.WOOD_2_1,
                  PortTypeEnum.WHEAT_2_1,
                  PortTypeEnum.STONE_2_1,
                  PortTypeEnum.BRICK_2_1];
     for (var i = 0; i < 5; i++)
         ports.push(PortTypeEnum.ANY_3_1);
-    
+
     while (ports.length < numPorts)
         ports = ports.concat(ports);
     ports = ports.slice(0, numPorts);
-    
+
     while (ports.length < numCoasts)
         ports.push(PortTypeEnum.NONE);
-    
+
     return ports;
 }
 
@@ -153,21 +153,21 @@ Board.prototype.hasValidPorts = function(minRadius)
 {
     minRad = 1;
     if (arguments.length > 0) minRad = minRadius;
-    
+
     var allEdges = this.allEdges();
-    for (var i = 0; i < allEdges.length; i++) 
+    for (var i = 0; i < allEdges.length; i++)
     {
         var edge = allEdges[i];
         if (edge.hasNoPort()) continue;
-        
+
         var eNbors = edge.eNeighborsWithinRad(minRad, this);
         eNbors = eNbors.slice(1); // remove self
-        
+
         for (var e = 0; e < eNbors.length; e++)
             if ( !eNbors[e].hasNoPort() )
                 return false;
     }
-    
+
     return true;
 }
 
@@ -187,7 +187,7 @@ Board.prototype.instantiateInters = function()
     }
 }
 
-/*  ================ 
+/*  ================
     >> Hex Basics <<
     ================  */
 
@@ -243,7 +243,7 @@ Board.prototype.populateHexes = function()
     // build array of resources
     var arr = new Array();
     while (arr.length < this.numTiles())
-        arr = arr.concat(resources); 
+        arr = arr.concat(resources);
     arr = arr.slice(0, this.numTiles() ); // clamp
 
     // randomize
@@ -257,14 +257,14 @@ Board.prototype.populateHexes = function()
                 this.hexes[i][j].type = arr[k++]; // assign next
 }
 
-/*  ===================== 
+/*  =====================
     >> Numbering Hexes <<
     =====================  */
 
 Board.prototype.numerateHexes = function()
 {
     arr = this.generateDiceRollArray();
-                
+
     do {
         this.assignDiceRolls(arr);
     } while ( !this.hasValidDiceRolls() );
@@ -275,13 +275,13 @@ Board.prototype.generateDiceRollArray = function()
     // dice roll distribution
     var startRolls = [2, 3,3, 4,4, 5,5, 6,6, 8,8, 9,9, 10,10, 11,11, 12]
     var extraRolls = [10, 4, 9, 5, 11, 3, 8, 6, 12, 2]
-    
+
     // build array of dice rolls
     var arr = startRolls;
     while ( arr.length < this.numResourceTiles() )
         arr = arr.concat(extraRolls);
     arr = arr.slice(0, this.numResourceTiles() ); // clamp
-    
+
     return arr;
 }
 
@@ -301,21 +301,21 @@ Board.prototype.assignDiceRolls = function(arr)
 Board.prototype.hasValidDiceRolls = function()
 {
     for (var i = 0; i < this.hexes.length; i++) // for each hex
-        for (var j = 0; j < this.hexes[i].length; j++) 
+        for (var j = 0; j < this.hexes[i].length; j++)
         {
             if (this.hexes[i][j].diceRoll != 6 && this.hexes[i][j].diceRoll != 8)
                 continue;
-            
+
             var nbors = this.hexes[i][j].hNeighbors(this);
             for (n in nbors)
                 if (nbors[n].diceRoll == 6 || nbors[n].diceRoll == 8)
-                    return false;                
-        }        
-    
+                    return false;
+        }
+
     return true;
 }
 
-/*  ================== 
+/*  ==================
     >> Array add-on <<
     ==================  */
 
@@ -331,121 +331,121 @@ Array.prototype.shuffle = function() {
  	}
 };
 
-/*  ===================== 
+/*  =====================
     >> convert to JSON <<
     =====================  */
 
-Board.prototype.makeHexObj = function(hex) 
+Board.prototype.makeHexObj = function(hex)
 {
     var hexObj = new Object();
-    
+
     // basics
     hexObj.index = hex.id;
     hexObj.grid = { 'x':hex.i, 'y':hex.j };
     hexObj.type = hex.type;
     hexObj.number = hex.diceRoll;
-    
+
     // iNeighbors
     hexObj.intersections = new Object();
     var nbors = hex.iNeighbors(this);
     for (n in nbors)
         hexObj.intersections[n] = nbors[n].id;
-    
+
     // eNeighbors
     hexObj.edges = new Object();
     nbors = hex.eNeighbors(this);
     for (n in nbors)
         hexObj.edges[n] = nbors[n].id;
-    
+
     return hexObj;
 }
 
 Board.prototype.makeInterObj = function(inter)
 {
     var interObj = new Object();
-    
+
     // basics
     interObj.index = inter.id;
     interObj.token = inter.token;
     interObj.isActive = inter.isActive(this);
-    
+
     // hNeighbors
     interObj.hexes = new Object();
     var nbors = inter.hNeighbors(this);
     for (n in nbors)
         interObj.hexes[n] = nbors[n].id;
-    
+
     // eNeighbors
     interObj.edges = new Object();
     var nbors = inter.eNeighbors(this);
     for (n in nbors)
         interObj.edges[n] = nbors[n].id;
-    
+
     return interObj;
 }
 
 Board.prototype.makeEdgeObj = function(edge)
 {
     var edgeObj = new Object();
-    
+
     // basics
     edgeObj.index = edge.id;
     edgeObj.token = edge.token;
     edgeObj.port = edge.port;
     edgeObj.isActive = edge.isActive(this);
-    
+
     // hNeighbors
     edgeObj.hexes = new Object(); // repetitive; shrink down
     var nbors = edge.hNeighbors(this);
     for (n in nbors)
         edgeObj.hexes[n] = nbors[n].id;
-    
+
     // iNeighbors
     edgeObj.intersections = new Object(); // repetitive; shrink down
     var nbors = edge.iNeighbors(this);
     for (n in nbors)
         edgeObj.intersections[n] = nbors[n].id;
-    
+
     return edgeObj;
 }
 
 Board.prototype.json2 = function() {
     var obj = new Object();
-    
+
     // board basics
     obj.gridWidth = this.width();
     obj.gridHeight = this.max;
     obj.startsUp = this.isUpCol(0);  //obj.gridWidth%4 == 1;
-    
+
     // assign hex IDs
     var k = 0;
     for (var i = 0; i < this.hexes.length; i++) // for each hex
         for (var j = 0; j < this.hexes[i].length; j++)
             this.hexes[i][j].id = k++;
     var numHexes = k;
-    
+
     // assign intersection IDs
     k = 0;
     for (var i = 0; i < this.inters.length; i++)
         for (var j = 0; j < this.inters[i].length; j++)
             this.inters[i][j].id = k++;
     var numInters = k;
-    
+
     // assign edge IDs
     k = 0;
     var allEdges = this.allEdges();
     for (var i = 0; i < allEdges.length; i++)
         allEdges[i].id = k++;
     var numEdges = k;
-    
+
     // populate hexes array
-    obj.hexes = new Array(numHexes);    
+    obj.hexes = new Array(numHexes);
     for (var i = 0; i < this.hexes.length; i++) // for each hex
         for (var j = 0; j < this.hexes[i].length; j++) {
             var hex = this.hexes[i][j];
             obj.hexes[ hex.id ] = this.makeHexObj( hex );
         }
-    
+
     // populate intersections array
     obj.intersections = new Array(numInters);
     for (var i = 0; i < this.inters.length; i++)
@@ -453,12 +453,12 @@ Board.prototype.json2 = function() {
             var inter = this.inters[i][j];
             obj.intersections[ inter.id ] = this.makeInterObj( inter );
         }
-    
+
     // populate edges array
     obj.edges = new Array(numEdges);
     for (var i = 0; i < allEdges.length; i++)
         obj.edges[ allEdges[i].id ] = this.makeEdgeObj( allEdges[i] );
-        
+
     return obj;
 }
 
