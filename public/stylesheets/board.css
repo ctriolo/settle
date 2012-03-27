@@ -140,6 +140,108 @@ svg line.path.hover {
   stroke: white;
 }
 
+/* player wells */
+.cardwell {
+  width: 90%;
+  height: 210px;
+  position: relative;
+}
+.cards, .roll, .trade, .end, .build, .dev_cards {
+  moz-border-radius: 10px;
+  border-radius: 10px;
+  border: 3px solid rgba(0, 0, 0, 0.07);
+  background-color: white;
+  position:absolute;
+}
+
+.cards {
+  top: 0px;
+  width: 98%;
+  height: 100px;
+}
+
+.roll, .trade, .end, .build {
+  width: 15%;
+  height: 40px;
+}
+.roll, .trade {
+  top: 120px;
+}
+.trade, .build {
+  left: 17%;
+}
+.end, .build {
+  top: 165px;
+}
+.dev_cards {
+  top: 110px;
+  right: 0;
+  width: 63%;
+  height: 100px;
+}
+
+/* building popup */
+#popupBackground {
+  display: none;
+  position: fixed;
+  height: 100%;
+  width: 100%;
+  top:0;
+  left:0;
+  background:#000000;
+  border: 1px solid #cecece;
+  z-index: 1;
+}
+
+#buildPopup {
+  display: none;
+  position: fixed;
+  height: 30%;
+  width: 60%;
+  top: 35%;
+  left: 20%;
+  background:#FFFFFF;
+  border: 3px solid #cecece;
+  z-index: 2;
+  margin-top:12px;
+  font-size:13px;
+}
+
+#popupClose {
+  font-size: 20px;
+  right: 6px;
+  top: 4px;
+  position: absolute;
+  color: #6fa5fd;
+  font-weight: 700;
+  display: block;
+}
+#settlement, #city, #road, #ship, #devcard {
+  height: 80%;
+  top: 10%;
+  width: 17%;
+  position: absolute;
+  background-color: beige;
+  moz-border-radius: 10px;
+  border-radius: 10px;
+  border: 3px solid rgba(0, 0, 0, 0.07);
+}
+#settlement {
+  left: 1%;
+}
+#city {
+  left: 21%;
+}
+#road {
+  left: 41%;
+}
+#ship {
+  left: 61%;
+}
+#devcard {
+  left: 81%;
+}
+
 
 /**
  * Debugging Info

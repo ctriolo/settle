@@ -1,9 +1,23 @@
 /**
  * Board Client Side Javascript
  */
-
+var popup = false;
 var debug = false;
-
+function loadPopup(){
+  if (!popup) {
+    $("#popupBackground").css({"opacity":"0.7"});
+    $("#popupBackground").fadeIn("slow");
+    $("#buildPopup").fadeIn("slow");
+    popup = true;
+  }
+}
+function disablePopup() {
+  if (popup){
+    $("#popupBackground").fadeOut("slow");
+    $("#buildPopup").fadeOut("slow");
+    popup = false;
+  }
+}    
 window.onload = function() {
 
   var CONFIG = {
@@ -21,11 +35,11 @@ window.onload = function() {
     objDiv.scrollTop(objDiv.prop('scrollHeight'));
   });
 
-  // Hovering
+  /* Hovering
   $(".path,.intersection,.hex,.port").not(".Sea").hover(
     function(){ socket.emit('hoverOn', $(this).attr('id')); },
     function(){ socket.emit('hoverOff', $(this).attr('id')); }
-  );
+  );*/
   socket.on('hoverOn',  function(id) { $('#'+id).addClass("hover"); });
   socket.on('hoverOff', function(id) { $('#'+id).removeClass("hover"); });
 
@@ -33,6 +47,26 @@ window.onload = function() {
   $(".path,.intersection,.hex,.port").not(".Sea").click(
     function(){
       socket.send('Someone just clicked ' + $(this).attr('id') + '.');
+    }
+  );
+  
+  // open pop-up on build click
+  $(".build").click(
+      function(){
+      loadPopup();
+      socket.send('Open popup!');
+    }
+  );
+  $("#popupClose").click(
+      function(){
+      disablePopup();
+      socket.send('Closing popup!');
+    }
+  );
+  $("#settlement").click(
+      function(){
+      disablePopup();
+      socket.send('Build Settlement!');
     }
   );
 
@@ -51,6 +85,10 @@ window.onload = function() {
       if (debug) $('.debug').hide();
       else $('.debug').show();
       debug = !debug;
+      break;
+    case 81: // q
+    case 27: // escape
+      if (popup) disablePopup();
       break;
     }
   });
