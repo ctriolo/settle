@@ -25,6 +25,13 @@ module.exports = function(sockets) {
     socket.on('hoverOff', function(id) {
       sockets.to(rooms[socket.id]).emit('hoverOff', id);
     });
+
+    socket.on('settlementSelect', function(id) {
+      sockets.to(rooms[socket.id]).emit('settlementSelect', id);
+    });
+    socket.on('settlementPlace', function(id) {
+      sockets.to(rooms[socket.id]).emit('settlementPlace', id);
+    });
   });
 
 };

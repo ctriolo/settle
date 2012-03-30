@@ -90,11 +90,11 @@ svg circle.intersection {
   fill-opacity: .65;
   stroke-width: 0;
 }
-
+/*
 svg circle.intersection.hover {
   fill: white;
   stroke:white;
-}
+}*/
 
 
 /**
@@ -102,7 +102,7 @@ svg circle.intersection.hover {
  */
 
 .port.Any31   circle{ fill: url(#market) pink; }
-.port.Sheep21 circle { fill: url(#sheep)  orangered; }
+.port.Sheep21 circle { fill: url(#sheep)  lime; }
 .port.Wood21  circle { fill: url(#wood)   forestgreen; }
 .port.Brick21 circle { fill: url(#brick)  redorange; }
 .port.Stone21 circle { fill: url(#ore)    black; }
@@ -217,8 +217,8 @@ svg line.path.hover {
   display: block;
 }
 #settlement, #city, #road, #ship, #devcard {
-  height: 80%;
-  top: 10%;
+  height: 60%;
+  top: 15%;
   width: 17%;
   position: absolute;
   background-color: beige;
@@ -241,6 +241,20 @@ svg line.path.hover {
 #devcard {
   left: 81%;
 }
+.buildResource {
+  float: left;
+  width: 15%;
+  height: 18%;
+  bottom: 5%;
+  moz-border-radius: 15px;
+  border-radius: 15px;
+  border: 3px solid rgba(0, 0, 0, 0.5);
+}
+.buildResource.wood { background: url(#wood) forestgreen; }
+.buildResource.brick { background: red; }
+.buildResource.sheep { background: url(#brick) lime; }
+.buildResource.wheat { background: url(#brick) yellow; }
+.buildResource.stone { background: url(#brick) black; }
 
 
 /**

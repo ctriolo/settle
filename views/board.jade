@@ -14,7 +14,7 @@ html
       .row-fluid
         .span8
           .board-container
-            | <svg viewBox="0 0 800 800" version="1.1">
+            | <svg id="s" viewBox="0 0 800 800" version="1.1">
             include includes/defs
 
             // --------------
@@ -22,7 +22,7 @@ html
             // --------------
             for hex in board.hexes
               | <g id="hex#{hex.index}" class="hex #{hex.type}">
-              |   <polygon points="
+              | <polygon points="
               for p in hex.points
                 #{p.x},#{p.y}
               |   " />
@@ -74,11 +74,29 @@ html
           a#popupClose
             | x
           #settlement
-            <image src="http://www.visitingdc.com/images/white-house-picture.jpg" width="100%" top="0"/>
+            image(src="http://www.visitingdc.com/images/white-house-picture.jpg", width="100%", top="0")
+            .buildResource.wood
+            .buildResource.brick
+            .buildResource.wheat
+            .buildResource.sheep
           #city
+            image(src="http://www.visitingdc.com/images/white-house-picture.jpg", width="100%", top="0")
+            .buildResource.stone
+            .buildResource.stone
+            .buildResource.stone
+            .buildResource.wheat
+            .buildResource.wheat
           #road
+            image(src="http://www.visitingdc.com/images/white-house-picture.jpg", width="100%", top="0")
+            .buildResource.wood
+            .buildResource.brick
           #ship
+            image(src="http://www.visitingdc.com/images/white-house-picture.jpg", width="100%", top="0")
           #devcard
+            image(src="http://www.visitingdc.com/images/white-house-picture.jpg", width="100%", top="0")
+            .buildResource.stone
+            .buildResource.wheat
+            .buildResource.sheep
         #popupBackground
         .span4
           .info-container

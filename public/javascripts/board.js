@@ -17,7 +17,14 @@ function disablePopup() {
     $("#buildPopup").fadeOut("slow");
     popup = false;
   }
-}    
+}
+function makeSVG(tag, attrs) {
+  var el= document.createElementNS('http://www.w3.org/2000/svg', tag);
+  for (var k in attrs)
+    el.setAttribute(k, attrs[k]);
+  return el;
+}
+    
 window.onload = function() {
 
   var CONFIG = {
@@ -35,21 +42,32 @@ window.onload = function() {
     objDiv.scrollTop(objDiv.prop('scrollHeight'));
   });
 
-  /* Hovering
+  // Hovering
   $(".path,.intersection,.hex,.port").not(".Sea").hover(
     function(){ socket.emit('hoverOn', $(this).attr('id')); },
     function(){ socket.emit('hoverOff', $(this).attr('id')); }
-  );*/
+  );
   socket.on('hoverOn',  function(id) { $('#'+id).addClass("hover"); });
   socket.on('hoverOff', function(id) { $('#'+id).removeClass("hover"); });
-
-  // On click
-  $(".path,.intersection,.hex,.port").not(".Sea").click(
+ 
+ // On click
+  $(".path,.hex,.port").not(".Sea").click(
     function(){
-      socket.send('Someone just clicked ' + $(this).attr('id') + '.');
-    }
+      socket.send('Someone just clicked ' + $(this).attr('id') + ' ' + $(this).css("fill") + '.');
+    }		
   );
-  
+  // On click
+  $(".intersection").not(".Sea").click(
+    function(){
+      var color = $(this).css("fill");
+      if (color === "#ffffff") {
+        // have to remove "Intersection from id"
+	var intersect = "intersection";
+        socket.emit('settlementPlace', $(this).attr('id').substring(intersect.length));
+      }
+    }		
+  );
+	
   // open pop-up on build click
   $(".build").click(
       function(){
@@ -64,11 +82,27 @@ window.onload = function() {
     }
   );
   $("#settlement").click(
-      function(){
-      disablePopup();
-      socket.send('Build Settlement!');
+    function(){ disablePopup();
+      socket.send('Build Settlement');
+      socket.emit('settlementSelect', $(this).attr('id'));
     }
   );
+  socket.on('settlementSelect', function(id) {
+    $('.intersection').css({"fill":"white", "stroke":"white"}) });
+  socket.on('settlementPlace', function(id) { 
+    $('.intersection').css({"fill":"black", "stroke":"black"});
+    var x = $('#intersection' + id).attr('cx');
+    var y = $('#intersection' + id).attr('cy');
+    socket.send(x + " " + y);
+    var settlement = makeSVG('circle', {
+        id: 'settlement' + id,
+	cx: x,
+	cy : y,
+	fill: 'blue',
+	r: '10'
+    });
+    document.getElementById('s').appendChild(settlement);
+  });
 
   $("#messageForm").submit(
     function() {
