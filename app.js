@@ -9,7 +9,7 @@ var express = require('express')
   , environment = require('./config/environment.js')
   , routes = require('./config/routes');
 
-environment(app, express);
+environment(app, express, io);
 routes(app, io);
 app.listen(80);
 

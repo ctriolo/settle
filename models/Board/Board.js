@@ -11,6 +11,21 @@ var Intersection = require("./Intersection");
 var Edge = require("./Edge");
 module.exports = Board;
 
+// Constants
+
+var TOKEN = {
+  SETTLEMENT: 'Settlement',
+  CITY: 'City',
+  ROAD: 'Road',
+};
+
+// Helper Objects
+
+function Token(player, type) {
+  this.player = player;
+  this.type = type;
+};
+
 // THE PRIMARY FUNCTION
 function Board(mn, mx) {
     this.min = 3;
@@ -68,6 +83,56 @@ Board.prototype.numResourceTiles = function() {
                 num++;
     return num;
 }
+
+/**
+ * _getIntersection (private)
+ *
+ * Return the Intersection object with the specified `id`
+ * @param   id   num      the id of the intersection you want
+ * @return       object   the Intersection object you want
+ */
+Board.prototype._getIntersection = function(id) {
+  for (var i = 0; i < this.inters.length; i++) {
+    for (var j = 0; j < this.inters[i].length; j++) {
+      if (this.inters[i][j].id == id) return this.inters[i][j];
+    }
+  }
+  return null; // an exception might be justified here
+};
+
+
+/**
+ * _getEdge (private)
+ *
+ * Return the Edge object with the specified `id`
+ * @param   id   num      the id of the edge you want
+ * @return       object   the Edge object you want
+ */
+Board.prototype._getEdge = function(id) {
+  var edges = this.allEdges();
+  for (var i = 0; i < edges.length; i++) {
+    if (edges[i].id == id) return edges[i];
+  }
+  return null; // an exception might be justified here
+};
+
+
+/**
+ * _getHex (private)
+ *
+ * Return the Hex object with the specified `id`
+ * @param   id   num      the id of the hex you want
+ * @return       object   the Hex object you want
+ */
+Board.prototype._getHex = function(id) {
+  for (var i = 0; i < this.hexes.length; i++) {
+    for (var j = 0; j < this.hexes[i].length; j++) {
+      if (this.hexes[i][j].id == id) return this.hexes[i][j].id;
+    }
+  }
+  return null; // an exception might be justified here
+};
+
 
 /*  ==============
     >> Edge Basics
@@ -466,3 +531,159 @@ Board.prototype.prettyprint2 = function() {
     return JSON.stringify(this.json2(), null, 4);
 }
 
+
+/**
+ * Public Interface
+ */
+
+
+/**
+ * getValidStartingSettlementIntersections
+ *
+ * Returns the intersection ids of the all the valid places
+ * a settlement can be built for the player with `player_id`
+ *
+ * @param  player_id  num    the id of the player
+ * @return            array  the array of ids (nums)
+ */
+Board.prototype.getValidStartingSettlementIntersections = function(player_id) {
+  var intersection_ids = [];
+
+  // For every intersection
+  for (var i = 0; i < this.inters.length; i++) {
+    for (var j = 0; j < this.inters[i].length; j++) {
+      var intersection = this.inters[i][j];
+
+      // Check that it's active
+      if (!intersection.isActive(this)) continue;
+
+      // Check that there is nothing on it
+      if (intersection.token) continue;
+
+      // Check that there are no settlements 1 edge away
+      var can_build = true;
+      var neighbors  = intersection.iNeighbors(this);
+      for (var dir in neighbors) {
+        can_build = can_build && !neighbors[dir].token;
+      }
+
+      if (can_build) intersection_ids.push(intersection.id);
+    }
+  }
+
+  return intersection_ids;
+};
+
+
+/**
+ * placeStartingSettlement
+ *
+ * Places a starting settlement at intersection_id for player_id
+ * Throws an exception if the action is invalid.
+ * @param   player_id         string   the player who wants to place a intersection
+ * @param   intersection_id   num      the location to place the intersection
+ */
+Board.prototype.placeStartingSettlement = function(player_id, intersection_id) {
+  var valid_ids = this.getValidStartingSettlementIntersections(player_id);
+  if (valid_ids.indexOf(intersection_id) == -1) {
+    throw 'Intersection Id ' + intersection_id + ' is not a valid location to build.'
+  }
+
+  var intersection = this._getIntersection(intersection_id);
+  intersection.token = new Token(player_id, TOKEN.SETTLEMENT);
+}
+
+
+/**
+ * getValidStartingRoadEdges
+ *
+ * Returns the edge ids of the all the valid places
+ * a road can be built for the player with `player_id`
+ *
+ * @param  player_id  num    the id of the player
+ * @return            array  the array of ids (nums)
+ */
+Board.prototype.getValidStartingRoadEdges = function(player_id) {
+  var edge_ids = [];
+
+  // Get the location of the settlement without a player road
+  for (var i = 0; i < this.inters.length; i++) {
+    for (var j = 0; j < this.inters[i].length; j++) {
+      var intersection = this.inters[i][j];
+
+      // Find the intersection with the players settlement
+      if (intersection.isActive(this) &&
+          intersection.token &&
+          intersection.token.player == player_id) {
+
+        // Check to see if the settlement has player roads attached
+        var can_build = true;
+        var edges  = intersection.eNeighbors(this);
+        for (var dir in edges) {
+          if (edges[dir].token) { // guarunteed edges[dir].token.player === player_id
+            can_build = false;
+          }
+        }
+
+        // Add the edges where the player can build
+        if (can_build) {
+          for (var dir in edges) {
+            if (edges[dir].isActive(this)) edge_ids.push(edges[dir].id);
+          }
+        }
+      }
+
+    }
+  }
+
+  return edge_ids;
+};
+
+
+/**
+ * placeStartingRoad
+ *
+ * Places a starting road at edge_id for player_id
+ * Throws an exception if the action is invalid.
+ * @param   plauer_id   string   the player who wants to place a road
+ * @param   edge_id     num      the location to place the road
+ */
+Board.prototype.placeStartingRoad = function(player_id, edge_id) {
+  var valid_ids = this.getValidStartingRoadEdges(player_id);
+  if (valid_ids.indexOf(edge_id) == -1) {
+    throw 'Edge Id ' + edge_id + ' is not a valid location to build.'
+  }
+
+  var edge = this._getEdge(edge_id);
+  edge.token = new Token(player_id, TOKEN.ROAD);
+}
+
+
+/**
+ * getNumberOfSettlements
+ *
+ * Get the number of settlements a player has on the board
+ * @param   player_id   num   the player to check
+ * @return              num   the number of settlements the user has
+ */
+Board.prototype.getNumberOfSettlements = function(player_id) {
+  var num = 0;
+
+  // For every intersection
+  for (var i = 0; i < this.inters.length; i++) {
+    for (var j = 0; j < this.inters[i].length; j++) {
+      var intersection = this.inters[i][j];
+
+      // Check that it's active, has token, is settlement, is player's
+      if (intersection.isActive(this) &&
+          intersection.token &&
+          intersection.token.type == 'Settlement' &&
+          intersection.token.player == player_id) {
+        num++;
+      }
+
+    }
+  }
+
+  return num;
+}

@@ -5,15 +5,10 @@
  */
 
 // Dependencies
-var Board = require('../models/Board/Board')
+var Game = require('../models/Game')
+  , GameProvider = require('../models/GameProvider')
   , UIBoard = require('../models/Board/UIBoard');
 
-// Global Memory
-var boards = {}; // will be moved into BoardProvider
-
-// Constants
-var MIN = 3;
-var MAX = 5;
 
 /**
  * view
@@ -21,19 +16,21 @@ var MAX = 5;
  * Renders a game, including a board and players
  */
 module.exports.view = function(req, res) {
-  var id = req.params.id?req.params.id:'default';
-  if (id in boards) {
-    // Fetch an existing board
-    var board = boards[id];
-  } else {
-    // Create a new board
-    var board = new Board(MIN, MAX);
-    boards[id] = board;
+  var id = req.params.id?req.params.id:'';
+  var gp = GameProvider.getInstance();
+  var game = gp.findById(id);
+
+  if (!game) {
+    game = new Game();
+    game.id = id;
   }
+
+  game.addPlayer(req.sessionID);
+  gp.save(game);
 
   res.render('board', {
     'layout': false,
     'title': 'Settle',
-    'board': (new UIBoard(board)).render()
+    'board': (new UIBoard(game.board)).render()
   });
 };
