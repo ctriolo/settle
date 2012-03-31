@@ -3,7 +3,7 @@
  */
 var popup = false;
 var debug = false;
-
+var player_colors = ["blue", "yellow", "red", "orange"];
 function loadPopup(){
   if (!popup) {
     $("#popupBackground").css({"opacity":"0.7"});
@@ -175,7 +175,7 @@ window.onload = function() {
         $('.intersection').off('click');
         $('.intersection').css({'fill':'black'});
         var id = parseInt($(this).attr('id').substring('intersection'.length));
-        socket.emit('startingSettlementPlacement', id);
+        socket.emit('startingSettlementPlacement', id, '0');
       });
     }
   });
@@ -190,14 +190,14 @@ window.onload = function() {
    * TODO: add and remove classes to change things like fill and stroke
    * @param   id   num   the interesection id to draw an element
    */
-  socket.on('startingSettlementPlacement', function(id) {
+  socket.on('startingSettlementPlacement', function(id, playerid) {
     var x = $('#intersection' + id).attr('cx');
     var y = $('#intersection' + id).attr('cy');
     var settlement = makeSVG('circle', {
       id: 'settlement' + id,
       cx: x,
       cy : y,
-      fill: 'blue',
+      fill: player_colors[playerid],
       r: '15'
     });
     document.getElementById('s').appendChild(settlement);
@@ -239,7 +239,7 @@ window.onload = function() {
    * TODO: change path to edge so we don't all go insane
    * @param   id   num   the edge id to draw an element
    */
-  socket.on('startingRoadPlacement', function(id) {
+  socket.on('startingRoadPlacement', function(id, playerid) {
     var x1 = $('#path' + id).attr('x1');
     var y1 = $('#path' + id).attr('y1');
     var x2 = $('#path' + id).attr('x2');
@@ -250,7 +250,7 @@ window.onload = function() {
       'y1': y1,
       'x2': x2,
       'y2': y2,
-      'stroke': 'blue',
+      'stroke': player_colors[playerid],
       'stroke-width': 10,
     });
     document.getElementById('s').appendChild(road);

@@ -63,15 +63,16 @@ module.exports = function(sockets) {
      * @param   intersection_id   num   the intersection id where he wants to
      *                                  place the settlement.
      */
-    socket.on('startingSettlementPlacement', function(intersection_id) {
+    socket.on('startingSettlementPlacement', function(intersection_id, userid) {
       var user_id = socket.handshake.sessionID;
+      
       var game_id = uid_to_gid[user_id];
       var game = gp.findById(game_id);
       if (DEBUG) { console.log('name:startingSettlementPlacement ', user_id, game); }
       console.log(intersection_id);
       game.placeStartingSettlement(user_id, intersection_id);
       gp.save(game);
-      sockets.to(game_id).emit('startingSettlementPlacement', intersection_id);
+      sockets.to(game_id).emit('startingSettlementPlacement', intersection_id, game._translate(user_id));
       sockets.to(game.whoseTurn()).emit('startingRoadSelect',
         game.getValidStartingRoadEdges(game.whoseTurn()));
     });
@@ -91,7 +92,7 @@ module.exports = function(sockets) {
       if (DEBUG) { console.log('name:startingRoadPlacement ', user_id, game); }
       game.placeStartingRoad(user_id, edge_id);
       gp.save(game);
-      sockets.to(game_id).emit('startingRoadPlacement', edge_id);
+      sockets.to(game_id).emit('startingRoadPlacement', edge_id, game._translate(user_id));
       if (game.whichPhase() != PHASE.NOT_IMPLEMENTED) {
         sockets.to(game.whoseTurn()).emit('startingSettlementSelect',
           game.getValidStartingSettlementIntersections(game.whoseTurn()));
