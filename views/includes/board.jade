@@ -1,4 +1,4 @@
-| <svg id="s" viewBox="0 0 800 800" version="1.1">
+| <svg id="board" viewBox="0 0 800 800" version="1.1">
 
 include defs
 
@@ -26,8 +26,8 @@ for port in board.ports
   | </g>
 for edge in board.edges
   | <line id="path#{edge.index}" class="path" x1="#{edge.x0}" y1="#{edge.y0}" x2="#{edge.x1}" y2="#{edge.y1}" />
-  for intersection in board.intersections
-    | <circle id="intersection#{intersection.index}" class="intersection" cx="#{intersection.x}" cy="#{intersection.y}" r="6" />
+for intersection in board.intersections
+  | <circle id="intersection#{intersection.index}" class="intersection" cx="#{intersection.x}" cy="#{intersection.y}" r="6" />
 
 // DEBUGGING ELEMENTS
 

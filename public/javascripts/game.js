@@ -202,7 +202,7 @@ window.onload = function() {
       fill: player_colors[playerid],
       r: '15'
     });
-    document.getElementById('s').appendChild(settlement);
+    $('#board').append(settlement);
   });
 
 
@@ -255,7 +255,7 @@ window.onload = function() {
       'stroke': player_colors[playerid],
       'stroke-width': 10,
     });
-    document.getElementById('s').appendChild(road);
+    $('#board').append(road);
   });
 
 
