@@ -139,6 +139,7 @@ window.onload = function() {
     $('#start').removeClass('disabled');
     $('#start').text("Start");
     $('#start').css("background-color", "#05C");
+    $("#startBackground").fadeOut("slow");
     $('#start').click(function(){
       $('#start').off('click');
       $('#start').remove();

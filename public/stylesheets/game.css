@@ -140,6 +140,17 @@ svg line.path.hover {
   stroke: white;
 }
 
+#startBackground {
+  position: fixed;
+  height: 100%;
+  width: 66%;
+  top:0;
+  left:0;
+  opacity:.7;
+  background:#000000;
+  border: 1px solid #cecece;
+  z-index: 1;
+}
 #start {
   position: fixed;
   width: 26%;
@@ -149,7 +160,8 @@ svg line.path.hover {
   font-size: 55px;
   opacity: .8;
   background-color:#CD0000;
-  color:"FFFFFF";
+  color:#FFFFFF;
+  z-index:2;
 }
 
 /* player wells */
