@@ -4,8 +4,8 @@
 
 var home = require('../controllers/home.js')
   , user = require('../controllers/user.js')
-  , board = require('../controllers/board.js')
-  , boardIO = require('../controllers/board.io.js');
+  , game = require('../controllers/game.js')
+  , gameIO = require('../controllers/game.io.js');
 
 module.exports = function(app, io){
 
@@ -17,9 +17,9 @@ module.exports = function(app, io){
   app.get('/user', user.list);
   app.get('/userfilltest', user.filltest);
 
-  // Board
-  app.get('/board/:id', board.view);
-  app.get('/board', board.view);
-  boardIO(io.of('/board'));
+  // Game
+  app.get('/game/:id', game.view);
+  app.get('/game', game.view);
+  gameIO(io.of('/game'));
 
 };

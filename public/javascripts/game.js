@@ -31,7 +31,7 @@ function makeSVG(tag, attrs) {
 window.onload = function() {
 
   var CONFIG = {
-    room: document.location.pathname.substring('board/'.length+1), // current room
+    room: document.location.pathname.substring('game/'.length+1), // current room
   };
 
 
@@ -39,7 +39,7 @@ window.onload = function() {
    * Socket IO Connection
    */
 
-  var socket = io.connect('/board');
+  var socket = io.connect('/game');
   socket.on('connect', function() {
     socket.emit('join', CONFIG.room);
   });

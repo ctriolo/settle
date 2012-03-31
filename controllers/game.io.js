@@ -1,5 +1,5 @@
 /**
- * Board Server Side Socket IO
+ * Game Server Side Socket IO
  */
 
 // Dependecies

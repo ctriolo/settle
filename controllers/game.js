@@ -1,5 +1,5 @@
 /**
- * Board.js
+ * Game.js
  *
  * Controller for board games
  */
@@ -28,7 +28,7 @@ module.exports.view = function(req, res) {
   game.addPlayer(req.sessionID);
   gp.save(game);
 
-  res.render('board', {
+  res.render('game', {
     'layout': false,
     'title': 'Settle',
     'board': (new UIBoard(game.board)).render()
