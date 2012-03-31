@@ -63,9 +63,8 @@ module.exports = function(sockets) {
      * @param   intersection_id   num   the intersection id where he wants to
      *                                  place the settlement.
      */
-    socket.on('startingSettlementPlacement', function(intersection_id, userid) {
+    socket.on('startingSettlementPlacement', function(intersection_id) {
       var user_id = socket.handshake.sessionID;
-      
       var game_id = uid_to_gid[user_id];
       var game = gp.findById(game_id);
       if (DEBUG) { console.log('name:startingSettlementPlacement ', user_id, game); }
