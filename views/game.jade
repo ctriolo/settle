@@ -1,128 +1,68 @@
-!!!
-html
-  head
-    title= title
-    link(rel='stylesheet', href='/bootstrap/css/bootstrap.min.css')
-    link(rel='shortcut icon', href='/images/favicon.ico')
-    script(src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js", type="text/javascript")
-    script(src="/javascripts/jquery.svg.js")
-    script(src="/javascripts/jquery.svgdom.js")
-    script(src="/socket.io/socket.io.js")
-    link(rel='stylesheet', href='/stylesheets/game.css')
-    script(src="/javascripts/game.js")
-  body
-    .container-fluid
-      .row-fluid
-        .span8
-          .board-container
-            a#start.btn.btn-primary.btn-large.disabled Waiting...
-            | <svg id="s" viewBox="0 0 800 800" version="1.1">
-            include includes/defs
+extends game-layout
 
-            // --------------
-            // BOARD ELEMENTS
-            // --------------
-            for hex in board.hexes
-              | <g id="hex#{hex.index}" class="hex #{hex.type}">
-              | <polygon points="
-              for p in hex.points
-                #{p.x},#{p.y}
-              |   " />
-              if (hex.number)
-                | <g class="numberToken number#{hex.number}">
-                |   <circle cx="#{hex.center.x}" cy="#{hex.center.y}" r="#{hex.radius/2.4}" />
-                |   <text x="#{hex.center.x+1}" y="#{hex.center.y+10}">#{hex.number}</text>
-                | </g>
-              | </g>
-            for port in board.ports
-              - var p = port.points
-              - var text = (port.type == 'Any31') ? '3:1' : '2:1';
-              | <g id="port#{port.index}" class="port #{port.type}">
-              |   <path d="M #{p[0].x} #{p[0].y} S #{p[1].x} #{p[1].y} #{p[2].x} #{p[2].y}" />
-              |   <circle cx="#{port.label.x}" cy="#{port.label.y}" r="18" />
-              |   <text x="#{port.label.x}" y="#{port.label.y+4}">#{text}</text>
-              | </g>
-            for edge in board.edges
-              | <line id="path#{edge.index}" class="path" x1="#{edge.x0}" y1="#{edge.y0}" x2="#{edge.x1}" y2="#{edge.y1}" />
-            for intersection in board.intersections
-              | <circle id="intersection#{intersection.index}" class="intersection" cx="#{intersection.x}" cy="#{intersection.y}" r="6" />
+block head
+  link(rel='stylesheet', href='/stylesheets/game.css')
+  script(src="/javascripts/game.js")
 
-            // ------------------
-            // DEBUGGING ELEMENTS
-            // ------------------
-            for hex in board.hexes
-              | <g class="debug hex">
-              |   <circle cx="#{hex.center.x}" cy="#{hex.center.y}" r="45"/>
-              |   <text x="#{hex.center.x}" y="#{hex.center.y+12}">h#{hex.index}</text>
-              | </g>
-            for port in board.ports
-              | <g class="debug port">
-              |   <circle cx="#{port.label.x}" cy="#{port.label.y}" r="15" />
-              |   <text x="#{port.label.x}" y="#{port.label.y+4}">p#{port.index}</text>
-              | </g>
-            for edge in board.edges
-              | <g class="debug path">
-              |   <circle cx="#{(edge.x0 + edge.x1)/2}" cy="#{(edge.y0 + edge.y1)/2}" r="15"/>
-              |   <text x="#{(edge.x0 + edge.x1)/2}" y="#{(edge.y0 + edge.y1)/2+5}">e#{edge.index}</text>
-              | </g>
-            for intersection in board.intersections
-              | <g class="debug intersection">
-              |   <circle cx="#{intersection.x}" cy="#{intersection.y}" r="15"/>
-              |   <text class="debug" x="#{intersection.x}" y="#{intersection.y+5}">i#{intersection.index}</text>
-              | </g>
+block board
+  a#start.btn.btn-primary.btn-large.disabled Waiting...
+  include includes/board
 
-            | </svg>
-        #buildPopup
-          a#popupClose
-            | x
-          #settlement
-            image(src="http://www.visitingdc.com/images/white-house-picture.jpg", width="100%", top="0")
-            .buildResource.wood
-            .buildResource.brick
-            .buildResource.wheat
-            .buildResource.sheep
-          #city
-            image(src="http://www.visitingdc.com/images/white-house-picture.jpg", width="100%", top="0")
-            .buildResource.stone
-            .buildResource.stone
-            .buildResource.stone
-            .buildResource.wheat
-            .buildResource.wheat
-          #road
-            image(src="http://www.visitingdc.com/images/white-house-picture.jpg", width="100%", top="0")
-            .buildResource.wood
-            .buildResource.brick
-          #ship
-            image(src="http://www.visitingdc.com/images/white-house-picture.jpg", width="100%", top="0")
-          #devcard
-            image(src="http://www.visitingdc.com/images/white-house-picture.jpg", width="100%", top="0")
-            .buildResource.stone
-            .buildResource.wheat
-            .buildResource.sheep
-        #popupBackground
-        .span4
-          .info-container
-            .player.well
-              h2 Player 1
-              .cardwell
-                .cards
-                .roll
-                  <image src="http://www.clker.com/cliparts/6/4/1/6/12456404511653839274badaman_dice.svg.med.png" width="100%"/>
-                .trade
-                  <image src="http://farm4.staticflickr.com/3609/3575000735_6ba08467d9.jpg" width="100%"/>
-                .dev_cards
-                .end
-                  <image src="http://www.fuzzimo.com/wp-content/uploads/2009/06/tutorial-StopSign-13.png" width="100%"/>
-                .build
-                  <image src="http://static.ddmcdn.com/gif/hammer-1.jpg" width="100%"/>
-            .player.well
-              h2 Player 2
-            .player.well
-              h2 Player 3
-            .player.well
-              h2 Player 4
-            .well
-              h2 Messages
-              #messages
-              form#messageForm
-                input#messageInput(type="text")
+block player
+  .player.well
+    h2 Player 1
+    .cardwell
+      .cards
+      .roll
+        <image src="http://www.clker.com/cliparts/6/4/1/6/12456404511653839274badaman_dice.svg.med.png" width="100%"/>
+      .trade
+        <image src="http://farm4.staticflickr.com/3609/3575000735_6ba08467d9.jpg" width="100%"/>
+      .dev_cards
+      .end
+        <image src="http://www.fuzzimo.com/wp-content/uploads/2009/06/tutorial-StopSign-13.png" width="100%"/>
+      .build
+        <image src="http://static.ddmcdn.com/gif/hammer-1.jpg" width="100%"/>
+
+block others
+  .player.well
+    h2 Player 2
+  .player.well
+    h2 Player 3
+  .player.well
+    h2 Player 4
+
+block messages
+  .well
+    h2 Messages
+    #messages
+    form#messageForm
+      input#messageInput(type="text")
+
+block extras
+  #buildPopup
+    a#popupClose x
+    #settlement
+      image(src="http://www.visitingdc.com/images/white-house-picture.jpg", width="100%", top="0")
+      .buildResource.wood
+      .buildResource.brick
+      .buildResource.wheat
+      .buildResource.sheep
+    #city
+      image(src="http://www.visitingdc.com/images/white-house-picture.jpg", width="100%", top="0")
+      .buildResource.stone
+      .buildResource.stone
+      .buildResource.stone
+      .buildResource.wheat
+      .buildResource.wheat
+    #road
+      image(src="http://www.visitingdc.com/images/white-house-picture.jpg", width="100%", top="0")
+      .buildResource.wood
+      .buildResource.brick
+    #ship
+      image(src="http://www.visitingdc.com/images/white-house-picture.jpg", width="100%", top="0")
+    #devcard
+      image(src="http://www.visitingdc.com/images/white-house-picture.jpg", width="100%", top="0")
+      .buildResource.stone
+      .buildResource.wheat
+      .buildResource.sheep
+  #popupBackground

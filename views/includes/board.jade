@@ -1,0 +1,55 @@
+| <svg id="s" viewBox="0 0 800 800" version="1.1">
+
+include defs
+
+// BOARD ELEMENTS
+
+for hex in board.hexes
+  | <g id="hex#{hex.index}" class="hex #{hex.type}">
+  | <polygon points="
+  for p in hex.points
+    #{p.x},#{p.y}
+  |   " />
+  if (hex.number)
+    | <g class="numberToken number#{hex.number}">
+    |   <circle cx="#{hex.center.x}" cy="#{hex.center.y}" r="#{hex.radius/2.4}" />
+    |   <text x="#{hex.center.x+1}" y="#{hex.center.y+10}">#{hex.number}</text>
+    | </g>
+  | </g>
+for port in board.ports
+  - var p = port.points
+  - var text = (port.type == 'Any31') ? '3:1' : '2:1';
+  | <g id="port#{port.index}" class="port #{port.type}">
+  |   <path d="M #{p[0].x} #{p[0].y} S #{p[1].x} #{p[1].y} #{p[2].x} #{p[2].y}" />
+  |   <circle cx="#{port.label.x}" cy="#{port.label.y}" r="18" />
+  |   <text x="#{port.label.x}" y="#{port.label.y+4}">#{text}</text>
+  | </g>
+for edge in board.edges
+  | <line id="path#{edge.index}" class="path" x1="#{edge.x0}" y1="#{edge.y0}" x2="#{edge.x1}" y2="#{edge.y1}" />
+  for intersection in board.intersections
+    | <circle id="intersection#{intersection.index}" class="intersection" cx="#{intersection.x}" cy="#{intersection.y}" r="6" />
+
+// DEBUGGING ELEMENTS
+
+for hex in board.hexes
+  | <g class="debug hex">
+  |   <circle cx="#{hex.center.x}" cy="#{hex.center.y}" r="45"/>
+  |   <text x="#{hex.center.x}" y="#{hex.center.y+12}">h#{hex.index}</text>
+  | </g>
+for port in board.ports
+  | <g class="debug port">
+  |   <circle cx="#{port.label.x}" cy="#{port.label.y}" r="15" />
+  |   <text x="#{port.label.x}" y="#{port.label.y+4}">p#{port.index}</text>
+  | </g>
+for edge in board.edges
+  | <g class="debug path">
+  |   <circle cx="#{(edge.x0 + edge.x1)/2}" cy="#{(edge.y0 + edge.y1)/2}" r="15"/>
+  |   <text x="#{(edge.x0 + edge.x1)/2}" y="#{(edge.y0 + edge.y1)/2+5}">e#{edge.index}</text>
+  | </g>
+for intersection in board.intersections
+  | <g class="debug intersection">
+  |   <circle cx="#{intersection.x}" cy="#{intersection.y}" r="15"/>
+  |   <text class="debug" x="#{intersection.x}" y="#{intersection.y+5}">i#{intersection.index}</text>
+  | </g>
+
+| </svg>

@@ -1,6 +1,31 @@
 !!!
 html
   head
-    title= title
-    link(rel='stylesheet', href='/stylesheets/style.css')
-  body!= body
+    title #{title} - Settle
+
+    // Favicon
+    link(rel='shortcut icon', href='/images/favicon.ico')
+
+    // jQuery
+    script(src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js", type="text/javascript")
+    script(src="/javascripts/jquery.svg.js")
+    script(src="/javascripts/jquery.svgdom.js")
+
+    // Bootstrap
+    link(rel='stylesheet', href='/bootstrap/css/bootstrap.min.css')
+    script(src="/bootstrap/bootstrap.min.js")
+
+    // Socket IO
+    script(src="/socket.io/socket.io.js")
+
+    // Global Stylesheet
+    //link(rel='stylesheet', href='/stylesheets/style.css')
+
+    // Page Specific Stylesheets and Javascripts
+    block head
+
+  body
+    block header
+    block content
+    block footer
+    block extras
