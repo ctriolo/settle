@@ -138,7 +138,7 @@ window.onload = function() {
   socket.on('canStart', function(can_start) {
     $('#start').removeClass('disabled');
     $('#start').text("Start");
-    //$('#start').css("background-color", "#00CD00");
+    $('#start').css("background-color", "#05C");
     $('#start').click(function(){
       $('#start').off('click');
       $('#start').remove();

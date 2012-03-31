@@ -141,15 +141,15 @@ svg line.path.hover {
 }
 
 #start {
-  display: block;
   position: fixed;
   width: 26%;
   height: 10%;
   top: 44%;
   left: 18.8%;
-  valign: "middle";
   font-size: 55px;
   opacity: .8;
+  background-color:#CD0000;
+  color:"FFFFFF";
 }
 
 /* player wells */
