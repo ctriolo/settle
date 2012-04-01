@@ -215,17 +215,16 @@ window.onload = function() {
    *   - Add an on click function the sends `startingRoadPlacement` and
    *     returns the edges back to normal.
    * TODO: add and remove classes to change things like fill and stroke
-   * TODO: change path to edge so we don't all go insane
    * @param   ids   array   the ids of the valid edges
    */
   socket.on('startingRoadSelect', function(ids) {
       console.log(ids);
     for (var i = 0; i < ids.length; i++) {
-      $("#path"+ids[i]).css({'stroke': 'white'});
-      $("#path"+ids[i]).click(function() {
-        $('.path').off('click');
-        $('.path').css({'stroke':'black'});
-        var id = parseInt($(this).attr('id').substring('path'.length));
+      $("#edge"+ids[i]).css({'stroke': 'white'});
+      $("#edge"+ids[i]).click(function() {
+        $('.edge').off('click');
+        $('.edge').css({'stroke':'black'});
+        var id = parseInt($(this).attr('id').substring('edge'.length));
         socket.emit('startingRoadPlacement', id);
       });
     }
@@ -239,14 +238,13 @@ window.onload = function() {
    * the edge id
    * TODO: change color by user
    * TODO: add and remove classes to change things like fill and stroke
-   * TODO: change path to edge so we don't all go insane
    * @param   id   num   the edge id to draw an element
    */
   socket.on('startingRoadPlacement', function(id, playerid) {
-    var x1 = $('#path' + id).attr('x1');
-    var y1 = $('#path' + id).attr('y1');
-    var x2 = $('#path' + id).attr('x2');
-    var y2 = $('#path' + id).attr('y2');
+    var x1 = $('#edge' + id).attr('x1');
+    var y1 = $('#edge' + id).attr('y1');
+    var x2 = $('#edge' + id).attr('x2');
+    var y2 = $('#edge' + id).attr('y2');
     var road = makeSVG('line', {
       id: 'road' + id,
       'x1': x1,
@@ -286,4 +284,3 @@ window.onload = function() {
   });
 
 };
-

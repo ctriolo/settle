@@ -25,7 +25,7 @@ for port in board.ports
   |   <text x="#{port.label.x}" y="#{port.label.y+4}">#{text}</text>
   | </g>
 for edge in board.edges
-  | <line id="path#{edge.index}" class="path" x1="#{edge.x0}" y1="#{edge.y0}" x2="#{edge.x1}" y2="#{edge.y1}" />
+  | <line id="edge#{edge.index}" class="edge" x1="#{edge.x0}" y1="#{edge.y0}" x2="#{edge.x1}" y2="#{edge.y1}" />
 for intersection in board.intersections
   | <circle id="intersection#{intersection.index}" class="intersection" cx="#{intersection.x}" cy="#{intersection.y}" r="6" />
 
@@ -42,7 +42,7 @@ for port in board.ports
   |   <text x="#{port.label.x}" y="#{port.label.y+4}">p#{port.index}</text>
   | </g>
 for edge in board.edges
-  | <g class="debug path">
+  | <g class="debug edge">
   |   <circle cx="#{(edge.x0 + edge.x1)/2}" cy="#{(edge.y0 + edge.y1)/2}" r="15"/>
   |   <text x="#{(edge.x0 + edge.x1)/2}" y="#{(edge.y0 + edge.y1)/2+5}">e#{edge.index}</text>
   | </g>

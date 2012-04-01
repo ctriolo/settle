@@ -115,16 +115,16 @@
 
 
 /**
- * Paths
+ * Edges
  */
 
-#board line.path {
+#board line.edge {
   stroke: black;
   stroke-opacity: .8;
   stroke-width: 7;
 }
 
-#board line.path.hover {
+#board line.edge.hover {
   fill: white;
   stroke: white;
 }
@@ -135,7 +135,7 @@
  */
 
 #board .debug.hex          circle { fill: pink; }
-#board .debug.path         circle { fill: orange; }
+#board .debug.edge         circle { fill: orange; }
 #board .debug.intersection circle { fill: yellow; }
 #board .debug.port         circle { fill: lightblue; }
 #board .debug              circle { stroke: black; stroke-width: 1; fill-opacity: 1; }
