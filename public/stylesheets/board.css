@@ -1,0 +1,151 @@
+/**
+ * Board Stylesheet
+ *
+ * All the stylings needed for the SVG element and the
+ * things it contains.
+ */
+
+
+/**
+ * SVG
+ */
+
+#board {
+  width: 100%;
+  height: 100%;
+}
+
+
+/**
+ * Hexes
+ */
+
+#board .hex.Pasture  polygon { fill: url(#sheep)  lightgreen; }
+#board .hex.Forest   polygon { fill: url(#wood)   forestgreen; }
+#board .hex.Field    polygon { fill: url(#wheat)  khaki; }
+#board .hex.Mountain polygon { fill: url(#ore)    rgb(36, 36, 36); }
+#board .hex.Hill     polygon { fill: url(#brick)  orangered; }
+#board .hex.Desert   polygon { fill: url(#desert) gold; }
+#board .hex.Water    polygon { fill:              cyan; }
+#board .hex.Sea      polygon { fill: darkcyan; stroke: darkgray; stroke-width: 1; }
+#board .hex          polygon { stroke-width: 3; stroke: black; }
+#board .hex.hover    polygon { fill-opacity: .5; }
+
+
+/**
+ * Number Tokens
+ */
+
+#board .numberToken.number6 circle,
+#board .numberToken.number8 circle {
+  fill: tomato;
+}
+
+#board .numberToken.number2 circle,
+#board .numberToken.number12 circle {
+  fill: skyblue;
+}
+
+#board .numberToken circle {
+  fill: moccasin;
+  fill-opacity: .6;
+  stroke: black;
+  stroke-width: 3;
+}
+
+#board .numberToken text {
+  font-size: 28px;
+  font-family: Arial Black;
+  text-anchor: middle;
+  stroke-width: 1;
+}
+
+
+/**
+ * Intersections
+ */
+
+#board circle.intersection {
+  fill: black;
+  fill-opacity: .65;
+  stroke-width: 0;
+}
+
+#board circle.intersection.hover {
+  fill: white;
+  stroke:white;
+}
+
+
+/**
+ * Ports
+ */
+
+#board .port.Any31   circle{ fill: url(#market) pink; }
+#board .port.Sheep21 circle { fill: url(#sheep)  lime; }
+#board .port.Wood21  circle { fill: url(#wood)   forestgreen; }
+#board .port.Brick21 circle { fill: url(#brick)  redorange; }
+#board .port.Stone21 circle { fill: url(#ore)    black; }
+#board .port.Wheat21 circle { fill: url(#wheat)  yellow; }
+#board .port.hover   circle { fill-opacity:.6 }
+#board .port         circle {
+  fill-opacity: .9;
+  fill: black;
+  stroke: black;
+  stroke-width: 2;
+}
+
+#board .port path {
+  stroke: black;
+  stroke-width: 7;
+  stroke-opacity:.6;
+  fill:white
+}
+
+#board .port.hover path {
+  stroke-opacity: .4;
+}
+
+#board .port text{
+  font-size: 14px;
+  font-family: Arial Black;
+  text-anchor: middle;
+  fill: white;
+}
+
+
+/**
+ * Paths
+ */
+
+#board line.path {
+  stroke: black;
+  stroke-opacity: .8;
+  stroke-width: 7;
+}
+
+#board line.path.hover {
+  fill: white;
+  stroke: white;
+}
+
+
+/**
+ * Debugging Info
+ */
+
+#board .debug.hex          circle { fill: pink; }
+#board .debug.path         circle { fill: orange; }
+#board .debug.intersection circle { fill: yellow; }
+#board .debug.port         circle { fill: lightblue; }
+#board .debug              circle { stroke: black; stroke-width: 1; fill-opacity: 1; }
+
+#board .debug.hex text { font-size: 36px; }
+#board .debug     text {
+  fill: black;
+  font-size: 11px;
+  font-family: Arial Black;
+  text-anchor: middle;
+}
+
+#board .debug { display: none; }
