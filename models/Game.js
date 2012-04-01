@@ -90,6 +90,7 @@ Game.prototype._translate = function(user_id) {
   for (var i = 0; i < this.players.length; i++) {
     if (this.players[i].user_id == user_id) return i;
   }
+  return PLAYER.NONE;
 }
 
 
@@ -211,6 +212,16 @@ Game.prototype.whoseTurn = function() {
 Game.prototype.whichPhase = function() {
   return this.current_phase;
 };
+
+/**
+ * isPlayer
+ *
+ * @param   user_id   string    the user_id
+ * @return            boolean   whether or not the user is a player
+ */
+Game.prototype.isPlayer = function(user_id) {
+  return this._translate(user_id) != PLAYER.NONE;
+}
 
 /**
  * canStart

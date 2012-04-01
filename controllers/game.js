@@ -25,7 +25,10 @@ module.exports.view = function(req, res) {
     game.id = id;
   }
 
-  game.addPlayer(req.sessionID);
+  if (!game.isPlayer(req.sessionID)) {
+    game.addPlayer(req.sessionID);
+  }
+
   gp.save(game);
 
   res.render('game', {
