@@ -36,7 +36,7 @@ body {
 #startBackground {
   position: fixed;
   height: 100%;
-  width: 66%;
+  width: 100%;
   top:0;
   left:0;
   opacity:.7;
@@ -59,6 +59,12 @@ body {
 }
 
 /* player wells */
+.player, .message {
+  position: relative;
+  z-index: 3;
+}
+
+/* card wells */
 .cardwell {
   width: 90%;
   height: 210px;
