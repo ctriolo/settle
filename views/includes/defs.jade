@@ -1,23 +1,23 @@
 - var IMAGES = [];
-- IMAGES[0]  = { 'id':'Forest',   'width':550, 'height':366, 'href':'http://images.travelpod.com/users/michaelsavage/1.1242034500.birds-eye-view-into-the-canyon-below.jpg' }
+- IMAGES[0]  = { 'id':'Forest',   'width':150, 'height':150, 'href':'http://i.imgur.com/HNTuR.jpg'}
 - IMAGES[1]  = { 'id':'Wood21',   'width':550, 'height':366, 'href':'http://images.travelpod.com/users/michaelsavage/1.1242034500.birds-eye-view-into-the-canyon-below.jpg' }
 - IMAGES[2]  = { 'id':'Field',    'width':625, 'height':469, 'href':'http://md.all.biz/img/md/catalog/18096.jpeg' }
 - IMAGES[3]  = { 'id':'Wheat21',  'width':625, 'height':469, 'href':'http://md.all.biz/img/md/catalog/18096.jpeg' }
-- IMAGES[4]  = { 'id':'Pasture',  'width':400, 'height':300, 'href':'http://4.bp.blogspot.com/_W19ZkFqGT-M/SWrtEqqtnLI/AAAAAAAAAn8/9bXPy_4UC5k/s400/Sheep+moving+on+hill+SM.jpg' }
+- IMAGES[4]  = { 'id':'Pasture',  'width':150, 'height':150, 'href':'http://i.imgur.com/TlA2r.jpg' }
 - IMAGES[5]  = { 'id':'Sheep21',  'width':400, 'height':300, 'href':'http://4.bp.blogspot.com/_W19ZkFqGT-M/SWrtEqqtnLI/AAAAAAAAAn8/9bXPy_4UC5k/s400/Sheep+moving+on+hill+SM.jpg' }
-- IMAGES[6]  = { 'id':'Hill',     'width':615, 'height':410, 'href':'http://www.publicdomainpictures.net/pictures/10000/nahled/1-122357738099Gn.jpg' }
+- IMAGES[6]  = { 'id':'Hill',     'width':150, 'height':150, 'href':'http://i.imgur.com/eTQxE.jpg' }
 - IMAGES[7]  = { 'id':'Brick21',  'width':615, 'height':410, 'href':'http://www.publicdomainpictures.net/pictures/10000/nahled/1-122357738099Gn.jpg' }
-- IMAGES[8]  = { 'id':'Mountain', 'width':220, 'height':220, 'href':'http://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Olivine_basalt2.jpg/220px-Olivine_basalt2.jpg' }
-- IMAGES[9]  = { 'id':'Stone21',  'width':220, 'height':220, 'href':'http://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Olivine_basalt2.jpg/220px-Olivine_basalt2.jpg' }
-- IMAGES[10] = { 'id':'Desert',   'width':641, 'height':513, 'href':'http://3.bp.blogspot.com/-87-vnzGa9Po/TiRR2qFWprI/AAAAAAAAAF0/KsfRQhoL5Ds/s1600/SandUDunesUSoft.jpg' }
+- IMAGES[9]  = { 'id':'Mountain', 'width':150, 'height':150, 'href':'http://i.imgur.com/llQvw.jpg' }
+- IMAGES[8]  = { 'id':'Stone21',  'width':220, 'height':220, 'href':'http://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Olivine_basalt2.jpg/220px-Olivine_basalt2.jpg' }
+- IMAGES[10] = { 'id':'Desert',   'width':150, 'height':150, 'href':'http://i.imgur.com/pNqUN.jpg' }
 - IMAGES[11] = { 'id':'Any31',    'width':425, 'height':282, 'href':'/images/gold.jpg' }
 |<defs>
 for IMAGE in IMAGES
   |<pattern
   |  id="#{IMAGE.id}"
-  |  patternContent="objectBoundingBox"
-  |  width="1"
-  |  height="1"
+  |  patternUnits="userSpaceOnUse"
+  |  width="#{IMAGE.width}"
+  |  height="#{IMAGE.height}"
   |  x="0"
   |  y="0"
   |  spreadMethod = "repeat">
