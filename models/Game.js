@@ -221,7 +221,16 @@ Game.prototype.whichPhase = function() {
  */
 Game.prototype.isPlayer = function(user_id) {
   return this._translate(user_id) != PLAYER.NONE;
-}
+};
+
+/**
+ * isStarted
+ *
+ * @return   boolean   whether or not the game has started
+ */
+Game.prototype.isStarted = function() {
+  return this.current_phase != PHASE.START;
+};
 
 /**
  * canStart

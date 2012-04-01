@@ -25,7 +25,7 @@ module.exports.view = function(req, res) {
     game.id = id;
   }
 
-  if (!game.isPlayer(req.sessionID)) {
+  if (!game.isPlayer(req.sessionID) && !game.isStarted()) {
     game.addPlayer(req.sessionID);
   }
 
