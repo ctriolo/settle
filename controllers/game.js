@@ -30,7 +30,7 @@ module.exports.view = function(req, res) {
 
   res.render('game', {
     'layout': false,
-    'title': 'Settle',
+    'title': id,
     'board': (new UIBoard(game.board)).render()
   });
 };
