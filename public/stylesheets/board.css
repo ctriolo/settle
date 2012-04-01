@@ -20,12 +20,6 @@
  * Hexes
  */
 
-#board .hex.Pasture  polygon { fill: url(#sheep)  lightgreen; }
-#board .hex.Forest   polygon { fill: url(#wood)   forestgreen; }
-#board .hex.Field    polygon { fill: url(#wheat)  khaki; }
-#board .hex.Mountain polygon { fill: url(#ore)    rgb(36, 36, 36); }
-#board .hex.Hill     polygon { fill: url(#brick)  orangered; }
-#board .hex.Desert   polygon { fill: url(#desert) gold; }
 #board .hex.Water    polygon { fill:              cyan; }
 #board .hex.Sea      polygon { fill: darkcyan; stroke: darkgray; stroke-width: 1; }
 #board .hex          polygon { stroke-width: 3; stroke: black; }
@@ -81,16 +75,9 @@
  * Ports
  */
 
-#board .port.Any31   circle{ fill: url(#market) pink; }
-#board .port.Sheep21 circle { fill: url(#sheep)  lime; }
-#board .port.Wood21  circle { fill: url(#wood)   forestgreen; }
-#board .port.Brick21 circle { fill: url(#brick)  redorange; }
-#board .port.Stone21 circle { fill: url(#ore)    black; }
-#board .port.Wheat21 circle { fill: url(#wheat)  yellow; }
 #board .port.hover   circle { fill-opacity:.6 }
 #board .port         circle {
   fill-opacity: .9;
-  fill: black;
   stroke: black;
   stroke-width: 2;
 }

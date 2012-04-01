@@ -1,5 +1,4 @@
-| <svg id="board" viewBox="0 0 800 800" version="1.1">
-
+| <svg id="board" viewBox="0 0 800 800" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" >
 include defs
 
 // BOARD ELEMENTS
@@ -9,7 +8,7 @@ for hex in board.hexes
   | <polygon points="
   for p in hex.points
     #{p.x},#{p.y}
-  |   " />
+  |   " fill="url(##{hex.type})"/>
   if (hex.number)
     | <g class="numberToken number#{hex.number}">
     |   <circle cx="#{hex.center.x}" cy="#{hex.center.y}" r="#{hex.radius/2.4}" />
@@ -21,7 +20,7 @@ for port in board.ports
   - var text = (port.type == 'Any31') ? '3:1' : '2:1';
   | <g id="port#{port.index}" class="port #{port.type}">
   |   <path d="M #{p[0].x} #{p[0].y} S #{p[1].x} #{p[1].y} #{p[2].x} #{p[2].y}" />
-  |   <circle cx="#{port.label.x}" cy="#{port.label.y}" r="18" />
+  |   <circle cx="#{port.label.x}" cy="#{port.label.y}" r="18" fill="url(##{port.type})"/>
   |   <text x="#{port.label.x}" y="#{port.label.y+4}">#{text}</text>
   | </g>
 for edge in board.edges
