@@ -218,7 +218,7 @@ Game.prototype.whichPhase = function() {
  * @return   boolean   whether or not the game can start
  */
 Game.prototype.canStart = function() {
-  return this.players.length > 2 && this.current_phase == PHASE.START;
+  return this.players.length >= 2 && this.current_phase == PHASE.START;
 };
 
 /**
