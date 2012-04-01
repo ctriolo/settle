@@ -99,7 +99,7 @@
   stroke: black;
   stroke-width: 7;
   stroke-opacity:.6;
-  fill:white
+  fill-opacity: 0;
 }
 
 #board .port.hover path {
