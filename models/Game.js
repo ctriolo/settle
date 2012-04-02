@@ -319,6 +319,14 @@ Game.prototype.start = function() {
   this._next();
 }
 
+/**
+  * EndTurn
+  * 
+  * Ends turn and moves to next player
+  */
+Game.prototype.endTurn = function() {
+  this._next();
+}
 
 /**
  * placeStartingSettlement
@@ -382,8 +390,6 @@ Game.prototype.rollDice = function(user_id) {
     if (i in resources) new_resources[this.players[i].user_id] = resources[i];
     else new_resources[this.players[i].user_id] = [];
   }
-
-  this._next();
 
   return {'number': total, 'resources': new_resources};
 };

@@ -63,6 +63,12 @@ body {
   position: relative;
   z-index: 3;
 }
+.name {
+  color: #333;
+}
+.name.highlight {
+  color: lime;
+}
 
 /* card wells */
 .cardwell {
@@ -100,6 +106,10 @@ body {
   height: 40px;
   opacity: 0.4;
 }
+.roll.turn, .trade.turn, .end.turn, .build.turn {
+  opacity: 1;
+}
+
 .roll, .trade {
   top: 120px;
 }

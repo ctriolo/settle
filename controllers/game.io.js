@@ -100,7 +100,7 @@ module.exports = function(sockets) {
       gp.save(game);
       sockets.to(game_id).emit('startingRoadPlacement', edge_id, game._translate(user_id));
       if (game.whichPhase() == PHASE.DICE) {
-        sockets.to(game.whoseTurn()).send('Roll the dice to start your turn.');
+        sockets.to(game.whoseTurn()).emit('startRoll');
       } else {
         sockets.to(game.whoseTurn()).emit('startingSettlementSelect',
           game.getValidStartingSettlementIntersections(game.whoseTurn()));
@@ -126,6 +126,21 @@ module.exports = function(sockets) {
       }
     });
 
+    socket.on('endTurn', function() {
+      var user_id = socket.handshake.sessionID;
+      var game_id = uid_to_gid[user_id];
+      var game = gp.findById(game_id);
+      try {
+        var ret = game.endTurn(user_id);
+        gp.save(game);
+        var user_ids = game.getPlayers();
+        for (var i = 0; i < user_ids.length; i++) {
+          sockets.to(user_ids[i]).emit('endTurnResults', game.whoseTurn(), user_ids, user_ids[i]);
+        }
+      } catch (error) {
+        socket.send(error);
+      }
+    });
 
     /**
      * startingSettlementPlacement

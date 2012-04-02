@@ -97,7 +97,26 @@ window.onload = function() {
    * Dice
    */
   $(".roll").click(function(){
-    socket.emit('rollDice');
+    if ($(".roll").css("opacity") === "1") {
+      $(".end").addClass('turn');
+      $(".build").addClass('turn');
+      $(".trade").addClass('turn');
+      $(".roll").removeClass('turn');
+      socket.emit('rollDice');
+    }
+  });
+
+  socket.on('startRoll', function() {
+    $(".roll").addClass('turn');
+  });
+
+  /**
+   * End turn
+   */
+  $(".end").click(function(){
+    if ($(".end").css("opacity") === "1") {
+      socket.emit('endTurn');
+    }
   });
 
 
@@ -306,6 +325,36 @@ window.onload = function() {
     }, 2000);
   });
 
+
+  /**
+    * EndTurnResults
+    * updates opacities and highlights for whose turn it is next
+    * @param	turn_user	string	the user whose turn it is
+    * @param	players		list		list of players
+    * @param	me			string	who am I?
+    */
+  socket.on('endTurnResults', function(turn_user, players, me) {
+    if (turn_user === me) {
+      $(".roll").addClass('turn');
+    }
+    else {
+      $(".roll").removeClass('turn');
+    }
+    $(".end").removeClass('turn');
+    $(".build").removeClass('turn');
+    $(".trade").removeClass('turn');
+    
+    for (var i = 0; i < users.length; i++) {
+      if (users[i] === turn_user) {
+      	$('#player'+i+' .name').addClass("highlight");
+      }
+      else
+        $('#player'+i+' .name').removeClass("highlight");
+    }
+
+
+
+  });
 
   // Placements
 
