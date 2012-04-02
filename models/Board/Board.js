@@ -687,3 +687,51 @@ Board.prototype.getNumberOfSettlements = function(player_id) {
 
   return num;
 }
+
+
+/**
+ * getResources
+ *
+ * Return an object with the arrays of resourses the players would get
+ * @param   number   num     the number to check
+ * @return           object  keys:   player ids
+ *                           values: array of resourses each player
+ */
+Board.prototype.getResources = function(number) {
+  var resources = {};
+
+  // For every intersection
+  for (var i = 0; i < this.hexes.length; i++) {
+    for (var j = 0; j < this.hexes[i].length; j++) {
+      var hex = this.hexes[i][j];
+      if (hex.isActive(this) && hex.diceRoll == number) {
+        var intersections = hex.iNeighbors(this);
+        for (var dir in intersections) {
+          var intersection = intersections[dir];
+          // Check that it has token, whether its a settlement or a city
+          if (intersection.token) {
+
+            // Initialize
+            if (!(intersection.token.player in resources)) {
+              resources[intersection.token.player] = [];
+            }
+
+            // Add one resource
+            if (intersection.token.type == TOKEN.SETTLEMENT) {
+              resources[intersection.token.player].push(HEX_TYPE_TO_RESOURCE[hex.type]);
+            }
+
+            // Add two resources
+            if (intersection.token.type == TOKEN.CITY) {
+              resources[intersection.token.player].push(HEX_TYPE_TO_RESOURCE[hex.type]);
+              resources[intersection.token.player].push(HEX_TYPE_TO_RESOURCE[hex.type]);
+            }
+
+          }
+        }
+      }
+    }
+  }
+
+  return resources;
+}

@@ -96,9 +96,30 @@ module.exports = function(sockets) {
       game.placeStartingRoad(user_id, edge_id);
       gp.save(game);
       sockets.to(game_id).emit('startingRoadPlacement', edge_id, game._translate(user_id));
-      if (game.whichPhase() != PHASE.NOT_IMPLEMENTED) {
+      if (game.whichPhase() == PHASE.DICE) {
+        sockets.to(game.whoseTurn()).send('Roll the dice to start your turn.');
+      } else {
         sockets.to(game.whoseTurn()).emit('startingSettlementSelect',
           game.getValidStartingSettlementIntersections(game.whoseTurn()));
+      }
+    });
+
+
+    /**
+     * rollDice
+     *
+     * Rolls the dice. Distributes Resources.
+     */
+    socket.on('rollDice', function() {
+      var user_id = socket.handshake.sessionID;
+      var game_id = uid_to_gid[user_id];
+      var game = gp.findById(game_id);
+      try {
+        var ret = game.rollDice(user_id);
+        gp.save(game);
+        sockets.to(game_id).emit('rollDiceResults', ret.number, ret.resources);
+      } catch (error) {
+        socket.send(error);
       }
     });
 

@@ -13,6 +13,8 @@ PHASE = {
   START: 'Start',
   STARTING_SETTLEMENT: 'Starting Settlement',
   STARTING_ROAD: 'Starting Road',
+  DICE: 'Dice',
+  MAIN: 'Main',
   // TODO: fill these in as we go along
   END: 'End',
   NOT_IMPLEMENTED: 'Not Implemented' // placeholder
@@ -180,10 +182,13 @@ Game.prototype._next = function() {
   case PHASE.STARTING_ROAD:
     this._nextPlayer();
     if (this.board.getNumberOfSettlements(this.current_player) == 2) {
-      this.current_phase = PHASE.NOT_IMPLEMENTED; // =D TODO: implement it
+      this.current_phase = PHASE.DICE;
     } else {
       this.current_phase = PHASE.STARTING_SETTLEMENT;
     }
+    break;
+  case PHASE.DICE:
+    this._nextPlayer();
     break;
   }
 };
@@ -339,6 +344,34 @@ Game.prototype.placeStartingRoad = function(user_id, edge_id) {
   this._next();
 };
 
+
+/**
+ * rollDice
+ *
+ * Rolls the dice and distrubutes resources.
+ * Returns information that just occured in an object
+ * @param   user_id   num   who rolls the dice
+ */
+Game.prototype.rollDice = function(user_id) {
+  var player_id = this._translate(user_id);
+  this._validatePlayer(player_id);
+  this._validatePhase(PHASE.DICE);
+
+  var dice = [Math.floor((Math.random()*6)+1), Math.floor((Math.random()*6)+1)];
+  var total = dice[0] + dice[1];
+
+  var resources = this.board.getResources(total);
+
+  var new_resources = {}
+  for (var i = 0; i < this.players.length; i++) {
+    if (i in resources) new_resources[this.players[i].user_id] = resources[i];
+    else new_resources[this.players[i].user_id] = [];
+  }
+
+  this._next();
+
+  return {'number': total, 'resources': new_resources};
+};
 
 /**
  * main

@@ -91,6 +91,14 @@ window.onload = function() {
 
 
   /**
+   * Dice
+   */
+  $(".roll").click(function(){
+    socket.emit('rollDice');
+  });
+
+
+  /**
    * Game Socket Senders
    */
 
@@ -255,6 +263,21 @@ window.onload = function() {
       'stroke-width': 10,
     });
     $('#board').append(road);
+  });
+
+  // Dice + Resources
+
+  /**
+   * rollDiceResults
+   *
+   * Received the results of the dice roll.
+   * @param   number      num      the number rolled
+   * @param   resources   object   keys: user ids
+   *                               values: resource arrays
+   */
+  socket.on('rollDiceResults', function(number, resources) {
+    console.log(number);
+    console.log(resources);
   });
 
 
