@@ -219,6 +219,21 @@ Game.prototype.whichPhase = function() {
 };
 
 /**
+ * getPlayers
+ *
+ * @return   array   of strings of user ids
+ */
+Game.prototype.getPlayers = function() {
+  var users = [];
+
+  for (var i = 0; i < this.players.length; i++) {
+    users.push(this.players[i].user_id);
+  }
+
+  return users;
+};
+
+/**
  * isPlayer
  *
  * @param   user_id   string    the user_id

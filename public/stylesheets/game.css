@@ -180,3 +180,38 @@ body {
 .buildResource.sheep { background: url(#brick) lime; }
 .buildResource.wheat { background: url(#brick) yellow; }
 .buildResource.stone { background: url(#brick) black; }
+
+/**
+ * Resource Cards
+ */
+
+ul.resource-cards {
+  margin: 0;
+  margin-left: 10px;
+  padding: 0;
+  height: 34px;
+}
+
+ul.resource-cards li { display: inline; }
+
+ul.resource-cards li .sheep-card,
+ul.resource-cards li .wheat-card,
+ul.resource-cards li .wood-card,
+ul.resource-cards li .brick-card,
+ul.resource-cards li .stone-card,
+ul.resource-cards li .resource-card {
+  float: left;
+  height: 30px;
+  width:  20px;
+  border: 2px solid black;
+  moz-border-radius: 3px;
+      border-radius: 3px;
+  margin-left: -10px;
+}
+
+ul.resource-cards li .wood-card     { background: forestgreen; }
+ul.resource-cards li .wheat-card    { background: khaki; }
+ul.resource-cards li .sheep-card    { background: lime; }
+ul.resource-cards li .brick-card    { background: orangered; }
+ul.resource-cards li .stone-card    { background: grey; }
+ul.resource-cards li .resource-card { background: blue }

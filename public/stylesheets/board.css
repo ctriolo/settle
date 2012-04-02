@@ -40,6 +40,10 @@
   fill: skyblue;
 }
 
+#board .numberToken.highlight circle {
+  fill: white;
+}
+
 #board .numberToken circle {
   fill: moccasin;
   fill-opacity: .6;

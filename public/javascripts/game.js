@@ -4,6 +4,9 @@
 var popup = false;
 var debug = false;
 var player_colors = ["blue", "yellow", "red", "orange"];
+var users = [];
+var me;
+
 function loadPopup(){
   if (!popup) {
     $("#popupBackground").css({"opacity":"0.7"});
@@ -161,7 +164,16 @@ window.onload = function() {
    *
    * Lets us know that we can start the game.
    */
-  socket.on('start', function(can_start) {
+  socket.on('start', function(players, you) {
+    users = players;
+    me = you;
+    if (users.indexOf(me) != -1) {
+      users.splice(users.indexOf(me), 1); // take out me
+      users.unshift(me); // put me first
+    }
+    for (var i = 0; i < users.length; i++) {
+      $('#player'+i+' .name').text(users[i].substring(0,5));
+    }
     $('#start').off('click');
     $('#start').remove();
   });
@@ -276,8 +288,22 @@ window.onload = function() {
    *                               values: resource arrays
    */
   socket.on('rollDiceResults', function(number, resources) {
-    console.log(number);
-    console.log(resources);
+
+    // Give Resources
+    for (var user in resources) {
+      for (var i = 0; i < resources[user].length; i++) {
+        var player = users.indexOf(user);
+        var resource = resources[user][i].toLowerCase();
+        if (user != me) resource = 'resource';
+        $('#player'+player+' .resource-cards').append('<li><div class="'+resource+'-card"</li>');
+      }
+    }
+
+    // Highlight Tokens
+    $('.numberToken.number'+number).addClass('highlight');
+    setTimeout(function() {
+      $('.numberToken.number'+number).removeClass('highlight');
+    }, 1000);
   });
 
 

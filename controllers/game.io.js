@@ -31,7 +31,7 @@ module.exports = function(sockets) {
       sockets.to(game_id).send('A client just connected.');
       if (game.isStarted()) {
         sockets.to(user_id).emit('canStart');
-        sockets.to(user_id).emit('start'); // maybe this should be startSpectating?
+        sockets.to(user_id).emit('start', game.getPlayers(), user_id);
         if (!game.isPlayer(user_id)) sockets.to(user_id).send('You cannot join a game that\'s already started.');
       } else if (game.canStart()) sockets.to(game_id).emit('canStart');
     });
@@ -50,7 +50,10 @@ module.exports = function(sockets) {
       try {
         game.start();
         gp.save(game);
-        sockets.to(game_id).emit('start');
+        var user_ids = game.getPlayers();
+        for (var i = 0; i < user_ids.length; i++) {
+          sockets.to(user_ids[i]).emit('start', user_ids, user_ids[i]);
+        }
         sockets.to(game_id).send('The game has begun.');
         sockets.to(game.whoseTurn()).emit('startingSettlementSelect',
           game.getValidStartingSettlementIntersections(game.whoseTurn()));

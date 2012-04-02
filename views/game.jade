@@ -14,8 +14,9 @@ block board
   include includes/board
 
 block player
-  .player.well
-    h2 Player 1
+  #player0.player.well
+    h2.name Empty
+    ul.resource-cards
     .cardwell
       .cards
       .roll
@@ -29,12 +30,15 @@ block player
         <image src="http://static.ddmcdn.com/gif/hammer-1.jpg" width="100%"/>
 
 block others
-  .player.well
-    h2 Player 2
-  .player.well
-    h2 Player 3
-  .player.well
-    h2 Player 4
+  #player1.player.well
+    h2.name Empty
+    ul.resource-cards
+  #player2.player.well
+    h2.name Empty
+    ul.resource-cards
+  #player3.player.well
+    h2.name Empty
+    ul.resource-cards
 
 block messages
   .message.well
