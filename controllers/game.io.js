@@ -30,8 +30,9 @@ module.exports = function(sockets) {
       uid_to_gid[user_id] = game_id;
       sockets.to(game_id).send('A client just connected.');
       if (game.isStarted()) {
+        sockets.to(user_id).emit('canStart');
         sockets.to(user_id).emit('start'); // maybe this should be startSpectating?
-        sockets.to(user_id).send('You cannot join a game that\'s already started.');
+        if (!game.isPlayer(user_id)) sockets.to(user_id).send('You cannot join a game that\'s already started.');
       } else if (game.canStart()) sockets.to(game_id).emit('canStart');
     });
 
