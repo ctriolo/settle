@@ -70,13 +70,17 @@ body {
   height: 210px;
   position: relative;
 }
-.cards, .roll, .trade, .end, .build, .dev_cards {
+.opponentcardwell {
+  width: 90%;
+  height: 50px;
+  position: relative;
+}
+.cards, .opponentcards, .roll, .trade, .end, .build, .dev_cards {
   moz-border-radius: 10px;
   border-radius: 10px;
   border: 3px solid rgba(0, 0, 0, 0.07);
   background-color: white;
   position:absolute;
-  opacity: 0.4;
 }
 
 .cards {
@@ -85,9 +89,16 @@ body {
   height: 100px;
 }
 
+.opponentcards {
+  top: 0px;
+  width: 50%;
+  height: 50px;
+}
+
 .roll, .trade, .end, .build {
   width: 15%;
   height: 40px;
+  opacity: 0.4;
 }
 .roll, .trade {
   top: 120px;
@@ -186,10 +197,10 @@ body {
  */
 
 ul.resource-cards {
-  margin: 0;
-  margin-left: 10px;
-  padding: 0;
-  height: 34px;
+  position: absolute;
+  top:10%;
+  left: 1%;
+  height: 80%;
 }
 
 ul.resource-cards li { display: inline; }
@@ -201,14 +212,22 @@ ul.resource-cards li .brick-card,
 ul.resource-cards li .stone-card,
 ul.resource-cards li .resource-card {
   float: left;
-  height: 30px;
-  width:  20px;
+  height: 100%;
+  width:  40px;
   border: 2px solid black;
   moz-border-radius: 3px;
       border-radius: 3px;
   margin-left: -10px;
 }
 
+.opponentcards ul.resource-cards li .sheep-card,
+.opponentcards ul.resource-cards li .wheat-card,
+.opponentcards ul.resource-cards li .wood-card,
+.opponentcards ul.resource-cards li .brick-card,
+.opponentcards ul.resource-cards li .stone-card,
+.opponentcards ul.resource-cards li .resource-card {
+  width: 20px;
+}
 ul.resource-cards li .wood-card     { background: forestgreen; }
 ul.resource-cards li .wheat-card    { background: khaki; }
 ul.resource-cards li .sheep-card    { background: lime; }

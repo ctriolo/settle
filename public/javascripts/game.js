@@ -303,7 +303,7 @@ window.onload = function() {
     $('.numberToken.number'+number).addClass('highlight');
     setTimeout(function() {
       $('.numberToken.number'+number).removeClass('highlight');
-    }, 1000);
+    }, 2000);
   });
 
 

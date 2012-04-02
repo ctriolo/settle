@@ -41,7 +41,7 @@
 }
 
 #board .numberToken.highlight circle {
-  fill: white;
+  fill: lime;
 }
 
 #board .numberToken circle {

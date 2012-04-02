@@ -16,9 +16,9 @@ block board
 block player
   #player0.player.well
     h2.name Empty
-    ul.resource-cards
     .cardwell
       .cards
+        ul.resource-cards
       .roll
         <image src="http://www.clker.com/cliparts/6/4/1/6/12456404511653839274badaman_dice.svg.med.png" width="100%"/>
       .trade
@@ -32,13 +32,19 @@ block player
 block others
   #player1.player.well
     h2.name Empty
-    ul.resource-cards
+    .opponentcardwell
+      .opponentcards
+        ul.resource-cards
   #player2.player.well
     h2.name Empty
-    ul.resource-cards
+    .opponentcardwell
+      .opponentcards
+        ul.resource-cards
   #player3.player.well
     h2.name Empty
-    ul.resource-cards
+    .opponentcardwell
+      .opponentcards
+        ul.resource-cards
 
 block messages
   .message.well
