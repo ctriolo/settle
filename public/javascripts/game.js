@@ -181,12 +181,19 @@ window.onload = function() {
    * Lets us know that we can start the game.
    */
   socket.on('start', function(players, you) {
-    users = players;
+    users = players.slice(0);
     me = you;
+
     if (users.indexOf(me) != -1) {
       users.splice(users.indexOf(me), 1); // take out me
       users.unshift(me); // put me first
     }
+
+    for (var i = 0; i < players.length; i++) {
+      $('#player' + i).css({"border-color":player_colors[players.indexOf(users[i])]});
+	$('#player' + i).css({"border-width":"4px"});
+    }
+
     for (var i = 0; i < users.length; i++) {
       $('#player'+i+' .name').text(users[i].substring(0,5));
     }
