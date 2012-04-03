@@ -106,9 +106,6 @@ window.onload = function() {
     }
   });
 
-  socket.on('startRoll', function() {
-    $(".roll").addClass('turn');
-  });
 
   /**
    * End turn
@@ -327,32 +324,26 @@ window.onload = function() {
 
 
   /**
-    * EndTurnResults
+    * newTurn
+    *
     * updates opacities and highlights for whose turn it is next
-    * @param	turn_user	string	the user whose turn it is
-    * @param	players		list		list of players
-    * @param	me			string	who am I?
+    * @param	turn_user	       string    the user whose turn it is
+    * @param	starting_phase   boolean   whether or not in starting phase
     */
-  socket.on('endTurnResults', function(turn_user, players, me) {
-    if (turn_user === me) {
-      $(".roll").addClass('turn');
-    }
-    else {
-      $(".roll").removeClass('turn');
-    }
-    $(".end").removeClass('turn');
-    $(".build").removeClass('turn');
-    $(".trade").removeClass('turn');
-    
-    for (var i = 0; i < users.length; i++) {
-      if (users[i] === turn_user) {
-      	$('#player'+i+' .name').addClass("highlight");
-      }
-      else
-        $('#player'+i+' .name').removeClass("highlight");
+  socket.on('newTurn', function(turn_user, starting_phase) {
+
+    // Disable action buttons, enable roll if it's this players turn
+    if (!starting_phase) {
+      if (turn_user == me) $(".roll").addClass('turn');
+      else $(".roll").removeClass('turn');
+      $(".end").removeClass('turn');
+      $(".build").removeClass('turn');
+      $(".trade").removeClass('turn');
     }
 
-
+    // Remove past highlights, highlight current player
+    $('.name.highlight').removeClass('highlight');
+    $('#player'+users.indexOf(turn_user)+' .name').addClass('highlight');
 
   });
 

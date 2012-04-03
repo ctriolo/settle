@@ -55,6 +55,7 @@ module.exports = function(sockets) {
           sockets.to(user_ids[i]).emit('start', user_ids, user_ids[i]);
         }
         sockets.to(game_id).send('The game has begun.');
+        sockets.to(game_id).emit('newTurn', game.whoseTurn(), true);
         sockets.to(game.whoseTurn()).emit('startingSettlementSelect',
           game.getValidStartingSettlementIntersections(game.whoseTurn()));
       } catch (error) {
@@ -99,11 +100,12 @@ module.exports = function(sockets) {
       game.placeStartingRoad(user_id, edge_id);
       gp.save(game);
       sockets.to(game_id).emit('startingRoadPlacement', edge_id, game._translate(user_id));
-      if (game.whichPhase() == PHASE.DICE) {
-        sockets.to(game.whoseTurn()).emit('startRoll');
-      } else {
+      if (game.whichPhase() == PHASE.STARTING_SETTLEMENT) {
+        sockets.to(game_id).emit('newTurn', game.whoseTurn(), true);
         sockets.to(game.whoseTurn()).emit('startingSettlementSelect',
           game.getValidStartingSettlementIntersections(game.whoseTurn()));
+      } else {
+        sockets.to(game_id).emit('newTurn', game.whoseTurn(), false);
       }
     });
 
@@ -126,6 +128,12 @@ module.exports = function(sockets) {
       }
     });
 
+
+    /**
+     * endTurn
+     *
+     * Ends the turn for the user calling the function.
+     */
     socket.on('endTurn', function() {
       var user_id = socket.handshake.sessionID;
       var game_id = uid_to_gid[user_id];
@@ -133,14 +141,12 @@ module.exports = function(sockets) {
       try {
         var ret = game.endTurn(user_id);
         gp.save(game);
-        var user_ids = game.getPlayers();
-        for (var i = 0; i < user_ids.length; i++) {
-          sockets.to(user_ids[i]).emit('endTurnResults', game.whoseTurn(), user_ids, user_ids[i]);
-        }
+        sockets.to(game_id).emit('newTurn', game.whoseTurn(), false);
       } catch (error) {
         socket.send(error);
       }
     });
+
 
     /**
      * startingSettlementPlacement
