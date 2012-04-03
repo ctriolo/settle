@@ -708,23 +708,30 @@ Board.prototype.getResources = function(number) {
         var intersections = hex.iNeighbors(this);
         for (var dir in intersections) {
           var intersection = intersections[dir];
+          var resource = HEX_TYPE_TO_RESOURCE[hex.type];
+
           // Check that it has token, whether its a settlement or a city
           if (intersection.token) {
+            var player = intersection.token.player;
 
-            // Initialize
-            if (!(intersection.token.player in resources)) {
-              resources[intersection.token.player] = [];
+            // Initialize Player
+            if (!(player in resources)) {
+              resources[player] = {};
+            }
+
+            // Initialize Resource
+            if (!(resource in resources[player])) {
+              resources[player][resource] = 0;
             }
 
             // Add one resource
             if (intersection.token.type == TOKEN.SETTLEMENT) {
-              resources[intersection.token.player].push(HEX_TYPE_TO_RESOURCE[hex.type]);
+              resources[player][resource] += 1;
             }
 
             // Add two resources
             if (intersection.token.type == TOKEN.CITY) {
-              resources[intersection.token.player].push(HEX_TYPE_TO_RESOURCE[hex.type]);
-              resources[intersection.token.player].push(HEX_TYPE_TO_RESOURCE[hex.type]);
+              resources[player][resource] += 2;
             }
 
           }

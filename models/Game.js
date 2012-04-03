@@ -57,8 +57,19 @@ DEVELOPMENT = {
 function Player(index, user_id) {
   this.index = index;
   this.user_id = user_id;
-  this.resource_cards = [];
+
+  // Resources
+  this.resource_cards = {};
+  this.resource_cards[RESOURCE.BRICK] = 0;
+  this.resource_cards[RESOURCE.SHEEP] = 0;
+  this.resource_cards[RESOURCE.STONE] = 0;
+  this.resource_cards[RESOURCE.WHEAT] = 0;
+  this.resource_cards[RESOURCE.WOOD]  = 0;
+
+  // Developments
   this.development_cards = [];
+
+  // Unbuilts
   this.unbuilt_roads = 15;
   this.unbuilt_settlements = 5;
   this.unbuilt_cities = 5;
@@ -393,10 +404,19 @@ Game.prototype.rollDice = function(user_id) {
 
   var resources = this.board.getResources(total);
 
+  // Add resources to player hand
+  for (var i = 0; i < this.players.length; i++) {
+    if (i in resources) {
+      for (var resource in resources[i]) {
+        this.players[i].resource_cards[resource] += resources[i][resource]
+      }
+    }
+  }
+
+  // Construct return object
   var new_resources = {}
   for (var i = 0; i < this.players.length; i++) {
     if (i in resources) new_resources[this.players[i].user_id] = resources[i];
-    else new_resources[this.players[i].user_id] = [];
   }
 
   this._next();
