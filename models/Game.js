@@ -188,6 +188,10 @@ Game.prototype._next = function() {
     }
     break;
   case PHASE.DICE:
+    this.current_phase = PHASE.MAIN
+    break;
+  case PHASE.MAIN:
+    this.current_phase = PHASE.DICE
     this._nextPlayer();
     break;
   }
@@ -320,11 +324,15 @@ Game.prototype.start = function() {
 }
 
 /**
-  * EndTurn
-  * 
+  * endTurn
+  *
   * Ends turn and moves to next player
+  * @param   user_id    string   the user who wants to end their turn
   */
-Game.prototype.endTurn = function() {
+Game.prototype.endTurn = function(user_id) {
+  var player_id = this._translate(user_id);
+  this._validatePlayer(player_id);
+  this._validatePhase(PHASE.MAIN);
   this._next();
 }
 
@@ -391,6 +399,7 @@ Game.prototype.rollDice = function(user_id) {
     else new_resources[this.players[i].user_id] = [];
   }
 
+  this._next();
   return {'number': total, 'resources': new_resources};
 };
 
