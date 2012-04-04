@@ -216,10 +216,13 @@ window.onload = function() {
    */
   socket.on('startingSettlementSelect', function(ids) {
     for (var i = 0; i < ids.length; i++) {
-      $("#intersection"+ids[i]).css({'fill': 'white'});
+      $("#intersection"+ids[i]).addClass('selectable');
+      $("#intersection"+ids[i]).hover(function(){$(this).addClass('hover')},
+                                      function(){$(this).removeClass('hover')});
       $("#intersection"+ids[i]).click(function() {
         $('.intersection').off('click');
-        $('.intersection').css({'fill':'black'});
+        $('.intersection').off('hover');
+        $('.intersection').removeClass('selectable');
         var id = parseInt($(this).attr('id').substring('intersection'.length));
         socket.emit('startingSettlementPlacement', id, '0');
       });
@@ -256,10 +259,13 @@ window.onload = function() {
   socket.on('startingRoadSelect', function(ids) {
       console.log(ids);
     for (var i = 0; i < ids.length; i++) {
-      $("#edge"+ids[i]).css({'stroke': 'white'});
+      $("#edge"+ids[i]).addClass('selectable');
+      $("#edge"+ids[i]).hover(function(){$(this).addClass('hover')},
+                              function(){$(this).removeClass('hover')});
       $("#edge"+ids[i]).click(function() {
         $('.edge').off('click');
-        $('.edge').css({'stroke':'black'});
+        $('.edge').off('hover');
+        $('.edge').removeClass('selectable');
         var id = parseInt($(this).attr('id').substring('edge'.length));
         socket.emit('startingRoadPlacement', id);
       });

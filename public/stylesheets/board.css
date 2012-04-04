@@ -87,11 +87,13 @@
   stroke-width: 0;
 }
 
-#board circle.intersection.hover {
-  fill: white;
-  stroke:white;
+#board circle.intersection.selectable {
+  fill: grey;
 }
 
+#board circle.intersection.hover {
+  fill: white;
+}
 
 /**
  * Ports
@@ -133,11 +135,13 @@
   stroke-width: 7;
 }
 
-#board line.edge.hover {
-  fill: white;
-  stroke: white;
+#board line.edge.selectable {
+  stroke: grey;
 }
 
+#board line.edge.hover {
+  stroke: white;
+}
 
 /**
  * Settlements
@@ -147,12 +151,12 @@
   stroke-width: 0;
 }
 
-#board circle.settlement.hover {
-  fill: white;
-}
-
 #board circle.settlement.selectable {
   fill: grey;
+}
+
+#board circle.settlement.hover {
+  fill: white;
 }
 
 #board circle.settlement { display: none; }
@@ -167,12 +171,12 @@
   stroke: black;
 }
 
-#board circle.city.hover {
-  fill: white;
-}
-
 #board circle.city.selectable {
   fill: grey;
+}
+
+#board circle.city.hover {
+  fill: white;
 }
 
 #board circle.city { display: none; }
@@ -186,12 +190,12 @@
   stroke-width: 10;
 }
 
-#board line.road.hover {
-  stroke: white;
-}
-
 #board line.road.selectable {
   stroke: grey;
+}
+
+#board line.road.hover {
+  stroke: white;
 }
 
 #board line.road { display: none; }
