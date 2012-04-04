@@ -57,7 +57,25 @@
   text-anchor: middle;
   stroke-width: 1;
 }
+#board .numberToken.desert circle {
+  display: none;
+}
+/**
+  * Robber
+  */
+#board .numberToken.robber circle {
+  display:inline;
+  fill: black;
+  fill-opacity: .9;
+}
 
+#board .numberToken.robber text {
+  fill: #FFFFFF;
+  stroke-width: 1;
+}
+#board .numberToken.robber.highlight circle {
+  fill: lime;
+}
 
 /**
  * Intersections

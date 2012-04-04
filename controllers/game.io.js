@@ -128,6 +128,24 @@ module.exports = function(sockets) {
       }
     });
 
+    /**
+      * updateRobber
+      * updates robber to the given tile
+      * @param		id	number	id number of the new robber tile
+      */
+    socket.on('updateRobber', function(id) {
+      var user_id = socket.handshake.sessionID;
+      var game_id = uid_to_gid[user_id];
+      var game = gp.findById(game_id);
+      try {
+        var old = game.getRobber();
+        var ret = game.updateRobber(id);
+        gp.save(game);
+        sockets.to(game_id).emit('moveRobber', old, id);
+      } catch (error) {
+        socket.send(error);
+      }
+    });
 
     /**
      * endTurn

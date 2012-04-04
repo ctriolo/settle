@@ -311,7 +311,14 @@ window.onload = function() {
    *                               values: resource arrays
    */
   socket.on('rollDiceResults', function(number, resources) {
-
+    // handle robber
+    if (number === 7) {
+      // Highlight Robber Tokens
+      $('.numberToken.robber').addClass('highlight');
+      setTimeout(function() {
+        $('.numberToken.robber').removeClass('highlight');
+      }, 2000);
+    }
     // Give Resources
     for (var user in resources) {
       for (var i = 0; i < resources[user].length; i++) {
@@ -329,6 +336,30 @@ window.onload = function() {
     }, 2000);
   });
 
+  /**
+    * Robber
+    * updates robber position
+    *
+    */
+    $(".hex").click(
+      function(){
+        if(!$(this).hasClass("robber")) {
+          var id = parseInt($(this).attr('id').substring('hex'.length));
+          socket.emit('updateRobber', id);
+       }
+      }
+    );
+   /**
+     * Move Robber
+     * handles robber moving css
+     * @param	start	number	id of original robber
+     * @param	end		boolean	id of new robber
+     */
+    socket.on('moveRobber', function(start, end) {
+      $("#hex" + start).children(".numberToken").removeClass("robber");
+      $("#hex" + start).children(".numberToken").removeClass("highlight");
+      $("#hex" + end).children(".numberToken").addClass("robber");
+    });
 
   /**
     * newTurn

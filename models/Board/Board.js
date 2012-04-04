@@ -318,8 +318,11 @@ Board.prototype.populateHexes = function()
     var k = 0;
     for (var i = 0; i < this.hexes.length; i++) // for each hex
         for (var j = 0; j < this.hexes[i].length; j++)
-            if ( this.hexes[i][j].isActive() ) // if active
+            if ( this.hexes[i][j].isActive() ) { // if active
                 this.hexes[i][j].type = arr[k++]; // assign next
+		if(this.hexes[i][j].type == HEX_TYPE.DESERT)
+                  this.hexes[i][j].robber = true; // assign initial robber
+            }
 }
 
 /*  =====================
@@ -403,7 +406,6 @@ Array.prototype.shuffle = function() {
 Board.prototype.makeHexObj = function(hex)
 {
     var hexObj = new Object();
-
     // basics
     hexObj.index = hex.id;
     hexObj.grid = { 'x':hex.i, 'y':hex.j };
@@ -591,6 +593,49 @@ Board.prototype.placeStartingSettlement = function(player_id, intersection_id) {
 
   var intersection = this._getIntersection(intersection_id);
   intersection.token = new Token(player_id, TOKEN.SETTLEMENT);
+}
+
+/**
+ * getRobber
+ * returns hex id of the robber tile
+ *
+ */
+Board.prototype._getRobber = function() {
+ for (var i = 0; i < this.hexes.length; i++) {
+    for (var j = 0; j < this.hexes[i].length; j++) {
+      var hex = this.hexes[i][j];
+      if (hex.robber) {
+        return hex.id;
+      }
+    }
+  }
+  return null; // this should never be called
+}
+
+/**
+ * updateRobber
+ *
+ * Moves robber from start to end
+ * Throws exception is start does not have robber on it.
+ * @param  end	num  the hex id of the hex robber should be moved to
+ */
+Board.prototype.updateRobber = function(end) {
+  var start_hex = this._getRobber()
+  var end_hex = this._getHex(end);
+  if (start_hex == end_hex) {
+    throw 'Robber already placed on hex ' + end + '.';
+  }
+ for (var i = 0; i < this.hexes.length; i++) {
+    for (var j = 0; j < this.hexes[i].length; j++) {
+      var hex = this.hexes[i][j];
+      if (hex.id === start_hex) {
+        this.hexes[i][j].robber = false;
+      }
+      if(hex.id === end_hex) {
+        this.hexes[i][j].robber = true;
+      }
+    }
+  }
 }
 
 

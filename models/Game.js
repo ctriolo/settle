@@ -15,6 +15,7 @@ PHASE = {
   STARTING_ROAD: 'Starting Road',
   DICE: 'Dice',
   MAIN: 'Main',
+  ROBBER: 'Robber',
   // TODO: fill these in as we go along
   END: 'End',
   NOT_IMPLEMENTED: 'Not Implemented' // placeholder
@@ -170,7 +171,7 @@ Game.prototype._nextPlayer = function() {
  * Figures out and sets the next player. (this.current_player)
  * [Most of the time the next player is set by calling _nextPlayer()]
  */
-Game.prototype._next = function() {
+Game.prototype._next = function(diceRoll) {
   switch(this.current_phase) {
   case PHASE.START:
     this.current_phase = PHASE.STARTING_SETTLEMENT;
@@ -188,6 +189,12 @@ Game.prototype._next = function() {
     }
     break;
   case PHASE.DICE:
+    if (diceRoll === 7)
+      this.current_phase = PHASE.ROBBER
+    else
+      this.current_phase = PHASE.MAIN
+    break;
+  case PHASE.ROBBER:
     this.current_phase = PHASE.MAIN
     break;
   case PHASE.MAIN:
@@ -390,7 +397,6 @@ Game.prototype.rollDice = function(user_id) {
 
   var dice = [Math.floor((Math.random()*6)+1), Math.floor((Math.random()*6)+1)];
   var total = dice[0] + dice[1];
-
   var resources = this.board.getResources(total);
 
   var new_resources = {}
@@ -399,10 +405,26 @@ Game.prototype.rollDice = function(user_id) {
     else new_resources[this.players[i].user_id] = [];
   }
 
-  this._next();
+  this._next(total);
   return {'number': total, 'resources': new_resources};
 };
 
+/**
+  * getRobber
+  * get current location of the robber as hex id
+  */
+Game.prototype.getRobber = function() {
+  return this.board._getRobber();
+}
+/**
+ * updateRobber
+ * moves the robber to new tile
+ */
+Game.prototype.updateRobber = function(move_id) {
+  this._validatePhase(PHASE.ROBBER);
+  this.board.updateRobber(move_id);
+  this._next();
+}
 /**
  * main
  *

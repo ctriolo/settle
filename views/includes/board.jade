@@ -11,9 +11,12 @@ for hex in board.hexes
   |   " fill="url(##{hex.type})"/>
   if (hex.number)
     | <g class="numberToken number#{hex.number}">
-    |   <circle cx="#{hex.center.x}" cy="#{hex.center.y}" r="#{hex.radius/2.4}" />
-    |   <text x="#{hex.center.x+1}" y="#{hex.center.y+10}">#{hex.number}</text>
-    | </g>
+    | <circle cx="#{hex.center.x}" cy="#{hex.center.y}" r="#{hex.radius/2.4}" />
+    | <text x="#{hex.center.x+1}" y="#{hex.center.y+10}">#{hex.number}</text>
+  else
+    | <g class="numberToken desert robber">
+    | <circle cx="#{hex.center.x}" cy="#{hex.center.y}" r="#{hex.radius/2.4}" />
+  | </g>
   | </g>
 for port in board.ports
   - var p = port.points
