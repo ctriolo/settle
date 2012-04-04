@@ -722,7 +722,7 @@ Board.prototype.getValidSettlementIntersections = function(player_id) {
       var intersection = this.inters[i][j];
 
       // Check that it's active and there is nothing on it
-      if (!intersection.isActive(this) && intersection.token) continue;
+      if (!intersection.isActive(this) || intersection.token) continue;
 
       // Check that there are no settlements or cities 1 edge away
       var can_build = true;
@@ -735,7 +735,7 @@ Board.prototype.getValidSettlementIntersections = function(player_id) {
       // At least one of player_id's roads leads to this intersection
       // TODO: Check that the road is not cut off from a settlement
       can_build = false;
-      var edges  = intersection.iNeighbors(this);
+      var edges  = intersection.eNeighbors(this);
       for (var dir in edges) {
         if (edges[dir].token && edges[dir].token.player == player_id) {
           can_build = true;
@@ -843,7 +843,7 @@ Board.prototype.buildSettlement = function(player_id, intersection_id) {
  * @param   intersection_id   num      the location to place the intersection
  */
 Board.prototype.buildCity = function(player_id, intersection_id) {
-  var valid_ids = this.getCityIntersections(player_id);
+  var valid_ids = this.getValidCityIntersections(player_id);
   if (valid_ids.indexOf(intersection_id) == -1) {
     throw 'Intersection Id ' + intersection_id + ' is not a valid location to build.'
   }
@@ -862,7 +862,7 @@ Board.prototype.buildCity = function(player_id, intersection_id) {
  * @param   edge_id     num      the location to place the road
  */
 Board.prototype.buildRoad = function(player_id, edge_id) {
-  var valid_ids = this.getRoadEdges(player_id);
+  var valid_ids = this.getValidRoadEdges(player_id);
   if (valid_ids.indexOf(edge_id) == -1) {
     throw 'Edge Id ' + edge_id + ' is not a valid location to build.'
   }

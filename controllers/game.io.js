@@ -169,17 +169,104 @@ module.exports = function(sockets) {
 
 
     /**
-     * startingSettlementPlacement
+     * Purchse Selections
+     */
+
+
+    /**
+     * selectSettlement
+     *
+     * Sends the user back valid build settlement intersections.
+     */
+    socket.on('selectSettlement', function() {
+      var user_id = socket.handshake.sessionID;
+      var game_id = uid_to_gid[user_id];
+      var game = gp.findById(game_id);
+      socket.to(user_id).emit('selectSettlement',
+                              game.getValidSettlementIntersections(user_id));
+    });
+
+
+    /**
+     * selectCity
+     *
+     * Sends the user back valid build city intersections.
+     */
+    socket.on('selectCity', function() {
+      var user_id = socket.handshake.sessionID;
+      var game_id = uid_to_gid[user_id];
+      var game = gp.findById(game_id);
+      socket.to(user_id).emit('selectCity',
+                              game.getValidCityIntersections(user_id));
+    });
+
+
+    /**
+     * selectRoad
+     *
+     * Sends the user back valid build road edges.
+     */
+    socket.on('selectRoad', function() {
+      var user_id = socket.handshake.sessionID;
+      var game_id = uid_to_gid[user_id];
+      var game = gp.findById(game_id);
+      socket.to(user_id).emit('selectRoad', game.getValidRoadEdges(user_id));
+    });
+
+
+    /**
+     * Purchase Building
+     */
+
+
+    /**
+     * buildSettlement
      *
      * Places a settlement at intersection_id for the player who sent the message
      * @param   intersection_id   num   the intersection id where he wants to
      *                                  place the settlement.
      */
-    socket.on('settlementPlacement', function(intersection_id) {
+    socket.on('buildSettlement', function(intersection_id) {
       var user_id = socket.handshake.sessionID;
       var game_id = uid_to_gid[user_id];
       var game = gp.findById(game_id);
-      socket.send('Not implemented yet');
+      game.buildSettlement(user_id, intersection_id);
+      gp.save(game);
+      socket.to(game_id).emit('buildSettlement', intersection_id, game._translate(user_id));
+    });
+
+
+    /**
+     * buildCity
+     *
+     * Places a city at intersection_id for the player who sent the message
+     * @param   intersection_id   num   the intersection id where he wants to
+     *                                  place the city.
+     */
+    socket.on('buildCity', function(intersection_id) {
+      var user_id = socket.handshake.sessionID;
+      var game_id = uid_to_gid[user_id];
+      var game = gp.findById(game_id);
+      game.buildCity(user_id, intersection_id);
+      gp.save(game);
+      socket.to(game_id).emit('buildCity', intersection_id, game._translate(user_id));
+    });
+
+
+    /**
+     * buildRoad
+     *
+     * Places a road at edge_id for the player who sent the message
+     * @param   intersection_id   num   the edge id where he wants to
+     *                                  place the road.
+     */
+    socket.on('buildRoad', function(edge_id) {
+      var user_id = socket.handshake.sessionID;
+      var game_id = uid_to_gid[user_id];
+      var game = gp.findById(game_id);
+      game.buildRoad(user_id, edge_id);
+      gp.save(game);
+      socket.to(game_id).emit('buildRoad', edge_id, game._translate(user_id));
     });
 
 

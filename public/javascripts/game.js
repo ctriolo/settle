@@ -31,6 +31,18 @@ function makeSVG(tag, attrs) {
   return el;
 }
 
+/**
+ * cancelCurrentAction
+ *
+ * Removes click and hover actions and selectable classes from:
+ * intersections, edges, hexes, roads, settlements, cities
+ */
+function cancelCurrentAction() {
+  $('.intersection,.edge,.hex,.road,.settlement,.city').removeClass(selectable);
+  $('.intersection,.edge,.hex,.road,.settlement,.city').off('hover');
+  $('.intersection,.edge,.hex,.road,.settlement,.city').off('click');
+};
+
 window.onload = function() {
 
   var CONFIG = {
@@ -85,12 +97,26 @@ window.onload = function() {
       socket.send('Closing popup!');
     }
   );
-  $("#settlement").click(
-    function(){ disablePopup();
-      socket.send('Build Settlement');
-      socket.emit('settlementSelect', $(this).attr('id'));
-    }
-  );
+
+  $("#settlement").click(function(){
+    disablePopup();
+    socket.emit('selectSettlement');
+  });
+
+  $("#city").click(function(){
+    disablePopup();
+    socket.emit('selectCity');
+  });
+
+  $("#road").click(function(){
+    disablePopup();
+    socket.emit('selectRoad');
+  });
+
+  $("#development").click(function(){
+    disablePopup();
+    socket.emit('selectDevelopment');
+  });
 
 
   /**
@@ -283,7 +309,121 @@ window.onload = function() {
    * @param   id   num   the edge id to draw an element
    */
   socket.on('startingRoadPlacement', function(id, playerid) {
+    $('#edge' + id).hide();
+    $('#road' + id).show();
+    $('#road' + id).addClass('player'+playerid);
+  });
+
+
+  /**
+   * selectSettlement
+   *
+   * For every interesection id in `ids`:
+   *   - Highlight the intersection
+   *   - Add an on click function the sends `buildSettlement` and
+   *     returns the intersections back to normal.
+   * @param   ids   array   the ids of the valid edges
+   */
+  socket.on('selectSettlement', function(ids) {
+    for (var i = 0; i < ids.length; i++) {
+      $("#intersection"+ids[i]).addClass('selectable');
+      $("#intersection"+ids[i]).hover(function(){$(this).addClass('hover')},
+                                      function(){$(this).removeClass('hover')});
+      $("#intersection"+ids[i]).click(function() {
+        $('.intersection').off('click');
+        $('.intersection').off('hover');
+        $('.intersection').removeClass('selectable');
+        var id = parseInt($(this).attr('id').substring('intersection'.length));
+        socket.emit('buildSettlement', id);
+      });
+    }
+  });
+
+
+  /**
+   * selectCity
+   *
+   * For every intersection id in `ids`:
+   *   - Highlight the settlement
+   *   - Add an on click function the sends `buildCity` and
+   *     returns the settlements back to normal.
+   * @param   ids   array   the ids of the valid intersections
+   */
+  socket.on('selectCity', function(ids) {
+    for (var i = 0; i < ids.length; i++) {
+      $("#settlement"+ids[i]).addClass('selectable');
+      $("#settlement"+ids[i]).hover(function(){$(this).addClass('hover')},
+                                    function(){$(this).removeClass('hover')});
+      $("#settlement"+ids[i]).click(function() {
+        $('.settlement').off('click');
+        $('.settlement').off('hover');
+        $('.settlement').removeClass('selectable');
+        var id = parseInt($(this).attr('id').substring('settlement'.length));
+        socket.emit('buildCity', id);
+      });
+    }
+  });
+
+
+  /**
+   * selectRoad
+   *
+   * For every edge id in `ids`:
+   *   - Highlight the edge
+   *   - Add an on click function the sends `buildRoad` and
+   *     returns the edges back to normal.
+   * @param   ids   array   the ids of the valid edges
+   */
+  socket.on('selectRoad', function(ids) {
+    for (var i = 0; i < ids.length; i++) {
+      $("#edge"+ids[i]).addClass('selectable');
+      $("#edge"+ids[i]).hover(function(){$(this).addClass('hover')},
+                              function(){$(this).removeClass('hover')});
+      $("#edge"+ids[i]).click(function() {
+        $('.edge').off('click');
+        $('.edge').off('hover');
+        $('.edge').removeClass('selectable');
+        var id = parseInt($(this).attr('id').substring('edge'.length));
+        socket.emit('buildRoad', id);
+      });
+    }
+  });
+
+
+  /**
+   * buildSettlement
+   *
+   * Show the svg element that represents a settlement at the intersection id
+   * @param   id   num   the intersection id to show the settlement at
+   */
+  socket.on('buildSettlement', function(id, playerid) {
     $('#intersection' + id).hide();
+    $('#settlement' + id).show();
+    $('#settlement' + id).addClass('player'+playerid);
+  });
+
+
+  /**
+   * buildCity
+   *
+   * Show the svg element that represents a city at the intersection id
+   * @param   id   num   the intersection id to show the city at
+   */
+  socket.on('buildCity', function(id, playerid) {
+    $('#settlement' + id).hide();
+    $('#city' + id).show();
+    $('#city' + id).addClass('player'+playerid);
+  });
+
+
+  /**
+   * buildRoad
+   *
+   * Show the svg element that represents a road at the edge id
+   * @param   id   num   the edge id to show the road at
+   */
+  socket.on('buildRoad', function(id, playerid) {
+    $('#edge' + id).hide();
     $('#road' + id).show();
     $('#road' + id).addClass('player'+playerid);
   });

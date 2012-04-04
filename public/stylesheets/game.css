@@ -164,7 +164,7 @@ body {
   font-weight: 700;
   display: block;
 }
-#settlement, #city, #road, #ship, #devcard {
+#settlement, #city, #road, #ship, #development {
   height: 60%;
   top: 15%;
   width: 17%;
@@ -186,7 +186,7 @@ body {
 #ship {
   left: 61%;
 }
-#devcard {
+#development {
   left: 81%;
 }
 .buildResource {

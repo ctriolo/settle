@@ -417,7 +417,7 @@ Game.prototype.getValidRoadEdges = function(user_id) {
 Game.prototype.canBuildSettlement = function(user_id) {
   var player_id = this._translate(user_id);
   var valid_locs = this.board.getValidSettlementIntersections(player_id).length > 0;
-  var pieces_left = this.players[player].unbuilt_settlements > 0;
+  var pieces_left = this.players[player_id].unbuilt_settlements > 0;
   var can_afford = this._canAfford(player_id, SETTLEMENT_COST);
 
   return valid_locs && can_afford && pieces_left;
@@ -434,7 +434,7 @@ Game.prototype.canBuildSettlement = function(user_id) {
 Game.prototype.canBuildCity = function(user_id) {
   var player_id = this._translate(user_id);
   var valid_locs = this.board.getValidCityIntersections(player_id).length > 0;
-  var pieces_left = this.players[player].unbuilt_cities > 0;
+  var pieces_left = this.players[player_id].unbuilt_cities > 0;
   var can_afford = this._canAfford(player_id, CITY_COST);
 
   return valid_locs && can_afford && pieces_left;
@@ -451,7 +451,7 @@ Game.prototype.canBuildCity = function(user_id) {
 Game.prototype.canBuildRoad = function(user_id) {
   var player_id = this._translate(user_id);
   var valid_locs = this.board.getValidRoadEdges(player_id).length > 0;
-  var pieces_left = this.players[player].unbuilt_roads > 0;
+  var pieces_left = this.players[player_id].unbuilt_roads > 0;
   var can_afford = this._canAfford(player_id, ROAD_COST);
 
   return valid_locs && can_afford && pieces_left;
@@ -580,7 +580,7 @@ Game.prototype.buildSettlement = function(user_id, intersection_id) {
   if (!this.canBuildSettlement(user_id)) throw 'You are not able to build a settlement!';
 
   this.players[player_id].unbuilt_settlements--;
-  this._subtactResources(player_id, SETTLEMENT_COST);
+  this._subtractResources(player_id, SETTLEMENT_COST);
   this.board.buildSettlement(player_id, intersection_id);
 };
 
@@ -601,7 +601,7 @@ Game.prototype.buildCity = function(user_id, intersection_id) {
 
   this.players[player_id].unbuilt_settlements++;
   this.players[player_id].unbuilt_cities--;
-  this._subtactResources(player_id, CITY_COST);
+  this._subtractResources(player_id, CITY_COST);
   this.board.buildCity(player_id, intersection_id);
 };
 
@@ -621,7 +621,7 @@ Game.prototype.buildRoad = function(user_id, edge_id) {
   if (!this.canBuildRoad(user_id)) throw 'You are not able to build a road!';
 
   this.players[player_id].unbuilt_roads--;
-  this._subtactResources(player_id, ROAD_COST);
+  this._subtractResources(player_id, ROAD_COST);
   this.board.buildRoad(player_id, edge_id);
 }
 
@@ -639,7 +639,7 @@ Game.prototype.buildDevelopment = function(user_id) {
   this._validatePhase(PHASE.MAIN);
   if (!this.canBuildDevelopment(user_id)) throw 'You are not able to build a development!';
 
-  this._subtactResources(player_id, DEVELOPMENT_COST);
+  this._subtractResources(player_id, DEVELOPMENT_COST);
   // var card = this.development_cards.pop();
   // this.players[player_id].push(card);
 
