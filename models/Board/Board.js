@@ -705,6 +705,117 @@ Board.prototype.placeStartingRoad = function(player_id, edge_id) {
 
 
 /**
+ * getValidSettlementIntersections
+ *
+ * Returns the intersection ids of the all the valid places
+ * a settlement can be built for the player with `player_id`
+ *
+ * @param  player_id  num    the id of the player
+ * @return            array  the array of ids (nums)
+ */
+Board.prototype.getValidSettlementIntersections = function(player_id) {
+  var intersection_ids = [];
+
+  // For every intersection
+  for (var i = 0; i < this.inters.length; i++) {
+    for (var j = 0; j < this.inters[i].length; j++) {
+      var intersection = this.inters[i][j];
+
+      // Check that it's active and there is nothing on it
+      if (!intersection.isActive(this) && intersection.token) continue;
+
+      // Check that there are no settlements or cities 1 edge away
+      var can_build = true;
+      var neighbors  = intersection.iNeighbors(this);
+      for (var dir in neighbors) {
+        can_build = can_build && !neighbors[dir].token;
+      }
+      if (!can_build) continue;
+
+      // At least one of player_id's roads leads to this intersection
+      // TODO: Check that the road is not cut off from a settlement
+      can_build = false;
+      var edges  = intersection.iNeighbors(this);
+      for (var dir in edges) {
+        if (edges[dir].token && edges[dir].token.player == player_id) {
+          can_build = true;
+        }
+      }
+
+      if (can_build) intersection_ids.push(intersection.id);
+    }
+  }
+
+  return intersection_ids;
+};
+
+
+/**
+ * getValidCityIntersections
+ *
+ * Returns the intersection ids of the all the valid places
+ * a city can be built for the player with `player_id`
+ *
+ * @param  player_id  num    the id of the player
+ * @return            array  the array of ids (nums)
+ */
+Board.prototype.getValidCityIntersections = function(player_id) {
+  var intersection_ids = [];
+
+  // For every intersection
+  for (var i = 0; i < this.inters.length; i++) {
+    for (var j = 0; j < this.inters[i].length; j++) {
+      var intersection = this.inters[i][j];
+      // Check that it is:
+      if (intersection.isActive(this) &&                 // active
+          intersection.token &&                          // has a token
+          intersection.token.type == TOKEN.SETTLEMENT && // is a settlement
+          intersection.token.player == player_id ) {     // is the player's
+        intersection_ids.push(intersection.id);
+      }
+    }
+  }
+
+  return intersection_ids;
+};
+
+
+/**
+ * getValidRoadEdges
+ *
+ * Returns the edge ids of the all the valid places
+ * a road can be built for the player with `player_id`
+ *
+ * @param  player_id  num    the id of the player
+ * @return            array  the array of ids (nums)
+ */
+Board.prototype.getValidRoadEdges = function(player_id) {
+  var edge_ids = [];
+
+  var edges = this.allEdges();
+  for (var i = 0; i < edges.length; i++) {
+
+    // Check that it's active and there is nothing on it
+    if (!edges[i].isActive(this) && edges[i].token) continue;
+
+
+    // At least one of player_id's roads leads to this road
+    // TODO: Check that the road is not cut off from a settlement
+    var can_build = false;
+    var neighbors  = edges[i].eNeighbors(this);
+    for (var dir in neighbors) {
+      var edge = neighbors[dir];
+      can_build = can_build || (edge.token && edge.token.player == player_id);
+    }
+
+    if (can_build) edge_ids.push(edges[i].id);
+  }
+
+  return edge_ids;
+};
+
+
+/**
  * getNumberOfSettlements
  *
  * Get the number of settlements a player has on the board

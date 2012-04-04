@@ -320,6 +320,46 @@ Game.prototype.getValidStartingRoadEdges = function(user_id) {
   return this.board.getValidStartingRoadEdges(player_id);
 };
 
+
+/**
+ * getValidSettlementIntersections
+ *
+ * Return the valid settlement intersections for user_id in the
+ * for of an array of intersection ids.
+ * @return   array   the array of intersection ids
+ */
+Game.prototype.getValidSettlementIntersections = function(user_id) {
+  var player_id = this._translate(user_id);
+  return this.board.getValidSettlementIntersections(player_id);
+};
+
+
+/**
+ * getValidCityIntersections
+ *
+ * Return the valid city intersections for user_id in the
+ * for of an array of intersection ids.
+ * @return   array   the array of intersection ids
+ */
+Game.prototype.getValidCityIntersections = function(user_id) {
+  var player_id = this._translate(user_id);
+  return this.board.getValidCityIntersections(player_id);
+};
+
+
+/**
+ * getValidRoadEdges
+ *
+ * Return the valid starting settlement edges for user_id in the
+ * for of an array of edge ids.
+ * @return   array   the array of edge ids
+ */
+Game.prototype.getValidRoadEdges = function(user_id) {
+  var player_id = this._translate(user_id);
+  return this.board.getValidRoadEdges(player_id);
+};
+
+
 // Modifiers
 
 
@@ -508,6 +548,10 @@ function main() {
   for (var i = USER_IDS.length-1; i >= 0; i--) {
     pick_settlement_and_road(game, USER_IDS[i], true);
   }
+
+  console.log(game.getValidSettlementIntersections(USER_IDS[2]));
+  console.log(game.getValidCityIntersections(USER_IDS[2]));
+  console.log(game.getValidRoadEdges(USER_IDS[2]));
 
   console.log(game);
 };
