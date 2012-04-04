@@ -28,8 +28,11 @@ for port in board.ports
   | </g>
 for edge in board.edges
   | <line id="edge#{edge.index}" class="edge" x1="#{edge.x0}" y1="#{edge.y0}" x2="#{edge.x1}" y2="#{edge.y1}" />
+  | <line id="road#{edge.index}" class="road" x1="#{edge.x0}" y1="#{edge.y0}" x2="#{edge.x1}" y2="#{edge.y1}" />
 for intersection in board.intersections
   | <circle id="intersection#{intersection.index}" class="intersection" cx="#{intersection.x}" cy="#{intersection.y}" r="6" />
+  | <circle id="settlement#{intersection.index}" class="settlement" cx="#{intersection.x}" cy="#{intersection.y}" r="15" />
+  | <circle id="city#{intersection.index}" class="city" cx="#{intersection.x}" cy="#{intersection.y}" r="25" />
 
 // DEBUGGING ELEMENTS
 

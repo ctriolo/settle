@@ -237,16 +237,9 @@ window.onload = function() {
    * @param   id   num   the interesection id to draw an element
    */
   socket.on('startingSettlementPlacement', function(id, playerid) {
-    var x = $('#intersection' + id).attr('cx');
-    var y = $('#intersection' + id).attr('cy');
-    var settlement = makeSVG('circle', {
-      id: 'settlement' + id,
-      cx: x,
-      cy : y,
-      fill: player_colors[playerid],
-      r: '15'
-    });
-    $('#board').append(settlement);
+    $('#intersection' + id).hide();
+    $('#settlement' + id).show();
+    $('#settlement' + id).addClass('player'+playerid);
   });
 
 
@@ -284,21 +277,11 @@ window.onload = function() {
    * @param   id   num   the edge id to draw an element
    */
   socket.on('startingRoadPlacement', function(id, playerid) {
-    var x1 = $('#edge' + id).attr('x1');
-    var y1 = $('#edge' + id).attr('y1');
-    var x2 = $('#edge' + id).attr('x2');
-    var y2 = $('#edge' + id).attr('y2');
-    var road = makeSVG('line', {
-      id: 'road' + id,
-      'x1': x1,
-      'y1': y1,
-      'x2': x2,
-      'y2': y2,
-      'stroke': player_colors[playerid],
-      'stroke-width': 10,
-    });
-    $('#board').append(road);
+    $('#intersection' + id).hide();
+    $('#road' + id).show();
+    $('#road' + id).addClass('player'+playerid);
   });
+
 
   // Dice + Resources
 

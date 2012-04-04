@@ -140,6 +140,89 @@
 
 
 /**
+ * Settlements
+ */
+
+#board circle.settlement {
+  stroke-width: 0;
+}
+
+#board circle.settlement.hover {
+  fill: white;
+}
+
+#board circle.settlement.selectable {
+  fill: grey;
+}
+
+#board circle.settlement { display: none; }
+
+
+/**
+ * Cities
+ */
+
+#board circle.city {
+  stroke-width: 10;
+  stroke: black;
+}
+
+#board circle.city.hover {
+  fill: white;
+}
+
+#board circle.city.selectable {
+  fill: grey;
+}
+
+#board circle.city { display: none; }
+
+
+/**
+ * Roads
+ */
+
+#board line.road {
+  stroke-width: 10;
+}
+
+#board line.road.hover {
+  stroke: white;
+}
+
+#board line.road.selectable {
+  stroke: grey;
+}
+
+#board line.road { display: none; }
+
+
+/**
+ * Player Colors
+ */
+
+/* Player 0 */
+#board line.road.player0 { stroke: blue; }
+#board circle.city.player0,
+#board circle.settlement.player0 { fill: blue; }
+
+/* Player 1 */
+#board line.road.player1 { stroke: yellow; }
+#board circle.city.player1,
+#board circle.settlement.player1 { fill: yellow; }
+
+/* Player 0 */
+#board line.road.player2 { stroke: red; }
+#board circle.city.player2,
+#board circle.settlement.player2 { fill: red; }
+
+/* Player 0 */
+#board line.road.player3 { stroke: orange; }
+#board circle.city.player3,
+#board circle.settlement.player3 { fill: orange; }
+
+
+/**
  * Debugging Info
  */
 
