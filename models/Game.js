@@ -209,6 +209,19 @@ Game.prototype._next = function() {
 };
 
 /**
+ * _addResources (private)
+ *
+ * Does any resource math needed.
+ * @param   player_id   num      the id of the player
+ * @param   resources   object   the assoc array of resource values
+ */
+Game.prototype._addResources = function(player_id, resources) {
+  for (var resource in resources) {
+    this.players[player_id].resource_cards[resource] += resources[resource];
+  };
+};
+
+/**
  * Public Interface
  */
 
@@ -363,7 +376,12 @@ Game.prototype.placeStartingSettlement = function(user_id, intersection_id) {
   this.players[player_id].unbuilt_settlements--;
   this.board.placeStartingSettlement(player_id, intersection_id);
 
+  var is_second = 2 == this.board.getNumberOfSettlements(player_id);
+  var resources = (is_second) ? this.board.getStartingResources(intersection_id) : {};
+  this._addResources(player_id, resources);
+
   this._next();
+  return resources;
 };
 
 
@@ -405,12 +423,8 @@ Game.prototype.rollDice = function(user_id) {
   var resources = this.board.getResources(total);
 
   // Add resources to player hand
-  for (var i = 0; i < this.players.length; i++) {
-    if (i in resources) {
-      for (var resource in resources[i]) {
-        this.players[i].resource_cards[resource] += resources[i][resource]
-      }
-    }
+  for (var player in resources) {
+    this._addResources(player, resources[player]);
   }
 
   // Construct return object
@@ -437,7 +451,7 @@ function main() {
     if (print) console.log('The valid starting settlement locations for player ' + player + ' is:' +
                 JSON.stringify(valid_intersection_ids));
     var settlement_choice = valid_intersection_ids[0];
-    game.placeStartingSettlement(player, settlement_choice);
+    console.log(game.placeStartingSettlement(player, settlement_choice));
     if (print) console.log(game.board._getIntersection(settlement_choice).token);
     var valid_edge_ids = game.getValidStartingRoadEdges(player);
     if (print) console.log('The valid starting road locations for player ' + player + ' is:' +
@@ -448,6 +462,9 @@ function main() {
     if (print) console.log('Player 0 Settlements: ' + game.board.getNumberOfSettlements(0));
     if (print) console.log('Player 1 Settlements: ' + game.board.getNumberOfSettlements(1));
     if (print) console.log('Player 2 Settlements: ' + game.board.getNumberOfSettlements(2));
+    if (print) console.log('Player 0 Resources: ' + JSON.stringify(game.players[0].resource_cards));
+    if (print) console.log('Player 1 Resources: ' + JSON.stringify(game.players[1].resource_cards));
+    if (print) console.log('Player 2 Resources: ' + JSON.stringify(game.players[2].resource_cards));
   };
 
   var game = new Game();

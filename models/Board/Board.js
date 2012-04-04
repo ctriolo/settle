@@ -741,4 +741,34 @@ Board.prototype.getResources = function(number) {
   }
 
   return resources;
-}
+};
+
+
+/**
+ * getStartingResources
+ *
+ * Return an object with the arrays of resourses the players would get
+ * @param   intersection_id   num      the intersection with the settlement
+ * @return                    object   resourses amounts
+ */
+Board.prototype.getStartingResources = function(intersection_id) {
+  var resources = {};
+
+  var intersection = this._getIntersection(intersection_id);
+  var hexes = intersection.hNeighbors(this);
+  for (var direction in hexes) {
+    if (hexes[direction].isResource()) {
+      var resource = HEX_TYPE_TO_RESOURCE[hexes[direction].type];
+
+      // Initialize Resource
+      if (!(resource in resources)) {
+        resources[resource] = 0;
+      }
+
+      // Add one resource
+      resources[resource] += 1;
+    }
+  }
+
+  return resources;
+};

@@ -77,9 +77,11 @@ module.exports = function(sockets) {
       var game = gp.findById(game_id);
       if (DEBUG) { console.log('name:startingSettlementPlacement ', user_id, game); }
       console.log(intersection_id);
-      game.placeStartingSettlement(user_id, intersection_id);
+      var resources = {}
+      resources[user_id] = game.placeStartingSettlement(user_id, intersection_id);
       gp.save(game);
       sockets.to(game_id).emit('startingSettlementPlacement', intersection_id, game._translate(user_id));
+      sockets.to(game_id).emit('rollDiceResults', 0, resources); // GIANT HACK TODO: FIXME
       sockets.to(game.whoseTurn()).emit('startingRoadSelect',
         game.getValidStartingRoadEdges(game.whoseTurn()));
     });
