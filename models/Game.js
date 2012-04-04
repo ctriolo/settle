@@ -229,6 +229,20 @@ Game.prototype._addResources = function(player_id, resources) {
 };
 
 /**
+ * _canAfford (private)
+ *
+ * Can the player afford the cost
+ * @param   player_id   num      the id of the player
+ * @param   cost        object   the assoc array of resource values
+ */
+Game.prototype._canAfford = function(player_id, cost) {
+  for (var resource in cost) {
+    if (this.players[player_id].resource_cards[resource] < cost[resource]) return false;
+  }
+  return true;
+};
+
+/**
  * Public Interface
  */
 
@@ -357,6 +371,91 @@ Game.prototype.getValidCityIntersections = function(user_id) {
 Game.prototype.getValidRoadEdges = function(user_id) {
   var player_id = this._translate(user_id);
   return this.board.getValidRoadEdges(player_id);
+};
+
+
+/**
+ * canBuildSettlement
+ *
+ * Return whether or not the user can build a settlement. This both means that
+ * there is a location for him to build and that he can afford it.
+ * @param   user_id   string   the user we are checking for
+ */
+Game.prototype.canBuildSettlement = function(user_id) {
+  var SETTLEMENT_COST = {};
+  SETTLEMENT_COST[RESOURCE.WOOD]  = 1;
+  SETTLEMENT_COST[RESOURCE.BRICK] = 1;
+  SETTLEMENT_COST[RESOURCE.WHEAT] = 1;
+  SETTLEMENT_COST[RESOURCE.SHEEP] = 1;
+
+  var player_id = this._translate(user_id);
+  var valid_locs = this.board.getValidSettlementIntersections(player_id).length > 0;
+  var pieces_left = this.players[player].unbuilt_settlements > 0;
+  var can_afford = this._canAfford(player_id, SETTLEMENT_COST);
+
+  return valid_locs && can_afford && pieces_left;
+};
+
+
+/**
+ * canBuildCity
+ *
+ * Return whether or not the user can build a road. This both means that
+ * there is a location for him to build and that he can afford it.
+ * @param   user_id   string   the user we are checking for
+ */
+Game.prototype.canBuildCity = function(user_id) {
+  var CITY_COST = {};
+  CITY_COST[RESOURCE.STONE] = 3;
+  CITY_COST[RESOURCE.WHEAT] = 2;
+
+  var player_id = this._translate(user_id);
+  var valid_locs = this.board.getValidCityIntersections(player_id).length > 0;
+  var pieces_left = this.players[player].unbuilt_cities > 0;
+  var can_afford = this._canAfford(player_id, CITY_COST);
+
+  return valid_locs && can_afford && pieces_left;
+};
+
+
+/**
+ * canBuildRoad
+ *
+ * Return whether or not the user can build a road. This both means that
+ * there is a location for him to build and that he can afford it.
+ * @param   user_id   string   the user we are checking for
+ */
+Game.prototype.canBuildRoad = function(user_id) {
+  var ROAD_COST = {};
+  ROAD_COST[RESOURCE.WOOD]  = 1;
+  ROAD_COST[RESOURCE.BRICK] = 1;
+
+  var player_id = this._translate(user_id);
+  var valid_locs = this.board.getValidRoadEdges(player_id).length > 0;
+  var pieces_left = this.players[player].unbuilt_roads > 0;
+  var can_afford = this._canAfford(player_id, ROAD_COST);
+
+  return valid_locs && can_afford && pieces_left;
+};
+
+
+/**
+ * canBuildDevelopment
+ *
+ * Return whether or not the user can build a development card.
+ * @param   user_id   string   the user we are checking for
+ */
+Game.prototype.canBuildDevelopment = function(user_id) {
+  var DEVELOPMENT_COST = {};
+  DEVELOPMENT_COST[RESOURCE.SHEEP] = 1;
+  DEVELOPMENT_COST[RESOURCE.STONE] = 1;
+  DEVELOPMENT_COST[RESOURCE.WHEAT] = 1;
+
+  var player_id = this._translate(user_id);
+  var can_afford = this._canAfford(player_id, DEVELOPMENT_COST);
+  var pieces_left = this.development_cards.length > 0;
+
+  return can_afford && pieces_left;
 };
 
 
