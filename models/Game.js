@@ -51,6 +51,26 @@ DEVELOPMENT = {
   CHAPEL:         'Chapel',
 }
 
+SETTLEMENT_COST = {};
+SETTLEMENT_COST[RESOURCE.WOOD]  = 1;
+SETTLEMENT_COST[RESOURCE.BRICK] = 1;
+SETTLEMENT_COST[RESOURCE.WHEAT] = 1;
+SETTLEMENT_COST[RESOURCE.SHEEP] = 1;
+
+CITY_COST = {};
+CITY_COST[RESOURCE.STONE] = 3;
+CITY_COST[RESOURCE.WHEAT] = 2;
+
+ROAD_COST = {};
+ROAD_COST[RESOURCE.WOOD]  = 1;
+ROAD_COST[RESOURCE.BRICK] = 1;
+
+DEVELOPMENT_COST = {};
+DEVELOPMENT_COST[RESOURCE.SHEEP] = 1;
+DEVELOPMENT_COST[RESOURCE.STONE] = 1;
+DEVELOPMENT_COST[RESOURCE.WHEAT] = 1;
+
+
 /**
  * Helper Objects
  */
@@ -229,6 +249,19 @@ Game.prototype._addResources = function(player_id, resources) {
 };
 
 /**
+ * _subtractResources (private)
+ *
+ * Does any resource math needed.
+ * @param   player_id   num      the id of the player
+ * @param   resources   object   the assoc array of resource values
+ */
+Game.prototype._subtractResources = function(player_id, resources) {
+  for (var resource in resources) {
+    this.players[player_id].resource_cards[resource] -= resources[resource];
+  };
+};
+
+/**
  * _canAfford (private)
  *
  * Can the player afford the cost
@@ -382,12 +415,6 @@ Game.prototype.getValidRoadEdges = function(user_id) {
  * @param   user_id   string   the user we are checking for
  */
 Game.prototype.canBuildSettlement = function(user_id) {
-  var SETTLEMENT_COST = {};
-  SETTLEMENT_COST[RESOURCE.WOOD]  = 1;
-  SETTLEMENT_COST[RESOURCE.BRICK] = 1;
-  SETTLEMENT_COST[RESOURCE.WHEAT] = 1;
-  SETTLEMENT_COST[RESOURCE.SHEEP] = 1;
-
   var player_id = this._translate(user_id);
   var valid_locs = this.board.getValidSettlementIntersections(player_id).length > 0;
   var pieces_left = this.players[player].unbuilt_settlements > 0;
@@ -405,10 +432,6 @@ Game.prototype.canBuildSettlement = function(user_id) {
  * @param   user_id   string   the user we are checking for
  */
 Game.prototype.canBuildCity = function(user_id) {
-  var CITY_COST = {};
-  CITY_COST[RESOURCE.STONE] = 3;
-  CITY_COST[RESOURCE.WHEAT] = 2;
-
   var player_id = this._translate(user_id);
   var valid_locs = this.board.getValidCityIntersections(player_id).length > 0;
   var pieces_left = this.players[player].unbuilt_cities > 0;
@@ -426,10 +449,6 @@ Game.prototype.canBuildCity = function(user_id) {
  * @param   user_id   string   the user we are checking for
  */
 Game.prototype.canBuildRoad = function(user_id) {
-  var ROAD_COST = {};
-  ROAD_COST[RESOURCE.WOOD]  = 1;
-  ROAD_COST[RESOURCE.BRICK] = 1;
-
   var player_id = this._translate(user_id);
   var valid_locs = this.board.getValidRoadEdges(player_id).length > 0;
   var pieces_left = this.players[player].unbuilt_roads > 0;
@@ -446,11 +465,6 @@ Game.prototype.canBuildRoad = function(user_id) {
  * @param   user_id   string   the user we are checking for
  */
 Game.prototype.canBuildDevelopment = function(user_id) {
-  var DEVELOPMENT_COST = {};
-  DEVELOPMENT_COST[RESOURCE.SHEEP] = 1;
-  DEVELOPMENT_COST[RESOURCE.STONE] = 1;
-  DEVELOPMENT_COST[RESOURCE.WHEAT] = 1;
-
   var player_id = this._translate(user_id);
   var can_afford = this._canAfford(player_id, DEVELOPMENT_COST);
   var pieces_left = this.development_cards.length > 0;
@@ -549,6 +563,89 @@ Game.prototype.placeStartingRoad = function(user_id, edge_id) {
 
   this._next();
 };
+
+
+/**
+ * buildSettlement
+ *
+ * Builds a starting settlement at intersection_id for user_id
+ * Throws an exception if the action is invalid.
+ * @param   user_id           string   the user who wants to place a intersection
+ * @param   intersection_id   num      the location to place the intersection
+ */
+Game.prototype.buildSettlement = function(user_id, intersection_id) {
+  var player_id = this._translate(user_id);
+  this._validatePlayer(player_id);
+  this._validatePhase(PHASE.MAIN);
+  if (!this.canBuildSettlement(user_id)) throw 'You are not able to build a settlement!';
+
+  this.players[player_id].unbuilt_settlements--;
+  this._subtactResources(player_id, SETTLEMENT_COST);
+  this.board.buildSettlement(player_id, intersection_id);
+};
+
+
+/**
+ * buildCity
+ *
+ * Builds a city at intersection_id for user_id
+ * Throws an exception if the action is invalid.
+ * @param   user_id           string   the user who wants to place a intersection
+ * @param   intersection_id   num      the location to place the intersection
+ */
+Game.prototype.buildCity = function(user_id, intersection_id) {
+  var player_id = this._translate(user_id);
+  this._validatePlayer(player_id);
+  this._validatePhase(PHASE.MAIN);
+  if (!this.canBuildCity(user_id)) throw 'You are not able to build a city!';
+
+  this.players[player_id].unbuilt_settlements++;
+  this.players[player_id].unbuilt_cities--;
+  this._subtactResources(player_id, CITY_COST);
+  this.board.buildCity(player_id, intersection_id);
+};
+
+
+/**
+ * buildRoad
+ *
+ * Builds a road at edge_id for user_id
+ * Throws an exception if the action is invalid.
+ * @param   user_id   string   the user who wants to place a road
+ * @param   edge_id   num      the location to place the road
+ */
+Game.prototype.buildRoad = function(user_id, edge_id) {
+  var player_id = this._translate(user_id);
+  this._validatePlayer(player_id);
+  this._validatePhase(PHASE.MAIN);
+  if (!this.canBuildRoad(user_id)) throw 'You are not able to build a road!';
+
+  this.players[player_id].unbuilt_roads--;
+  this._subtactResources(player_id, ROAD_COST);
+  this.board.buildRoad(player_id, edge_id);
+}
+
+
+/**
+ * buildDevelopment
+ *
+ * Builds a development for user_id
+ * Throws an exception if the action is invalid.
+ * @param   user_id   string   the user who wants to place a road
+ */
+Game.prototype.buildDevelopment = function(user_id) {
+  var player_id = this._translate(user_id);
+  this._validatePlayer(player_id);
+  this._validatePhase(PHASE.MAIN);
+  if (!this.canBuildDevelopment(user_id)) throw 'You are not able to build a development!';
+
+  this._subtactResources(player_id, DEVELOPMENT_COST);
+  // var card = this.development_cards.pop();
+  // this.players[player_id].push(card);
+
+  throw 'Not implemenented';
+  // return card;
+}
 
 
 /**

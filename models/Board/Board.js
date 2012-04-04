@@ -816,6 +816,63 @@ Board.prototype.getValidRoadEdges = function(player_id) {
 
 
 /**
+ * buildSettlement
+ *
+ * Builds a settlement at intersection_id for player_id
+ * Throws an exception if the action is invalid.
+ * @param   player_id         string   the player who wants to place a intersection
+ * @param   intersection_id   num      the location to place the intersection
+ */
+Board.prototype.buildSettlement = function(player_id, intersection_id) {
+  var valid_ids = this.getValidSettlementIntersections(player_id);
+  if (valid_ids.indexOf(intersection_id) == -1) {
+    throw 'Intersection Id ' + intersection_id + ' is not a valid location to build.'
+  }
+
+  var intersection = this._getIntersection(intersection_id);
+  intersection.token = new Token(player_id, TOKEN.SETTLEMENT);
+};
+
+
+/**
+ * buildCity
+ *
+ * Builds a city at intersection_id for player_id
+ * Throws an exception if the action is invalid.
+ * @param   player_id         string   the player who wants to place a intersection
+ * @param   intersection_id   num      the location to place the intersection
+ */
+Board.prototype.buildCity = function(player_id, intersection_id) {
+  var valid_ids = this.getCityIntersections(player_id);
+  if (valid_ids.indexOf(intersection_id) == -1) {
+    throw 'Intersection Id ' + intersection_id + ' is not a valid location to build.'
+  }
+
+  var intersection = this._getIntersection(intersection_id);
+  intersection.token = new Token(player_id, TOKEN.CITY);
+};
+
+
+/**
+ * buildRoad
+ *
+ * Builds a road at edge_id for player_id
+ * Throws an exception if the action is invalid.
+ * @param   plauer_id   string   the player who wants to place a road
+ * @param   edge_id     num      the location to place the road
+ */
+Board.prototype.buildRoad = function(player_id, edge_id) {
+  var valid_ids = this.getRoadEdges(player_id);
+  if (valid_ids.indexOf(edge_id) == -1) {
+    throw 'Edge Id ' + edge_id + ' is not a valid location to build.'
+  }
+
+  var edge = this._getEdge(edge_id);
+  edge.token = new Token(player_id, TOKEN.ROAD);
+};
+
+
+/**
  * getNumberOfSettlements
  *
  * Get the number of settlements a player has on the board
