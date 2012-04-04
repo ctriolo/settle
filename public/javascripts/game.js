@@ -308,7 +308,7 @@ window.onload = function() {
    * Received the results of the dice roll.
    * @param   number      num      the number rolled
    * @param   resources   object   keys: user ids
-   *                               values: resource arrays
+   *                               values: resource assoc array
    */
   socket.on('rollDiceResults', function(number, resources) {
     // handle robber
@@ -321,11 +321,14 @@ window.onload = function() {
     }
     // Give Resources
     for (var user in resources) {
-      for (var i = 0; i < resources[user].length; i++) {
+      for (var resource in resources[user]) {
         var player = users.indexOf(user);
-        var resource = resources[user][i].toLowerCase();
-        if (user != me) resource = 'resource';
-        $('#player'+player+' .resource-cards').append('<li><div class="'+resource+'-card"</li>');
+        var r = resource.toLowerCase();
+        if (user != me) r = 'resource';
+        for (var i = 0; i < resources[user][resource]; i++) {
+          $('#player'+player+' .resource-cards')
+            .append('<li><div class="'+r+'-card"</li>');
+        }
       }
     }
 
