@@ -125,6 +125,7 @@ module.exports = function(sockets) {
         var ret = game.rollDice(user_id);
         gp.save(game);
         sockets.to(game_id).emit('rollDiceResults', ret.number, ret.resources);
+        socket.emit('canBuild', game.canBuild(user_id));
       } catch (error) {
         socket.send(error);
       }
@@ -232,6 +233,7 @@ module.exports = function(sockets) {
       var game = gp.findById(game_id);
       game.buildSettlement(user_id, intersection_id);
       gp.save(game);
+      socket.emit('canBuild', game.canBuild(user_id));
       sockets.to(game_id).emit('buildSettlement', intersection_id, game._translate(user_id));
     });
 
@@ -249,6 +251,7 @@ module.exports = function(sockets) {
       var game = gp.findById(game_id);
       game.buildCity(user_id, intersection_id);
       gp.save(game);
+      socket.emit('canBuild', game.canBuild(user_id));
       sockets.to(game_id).emit('buildCity', intersection_id, game._translate(user_id));
     });
 
@@ -266,6 +269,7 @@ module.exports = function(sockets) {
       var game = gp.findById(game_id);
       game.buildRoad(user_id, edge_id);
       gp.save(game);
+      socket.emit('canBuild', game.canBuild(user_id));
       sockets.to(game_id).emit('buildRoad', edge_id, game._translate(user_id));
     });
 
