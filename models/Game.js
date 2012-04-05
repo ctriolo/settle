@@ -414,6 +414,23 @@ Game.prototype.getValidRoadEdges = function(user_id) {
 
 
 /**
+ * canBuild
+ *
+ * @param   user_id   string   the user we are checking for
+ * @return            object   associated array of booleans
+ */
+Game.prototype.canBuild = function(user_id) {
+  var can_build = {};
+
+  can_build['Settlement'] =  this.canBuildSettlement(user_id);
+  can_build['City'] =        this.canBuildCity(user_id);
+  can_build['Road'] =        this.canBuildRoad(user_id);
+  can_build['Development'] = this.canBuildSettlement(user_id);
+
+  return can_build;
+}
+
+/**
  * canBuildSettlement
  *
  * Return whether or not the user can build a settlement. This both means that

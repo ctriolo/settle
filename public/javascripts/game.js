@@ -98,16 +98,6 @@ window.onload = function() {
 
 
   /**
-   * Build Menu
-   */
-
-  $("#settlement").click(function(){  socket.emit('selectSettlement');  });
-  $("#city").click(function(){        socket.emit('selectCity');        });
-  $("#road").click(function(){        socket.emit('selectRoad');        });
-  $("#development").click(function(){ socket.emit('selectDevelopment'); });
-
-
-  /**
    * Game Socket Senders
    */
 
@@ -277,6 +267,31 @@ window.onload = function() {
     $('#road' + id).show();
     $('#road' + id).addClass('player'+playerid);
   });
+
+
+  /**
+   * canBuild
+   *
+   * Update the build dropdown list.
+   * @param   can_build   object   associated array of booleans
+   */
+   socket.on('canBuild', function(can_build) {
+     for (var key in can_build) {
+       var building = key.toLowerCase();
+       var emit = 'select'+key;
+       if (can_build[key]) {
+         $('#'+building).removeClass('disabled');
+         $('#'+building).click(function(){
+           var id = $(this).attr('id');
+           id = id.charAt(0).toUpperCase() + id.slice(1);
+           socket.emit('select'+id);
+         });
+       } else {
+         $('#'+building).addClass('disabled');
+         $('#'+building).off('click');
+       }
+     }
+   });
 
 
   /**
