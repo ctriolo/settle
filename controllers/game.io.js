@@ -182,8 +182,8 @@ module.exports = function(sockets) {
       var user_id = socket.handshake.sessionID;
       var game_id = uid_to_gid[user_id];
       var game = gp.findById(game_id);
-      socket.to(user_id).emit('selectSettlement',
-                              game.getValidSettlementIntersections(user_id));
+      socket.emit('selectSettlement',
+                  game.getValidSettlementIntersections(user_id));
     });
 
 
@@ -196,8 +196,8 @@ module.exports = function(sockets) {
       var user_id = socket.handshake.sessionID;
       var game_id = uid_to_gid[user_id];
       var game = gp.findById(game_id);
-      socket.to(user_id).emit('selectCity',
-                              game.getValidCityIntersections(user_id));
+      socket.emit('selectCity',
+                  game.getValidCityIntersections(user_id));
     });
 
 
@@ -210,7 +210,7 @@ module.exports = function(sockets) {
       var user_id = socket.handshake.sessionID;
       var game_id = uid_to_gid[user_id];
       var game = gp.findById(game_id);
-      socket.to(user_id).emit('selectRoad', game.getValidRoadEdges(user_id));
+      socket.emit('selectRoad', game.getValidRoadEdges(user_id));
     });
 
 
@@ -232,7 +232,7 @@ module.exports = function(sockets) {
       var game = gp.findById(game_id);
       game.buildSettlement(user_id, intersection_id);
       gp.save(game);
-      socket.to(game_id).emit('buildSettlement', intersection_id, game._translate(user_id));
+      sockets.to(game_id).emit('buildSettlement', intersection_id, game._translate(user_id));
     });
 
 
@@ -249,7 +249,7 @@ module.exports = function(sockets) {
       var game = gp.findById(game_id);
       game.buildCity(user_id, intersection_id);
       gp.save(game);
-      socket.to(game_id).emit('buildCity', intersection_id, game._translate(user_id));
+      sockets.to(game_id).emit('buildCity', intersection_id, game._translate(user_id));
     });
 
 
@@ -266,7 +266,7 @@ module.exports = function(sockets) {
       var game = gp.findById(game_id);
       game.buildRoad(user_id, edge_id);
       gp.save(game);
-      socket.to(game_id).emit('buildRoad', edge_id, game._translate(user_id));
+      sockets.to(game_id).emit('buildRoad', edge_id, game._translate(user_id));
     });
 
 
