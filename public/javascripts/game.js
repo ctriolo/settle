@@ -85,12 +85,7 @@ window.onload = function() {
    */
 
   // open pop-up on build click
-  $(".build").click(
-      function(){
-      loadPopup();
-      socket.send('Open popup!');
-    }
-  );
+
   $("#popupClose").click(
       function(){
       disablePopup();
@@ -120,26 +115,33 @@ window.onload = function() {
 
 
   /**
-   * Dice
+   * Actions
    */
+
+  // Can't do this in CSS as we'll lose display: inline-block
+  $('.roll-phase, .main-phase').hide();
+
   $(".roll").click(function(){
-    if ($(".roll").css("opacity") === "1") {
-      $(".end").addClass('turn');
-      $(".build").addClass('turn');
-      $(".trade").addClass('turn');
-      $(".roll").removeClass('turn');
-      socket.emit('rollDice');
-    }
+    $('.roll-phase').hide();
+    $('.main-phase').show();
+    socket.emit('rollDice');
   });
 
+  $(".development").click(function(){
+    alert('Not implemented, silly.');
+  });
 
-  /**
-   * End turn
-   */
+  $(".build").click(function(){
+    loadPopup();
+    socket.send('Open popup!');
+  });
+
+  $(".trade").click(function(){
+    alert('Not implemented, silly.');
+  });
+
   $(".end").click(function(){
-    if ($(".end").css("opacity") === "1") {
-      socket.emit('endTurn');
-    }
+    socket.emit('endTurn');
   });
 
 
@@ -504,11 +506,9 @@ window.onload = function() {
 
     // Disable action buttons, enable roll if it's this players turn
     if (!starting_phase) {
-      if (turn_user == me) $(".roll").addClass('turn');
-      else $(".roll").removeClass('turn');
-      $(".end").removeClass('turn');
-      $(".build").removeClass('turn');
-      $(".trade").removeClass('turn');
+      if (turn_user == me) $('.roll-phase').show();
+      else $('.roll-phase').hide();
+      $('.main-phase').hide();
     }
 
     // Remove past highlights, highlight current player

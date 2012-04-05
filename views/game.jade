@@ -19,15 +19,15 @@ block player
     .cardwell
       .cards
         ul.resource-cards
-      .roll
-        <image src="http://www.clker.com/cliparts/6/4/1/6/12456404511653839274badaman_dice.svg.med.png" width="100%"/>
-      .trade
-        <image src="http://farm4.staticflickr.com/3609/3575000735_6ba08467d9.jpg" width="100%"/>
-      .dev_cards
-      .end
-        <image src="http://www.fuzzimo.com/wp-content/uploads/2009/06/tutorial-StopSign-13.png" width="100%"/>
-      .build
-        <image src="http://static.ddmcdn.com/gif/hammer-1.jpg" width="100%"/>
+    .actions
+      .btn-group.roll-phase
+        button.btn.roll Roll
+        button.btn.development Development
+      .btn-group.main-phase
+        button.btn.build Build
+        button.btn.trade Trade
+        button.btn.development Development
+        button.btn.end End
 
 block others
   #player1.player.well
