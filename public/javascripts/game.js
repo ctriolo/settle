@@ -67,12 +67,21 @@ window.onload = function() {
    */
 
   // Can't do this in CSS as we'll lose display: inline-block
-  $('.roll-phase, .main-phase').hide();
+  $('.roll-phase, .main-phase, .robber-phase, .steal-phase').hide();
 
   $(".roll").click(function(){
-    $('.roll-phase').hide();
+    $('.roll-phase, .robber-phase, .steal-phase').hide();
     $('.main-phase').show();
     socket.emit('rollDice');
+  });
+
+  // handle stealing
+  $(".player.well").click(function(){
+    if ($(this).hasClass("enabled")) {
+        var id = parseInt($(this).attr('id').substring('player'.length));
+        socket.emit('steal', users[id]);
+
+   }
   });
 
   $(".development").click(function(){
@@ -386,6 +395,7 @@ window.onload = function() {
 
   // Dice + Resources
 
+
   /**
    * rollDiceResults
    *
@@ -436,6 +446,29 @@ window.onload = function() {
        }
       }
     );
+    
+    socket.on('showRobber', function() {
+      $('.roll-phase, .main-phase, .steal-phase').hide();
+      $('.robber-phase').show();
+    }); 
+    
+    socket.on('showSteal', function(players) {
+      $('.roll-phase, .main-phase, .robber-phase').hide();
+      $('.steal-phase').show();
+      $('.player.well').addClass("disabled");
+      $('#player' + users.indexOf(players[i])).removeClass("disabled");
+      for (var i = 0; i < players.length; i++) {
+        $('#player' + users.indexOf(players[i])).removeClass("disabled");
+        $('#player' + users.indexOf(players[i])).addClass("enabled"); // enable stealing from these player wells
+      }
+    }); 
+    socket.on('showMain', function() {
+      $('.roll-phase, .robber-phase, .steal-phase').hide();
+      $('.main-phase').show();
+      $('.player.well').removeClass("disabled");
+      $('.player.well').removeClass("enabled");
+    }); 
+
    /**
      * Move Robber
      * handles robber moving css
@@ -446,6 +479,15 @@ window.onload = function() {
       $("#hex" + start).children(".numberToken").removeClass("robber");
       $("#hex" + start).children(".numberToken").removeClass("highlight");
       $("#hex" + end).children(".numberToken").addClass("robber");
+    });
+
+   /**
+     * stealCard
+     * handles card stealing css
+     */
+    socket.on('stealCard', function(thief, player_id, resource) {
+      $('.roll-phase, .robber-phase, .steal-phase').hide();
+      $('.main-phase').show();
     });
 
   /**
@@ -461,7 +503,7 @@ window.onload = function() {
     if (!starting_phase) {
       if (turn_user == me) $('.roll-phase').show();
       else $('.roll-phase').hide();
-      $('.main-phase').hide();
+      $('.main-phase, .robber-phase, .steal-phase').hide();
     }
 
     // Remove past highlights, highlight current player

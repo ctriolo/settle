@@ -124,6 +124,8 @@ module.exports = function(sockets) {
       try {
         var ret = game.rollDice(user_id);
         gp.save(game);
+        if (ret.number == 7)
+          sockets.to(game.whoseTurn()).emit('showRobber');
         sockets.to(game_id).emit('rollDiceResults', ret.number, ret.resources);
       } catch (error) {
         socket.send(error);
@@ -141,13 +143,42 @@ module.exports = function(sockets) {
       var game = gp.findById(game_id);
       try {
         var old = game.getRobber();
-        var ret = game.updateRobber(id);
+        var players = game.updateRobber(user_id, id);
         gp.save(game);
+
         sockets.to(game_id).emit('moveRobber', old, id);
+        if (players.length > 0)
+          sockets.to(game.whoseTurn()).emit('showSteal', players);
+        else {
+          sockets.send("No one to steal from");
+          sockets.to(game.whoseTurn()).emit('showMain');
+        }
       } catch (error) {
         socket.send(error);
       }
     });
+
+    /**
+      * steal
+      * steals resource from given player
+      * @param	 thief	user stealing
+      * @param player_id  user being stolen from
+      */
+    socket.on('steal', function(player_id) {
+      var user_id = socket.handshake.sessionID;
+      var game_id = uid_to_gid[user_id];
+      var game = gp.findById(game_id);
+      try {
+        var resource = game.steal(player_id);
+        gp.save(game);
+        sockets.to(game.whoseTurn()).emit('stealCard', game.whoseTurn(), player_id,  resource);
+        sockets.to(game.whoseTurn()).emit('showMain');
+      } catch (error) {
+        socket.send(error);
+      }
+    });
+
+
 
     /**
      * endTurn
