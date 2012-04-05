@@ -49,6 +49,23 @@ body {
   display: inline-block;
 }
 
+.actions .btn-toolbar {
+    margin-bottom: 0px;
+}
+
+.actions .btn {
+  width: 120px;
+}
+
+.actions .dropdown-menu {
+  text-align: left;
+}
+
+.actions span.wheat { color: khaki }
+.actions span.wood  { color: forestgreen }
+.actions span.sheep { color: lime }
+.actions span.brick { color: orangered }
+.actions span.stone { color: grey }
 
 /**
  * Starting Dramatics
@@ -84,7 +101,7 @@ body {
   position: relative;
   border: 4px: solid;
   border-color: black;
-  z-index: 3;
+
 }
 .name {
   color: #333;
@@ -123,82 +140,6 @@ body {
   width: 50%;
   height: 50px;
 }
-
-/* building popup */
-#popupBackground {
-  display: none;
-  position: fixed;
-  height: 100%;
-  width: 100%;
-  top:0;
-  left:0;
-  background:#000000;
-  border: 1px solid #cecece;
-  z-index: 1;
-}
-
-#buildPopup {
-  display: none;
-  position: fixed;
-  height: 30%;
-  width: 60%;
-  top: 35%;
-  left: 20%;
-  background:#FFFFFF;
-  border: 3px solid #cecece;
-  z-index: 2;
-  margin-top:12px;
-  font-size:13px;
-}
-
-#popupClose {
-  font-size: 20px;
-  right: 6px;
-  top: 4px;
-  position: absolute;
-  color: #6fa5fd;
-  font-weight: 700;
-  display: block;
-}
-#settlement, #city, #road, #ship, #development {
-  height: 60%;
-  top: 15%;
-  width: 17%;
-  position: absolute;
-  background-color: beige;
-  moz-border-radius: 10px;
-  border-radius: 10px;
-  border: 3px solid rgba(0, 0, 0, 0.07);
-}
-#settlement {
-  left: 1%;
-}
-#city {
-  left: 21%;
-}
-#road {
-  left: 41%;
-}
-#ship {
-  left: 61%;
-}
-#development {
-  left: 81%;
-}
-.buildResource {
-  float: left;
-  width: 15%;
-  height: 18%;
-  bottom: 5%;
-  moz-border-radius: 15px;
-  border-radius: 15px;
-  border: 3px solid rgba(0, 0, 0, 0.5);
-}
-.buildResource.wood { background: url(#wood) forestgreen; }
-.buildResource.brick { background: red; }
-.buildResource.sheep { background: url(#brick) lime; }
-.buildResource.wheat { background: url(#brick) yellow; }
-.buildResource.stone { background: url(#brick) black; }
 
 /**
  * Resource Cards

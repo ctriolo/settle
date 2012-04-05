@@ -20,14 +20,55 @@ block player
       .cards
         ul.resource-cards
     .actions
-      .btn-group.roll-phase
-        button.btn.roll Roll
-        button.btn.development Development
-      .btn-group.main-phase
-        button.btn.build Build
-        button.btn.trade Trade
-        button.btn.development Development
-        button.btn.end End
+      .btn-toolbar.roll-phase
+        .btn-group
+          button.btn.roll Roll
+        .btn-group
+          button.btn.development Development
+      .btn-toolbar.main-phase
+        .btn-group
+          button.btn.dropdown-toggle(data-toggle="dropdown")
+            | Build <span class="caret" />
+          ul.dropdown-menu
+            li
+              a#settlement
+                i.icon-home
+                | Settlement
+                span.brick &bull;
+                span.sheep &bull;
+                span.wheat &bull;
+                span.wood  &bull;
+            li
+              a#city
+                i.icon-home
+                | City
+                span.stone &bull;
+                span.stone &bull;
+                span.stone &bull;
+                span.wheat &bull;
+                span.wheat &bull;
+            li
+              a#road
+                i.icon-road
+                | Road
+                span.brick &bull;
+                span.wood  &bull;
+            li
+              a#development
+                i.icon-book
+                | Development
+                span.stone &bull;
+                span.wheat &bull;
+                span.sheep &bull;
+        .btn-group
+          button.btn.trade
+            | Trade <span class="caret" />
+      .btn-toolbar.main-phase
+        .btn-group
+          button.btn.development
+            | Development <span class="caret" />
+        .btn-group
+          button.btn.end End
 
 block others
   #player1.player.well
@@ -54,30 +95,3 @@ block messages
       input#messageInput(type="text")
 
 block extras
-  #buildPopup
-    a#popupClose x
-    #settlement
-      image(src="http://www.visitingdc.com/images/white-house-picture.jpg", width="100%", top="0")
-      .buildResource.wood
-      .buildResource.brick
-      .buildResource.wheat
-      .buildResource.sheep
-    #city
-      image(src="http://www.visitingdc.com/images/white-house-picture.jpg", width="100%", top="0")
-      .buildResource.stone
-      .buildResource.stone
-      .buildResource.stone
-      .buildResource.wheat
-      .buildResource.wheat
-    #road
-      image(src="http://www.visitingdc.com/images/white-house-picture.jpg", width="100%", top="0")
-      .buildResource.wood
-      .buildResource.brick
-    #ship
-      image(src="http://www.visitingdc.com/images/white-house-picture.jpg", width="100%", top="0")
-    #development
-      image(src="http://www.visitingdc.com/images/white-house-picture.jpg", width="100%", top="0")
-      .buildResource.stone
-      .buildResource.wheat
-      .buildResource.sheep
-  #popupBackground

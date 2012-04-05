@@ -1,28 +1,10 @@
 /**
  * Board Client Side Javascript
  */
-var popup = false;
 var debug = false;
 var player_colors = ["blue", "yellow", "red", "orange"];
 var users = [];
 var me;
-
-function loadPopup(){
-  if (!popup) {
-    $("#popupBackground").css({"opacity":"0.7"});
-    $("#popupBackground").fadeIn("slow");
-    $("#buildPopup").fadeIn("slow");
-    popup = true;
-  }
-}
-
-function disablePopup() {
-  if (popup){
-    $("#popupBackground").fadeOut("slow");
-    $("#buildPopup").fadeOut("slow");
-    popup = false;
-  }
-}
 
 function makeSVG(tag, attrs) {
   var el= document.createElementNS('http://www.w3.org/2000/svg', tag);
@@ -81,40 +63,6 @@ window.onload = function() {
 
 
   /**
-   * Build Menu
-   */
-
-  // open pop-up on build click
-
-  $("#popupClose").click(
-      function(){
-      disablePopup();
-      socket.send('Closing popup!');
-    }
-  );
-
-  $("#settlement").click(function(){
-    disablePopup();
-    socket.emit('selectSettlement');
-  });
-
-  $("#city").click(function(){
-    disablePopup();
-    socket.emit('selectCity');
-  });
-
-  $("#road").click(function(){
-    disablePopup();
-    socket.emit('selectRoad');
-  });
-
-  $("#development").click(function(){
-    disablePopup();
-    socket.emit('selectDevelopment');
-  });
-
-
-  /**
    * Actions
    */
 
@@ -131,11 +79,6 @@ window.onload = function() {
     alert('Not implemented, silly.');
   });
 
-  $(".build").click(function(){
-    loadPopup();
-    socket.send('Open popup!');
-  });
-
   $(".trade").click(function(){
     alert('Not implemented, silly.');
   });
@@ -143,6 +86,16 @@ window.onload = function() {
   $(".end").click(function(){
     socket.emit('endTurn');
   });
+
+
+  /**
+   * Build Menu
+   */
+
+  $("#settlement").click(function(){  socket.emit('selectSettlement');  });
+  $("#city").click(function(){        socket.emit('selectCity');        });
+  $("#road").click(function(){        socket.emit('selectRoad');        });
+  $("#development").click(function(){ socket.emit('selectDevelopment'); });
 
 
   /**
