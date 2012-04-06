@@ -50,7 +50,8 @@ body {
 }
 
 .actions .btn-toolbar {
-    margin-bottom: 0px;
+  margin-bottom: 0px;
+  display: none;
 }
 
 .actions .btn {
@@ -64,16 +65,17 @@ body {
   text-align: left;
 }
 
+.actions .dropdown-menu .disabled {
+  background-color:#d9d9d9 !important;
+  color:#aaa !important;
+}
+
 .actions span.wheat { color: khaki }
 .actions span.wood  { color: forestgreen }
 .actions span.sheep { color: lime }
 .actions span.brick { color: orangered }
 .actions span.stone { color: grey }
 
-.actions .disabled {
-  background-color:#d9d9d9 !important;
-  color:#aaa !important;
-}
 
 /**
  * Starting Dramatics

@@ -66,9 +66,6 @@ window.onload = function() {
    * Actions
    */
 
-  // Can't do this in CSS as we'll lose display: inline-block
-  $('.roll-phase, .main-phase, .robber-phase, .steal-phase').hide();
-
   $(".roll").click(function(){
     $('.roll-phase, .robber-phase, .steal-phase').hide();
     $('.main-phase').show();
@@ -461,12 +458,12 @@ window.onload = function() {
        }
       }
     );
-    
+
     socket.on('showRobber', function() {
       $('.roll-phase, .main-phase, .steal-phase').hide();
       $('.robber-phase').show();
-    }); 
-    
+    });
+
     socket.on('showSteal', function(players) {
       $('.roll-phase, .main-phase, .robber-phase').hide();
       $('.steal-phase').show();
@@ -476,13 +473,13 @@ window.onload = function() {
         $('#player' + users.indexOf(players[i])).removeClass("disabled");
         $('#player' + users.indexOf(players[i])).addClass("enabled"); // enable stealing from these player wells
       }
-    }); 
+    });
     socket.on('showMain', function() {
       $('.roll-phase, .robber-phase, .steal-phase').hide();
       $('.main-phase').show();
       $('.player.well').removeClass("disabled");
       $('.player.well').removeClass("enabled");
-    }); 
+    });
 
    /**
      * Move Robber
