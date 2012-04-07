@@ -641,8 +641,9 @@ Board.prototype.updateRobber = function(end) {
           // Check that it has token, whether its a settlement or a city
           if (intersection.token) {
             var player = intersection.token.player;
-            if(!(player in players))
+            if(players.indexOf(player) === -1) {
               players.push(player);
+            }
           }
         }
       }
