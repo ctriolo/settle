@@ -5,6 +5,8 @@ var debug = false;
 var player_colors = ["blue", "yellow", "red", "orange"];
 var users = [];
 var me;
+var roll_frequency = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+var total_rolls = 0.0;
 
 function makeSVG(tag, attrs) {
   var el= document.createElementNS('http://www.w3.org/2000/svg', tag);
@@ -24,6 +26,18 @@ function cancelCurrentAction() {
   $('.intersection,.edge,.hex,.road,.settlement,.city').off('hover');
   $('.intersection,.edge,.hex,.road,.settlement,.city').off('click');
 };
+
+/**
+ * updateFrequencies
+ *
+ * Updates the bar chart with current frequencies
+ */
+function updateFrequencies() {
+  for (var i = 2; i <= 12; i++) {
+    console.log(i + " " + roll_frequency[i-2] + " " + total_rolls + " " + roll_frequency[i-2]/total_rolls); 
+    $('#bar' + i).height(100*roll_frequency[i-2]/total_rolls + "%");
+  }
+}
 
 window.onload = function() {
 
@@ -91,6 +105,19 @@ window.onload = function() {
 
   $(".end").click(function(){
     socket.emit('endTurn');
+  });
+
+  $("#frequencyChart").click(function() {
+    if (total_rolls > 0) {
+      if ($(this).hasClass("chartShow")) {
+        $(".frequency-container").animate({"right": "30%"}, "slow");
+        $(this).removeClass("chartShow");
+      }
+      else {
+        $(".frequency-container").animate({"right": "5%"}, "slow");      
+        $(this).addClass("chartShow");
+      }
+    }
   });
 
 
@@ -443,6 +470,13 @@ window.onload = function() {
     setTimeout(function() {
       $('.numberToken.number'+number).removeClass('highlight');
     }, 2000);
+
+    // update bar chart frequency
+    if (number !== 0) {
+      total_rolls += 1;
+      roll_frequency[number-2] += 1;
+      updateFrequencies();
+    }
   });
 
   /**
@@ -458,6 +492,8 @@ window.onload = function() {
        }
       }
     );
+
+   
 
     socket.on('showRobber', function() {
       $('.roll-phase, .main-phase, .steal-phase').hide();

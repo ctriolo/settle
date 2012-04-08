@@ -684,8 +684,7 @@ Game.prototype.rollDice = function(user_id) {
   this._validatePhase(PHASE.DICE);
 
   var dice = [Math.floor((Math.random()*6)+1), Math.floor((Math.random()*6)+1)];
-  //var total = dice[0] + dice[1];
-  var total = 7;
+  var total = dice[0] + dice[1];
   var resources = this.board.getResources(total);
 
   // Add resources to player hand
