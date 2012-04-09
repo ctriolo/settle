@@ -620,8 +620,9 @@ Board.prototype._getRobber = function() {
  * @param  end	num  the hex id of the hex robber should be moved to
  */
 Board.prototype.updateRobber = function(end) {
-  var start_hex = this._getRobber()
+  var start_hex = this._getRobber();
   var end_hex = this._getHex(end);
+  var players = [];
   if (start_hex == end_hex) {
     throw 'Robber already placed on hex ' + end + '.';
   }
@@ -632,10 +633,23 @@ Board.prototype.updateRobber = function(end) {
         this.hexes[i][j].robber = false;
       }
       if(hex.id === end_hex) {
+        // get players able to steal from
         this.hexes[i][j].robber = true;
+        var intersections = hex.iNeighbors(this);
+        for (var dir in intersections) {
+          var intersection = intersections[dir];
+          // Check that it has token, whether its a settlement or a city
+          if (intersection.token) {
+            var player = intersection.token.player;
+            if(players.indexOf(player) === -1) {
+              players.push(player);
+            }
+          }
+        }
       }
     }
   }
+  return players;
 }
 
 
@@ -917,7 +931,7 @@ Board.prototype.getResources = function(number) {
   for (var i = 0; i < this.hexes.length; i++) {
     for (var j = 0; j < this.hexes[i].length; j++) {
       var hex = this.hexes[i][j];
-      if (hex.isActive(this) && hex.diceRoll == number) {
+      if (hex.isActive(this) && hex.diceRoll == number && !hex.robber) {
         var intersections = hex.iNeighbors(this);
         for (var dir in intersections) {
           var intersection = intersections[dir];

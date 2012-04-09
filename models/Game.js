@@ -16,6 +16,7 @@ PHASE = {
   DICE: 'Dice',
   MAIN: 'Main',
   ROBBER: 'Robber',
+  STEAL: 'Steal',
   // TODO: fill these in as we go along
   END: 'End',
   NOT_IMPLEMENTED: 'Not Implemented' // placeholder
@@ -38,6 +39,8 @@ RESOURCE = {
   WHEAT: 'Wheat',
   WOOD:  'Wood',
 };
+
+RESOURCE_ARRAY = [RESOURCE.SHEEP, RESOURCE.STONE, RESOURCE.WHEAT, RESOURCE.BRICK, RESOURCE.WOOD];
 
 DEVELOPMENT = {
   KNIGHT:         'Knight',
@@ -226,6 +229,9 @@ Game.prototype._next = function(diceRoll) {
       this.current_phase = PHASE.MAIN
     break;
   case PHASE.ROBBER:
+    this.current_phase = PHASE.STEAL
+    break;
+  case PHASE.STEAL:
     this.current_phase = PHASE.MAIN
     break;
   case PHASE.MAIN:
@@ -239,7 +245,7 @@ Game.prototype._next = function(diceRoll) {
  * _addResources (private)
  *
  * Does any resource math needed.
- * @param   player_id   num      the id of the player
+ * @param   player_id   num      the id of the plasyer
  * @param   resources   object   the assoc array of resource values
  */
 Game.prototype._addResources = function(player_id, resources) {
@@ -406,6 +412,23 @@ Game.prototype.getValidRoadEdges = function(user_id) {
   return this.board.getValidRoadEdges(player_id);
 };
 
+
+/**
+ * canBuild
+ *
+ * @param   user_id   string   the user we are checking for
+ * @return            object   associated array of booleans
+ */
+Game.prototype.canBuild = function(user_id) {
+  var can_build = {};
+
+  can_build['Settlement'] =  this.canBuildSettlement(user_id);
+  can_build['City'] =        this.canBuildCity(user_id);
+  can_build['Road'] =        this.canBuildRoad(user_id);
+  can_build['Development'] = this.canBuildSettlement(user_id);
+
+  return can_build;
+}
 
 /**
  * canBuildSettlement
@@ -690,10 +713,66 @@ Game.prototype.getRobber = function() {
  * updateRobber
  * moves the robber to new tile
  */
-Game.prototype.updateRobber = function(move_id) {
+Game.prototype.updateRobber = function(user_id, move_id) {
   this._validatePhase(PHASE.ROBBER);
-  this.board.updateRobber(move_id);
+  var players = this.board.updateRobber(move_id);
+  var me = this._translate(user_id);
+
+  if (players.indexOf(me) >= 0)
+    players.splice(players.indexOf(me), 1) // take out me
+
+  var player_names = this.getPlayers();
+  for (var i = 0; i < players.length; i++) // translate to full player names
+    players[i] = player_names[players[i]]
+  var final_players = [];
+  // remove players who have no cards to steal
+  for (var i = 0; i < players.length; i++) {
+    empty = true;
+    for(var resource = 0; i < RESOURCE_ARRAY.length; resource++) {
+      if (this.players[i].resource_cards[RESOURCE_ARRAY[resource]] > 0) {
+        empty = false;
+        break;
+      }
+    }
+    if (!empty) {
+      final_players.push(players[i]);
+    }
+  }
+
   this._next();
+  // skip steal phase if no one to steal from
+  if (final_players.length === 0)
+    this._next();
+  return final_players
+}
+
+/**
+ * steal
+ * steals random resource from player to thief
+ * Throws exception if invalid
+ */
+Game.prototype.steal = function(player_id) {
+  this._validatePhase(PHASE.STEAL);
+  var thief = this.whoseTurn();
+  if (thief === player_id)
+    throw "Can't steal from yourself";
+  player_id = this._translate(player_id);
+  thief = this._translate(thief);
+  // substract random card from user
+  var removed = false;
+  while(!removed) {
+    var random = Math.floor(Math.random()*RESOURCE_ARRAY.length);
+    
+    if (this.players[player_id].resource_cards[RESOURCE_ARRAY[random]] > 0) {
+      this.players[player_id].resource_cards[RESOURCE_ARRAY[random]] -= 1;
+      console.log("STEALING: " + RESOURCE_ARRAY[random]);
+      this.players[thief].resource_cards[RESOURCE_ARRAY[random]] += 1;
+      removed = true;
+    }
+  }
+
+  this._next();
+  return RESOURCE_ARRAY[random];
 }
 /**
  * main

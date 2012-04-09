@@ -33,6 +33,54 @@ body {
   margin:0;
 }
 
+
+/**
+ * Action Buttons
+ */
+
+.actions {
+  text-align: center;
+}
+
+.actions .roll-phase,
+.actions .main-phase {
+  text-align: center;
+  width: inherit;
+  display: inline-block;
+}
+
+.actions .btn-toolbar {
+  margin-bottom: 0px;
+  display: none;
+}
+
+.actions .btn {
+  width: 120px;
+}
+.actions .btn.big {
+  width: 240px;
+}
+
+.actions .dropdown-menu {
+  text-align: left;
+}
+
+.actions .dropdown-menu .disabled {
+  background-color:#d9d9d9 !important;
+  color:#aaa !important;
+}
+
+.actions span.wheat { color: khaki }
+.actions span.wood  { color: forestgreen }
+.actions span.sheep { color: lime }
+.actions span.brick { color: orangered }
+.actions span.stone { color: grey }
+
+
+/**
+ * Starting Dramatics
+ */
+
 #startBackground {
   position: fixed;
   height: 100%;
@@ -61,9 +109,14 @@ body {
 /* player wells */
 .player, .message {
   position: relative;
-  border: 4px: solid;
+  border: 3px solid;
   border-color: black;
   z-index: 3;
+
+}
+
+.player.well.disabled {
+  opacity: .6;
 }
 .name {
   color: #333;
@@ -75,7 +128,7 @@ body {
 /* card wells */
 .cardwell {
   width: 90%;
-  height: 210px;
+  height: 120px;
   position: relative;
 }
 .opponentcardwell {
@@ -83,7 +136,7 @@ body {
   height: 50px;
   position: relative;
 }
-.cards, .opponentcards, .roll, .trade, .end, .build, .dev_cards {
+.cards, .opponentcards {
   moz-border-radius: 10px;
   border-radius: 10px;
   border: 3px solid rgba(0, 0, 0, 0.07);
@@ -102,107 +155,6 @@ body {
   width: 50%;
   height: 50px;
 }
-
-.roll, .trade, .end, .build {
-  width: 15%;
-  height: 40px;
-  opacity: 0.4;
-}
-.roll.turn, .trade.turn, .end.turn, .build.turn {
-  opacity: 1;
-}
-
-.roll, .trade {
-  top: 120px;
-}
-.trade, .build {
-  left: 17%;
-}
-.end, .build {
-  top: 165px;
-}
-.dev_cards {
-  top: 110px;
-  right: 0;
-  width: 63%;
-  height: 100px;
-}
-
-/* building popup */
-#popupBackground {
-  display: none;
-  position: fixed;
-  height: 100%;
-  width: 100%;
-  top:0;
-  left:0;
-  background:#000000;
-  border: 1px solid #cecece;
-  z-index: 1;
-}
-
-#buildPopup {
-  display: none;
-  position: fixed;
-  height: 30%;
-  width: 60%;
-  top: 35%;
-  left: 20%;
-  background:#FFFFFF;
-  border: 3px solid #cecece;
-  z-index: 2;
-  margin-top:12px;
-  font-size:13px;
-}
-
-#popupClose {
-  font-size: 20px;
-  right: 6px;
-  top: 4px;
-  position: absolute;
-  color: #6fa5fd;
-  font-weight: 700;
-  display: block;
-}
-#settlement, #city, #road, #ship, #development {
-  height: 60%;
-  top: 15%;
-  width: 17%;
-  position: absolute;
-  background-color: beige;
-  moz-border-radius: 10px;
-  border-radius: 10px;
-  border: 3px solid rgba(0, 0, 0, 0.07);
-}
-#settlement {
-  left: 1%;
-}
-#city {
-  left: 21%;
-}
-#road {
-  left: 41%;
-}
-#ship {
-  left: 61%;
-}
-#development {
-  left: 81%;
-}
-.buildResource {
-  float: left;
-  width: 15%;
-  height: 18%;
-  bottom: 5%;
-  moz-border-radius: 15px;
-  border-radius: 15px;
-  border: 3px solid rgba(0, 0, 0, 0.5);
-}
-.buildResource.wood { background: url(#wood) forestgreen; }
-.buildResource.brick { background: red; }
-.buildResource.sheep { background: url(#brick) lime; }
-.buildResource.wheat { background: url(#brick) yellow; }
-.buildResource.stone { background: url(#brick) black; }
 
 /**
  * Resource Cards
@@ -246,3 +198,70 @@ ul.resource-cards li .sheep-card    { background: lime; }
 ul.resource-cards li .brick-card    { background: orangered; }
 ul.resource-cards li .stone-card    { background: grey; }
 ul.resource-cards li .resource-card { background: blue }
+
+/*****
+  * frequency chart 
+  *****/
+.frequency-container {
+  position: absolute;
+  top: 3%;
+  right: 2%;
+  width: 22.91%;
+  height: 19%;
+  background-color: whiteSmoke;
+  border: 2px solid black;
+  moz-border-radius: 3px;
+  border-radius: 3px;
+  z-index: 2;
+}
+.bar-container {
+  position:relative;
+  border: 2px solid black;
+  top:5%;
+  left: 5%;
+  height: 70%;
+  width: 90%;
+}
+.label-container {
+  position:relative;
+  border: 2px solid black;
+  bottom :-5%;
+  left: 5%;
+  height: 10%;
+  width: 90%;
+}
+.bar-padding, .label-padding {
+  float: left;
+  width: 5%;
+  height: 100%;
+}
+.bars {
+  position: relative;
+  float: left;
+  width: 8.39%;
+  height: 100%;
+}
+.bar {
+  position:absolute;
+  bottom: 0px;
+  width: 80%;
+  height: 0%;
+  background-color: #1589FF;
+  border: 1px solid black;
+}
+.frequency-label {
+  float:left;
+  width: 8.39%;
+  height: 100%;
+  text-align: center;
+}
+#frequencyChart {
+  position: absolute;
+  top: 15%;
+  right: 5%;
+  width: 20%;
+  height: 50%;
+}
+#frequencyChart img {
+  width: 100%;
+}

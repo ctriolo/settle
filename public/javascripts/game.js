@@ -1,28 +1,12 @@
 /**
  * Board Client Side Javascript
  */
-var popup = false;
 var debug = false;
 var player_colors = ["blue", "yellow", "red", "orange"];
 var users = [];
 var me;
-
-function loadPopup(){
-  if (!popup) {
-    $("#popupBackground").css({"opacity":"0.7"});
-    $("#popupBackground").fadeIn("slow");
-    $("#buildPopup").fadeIn("slow");
-    popup = true;
-  }
-}
-
-function disablePopup() {
-  if (popup){
-    $("#popupBackground").fadeOut("slow");
-    $("#buildPopup").fadeOut("slow");
-    popup = false;
-  }
-}
+var roll_frequency = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+var total_rolls = 0.0;
 
 function makeSVG(tag, attrs) {
   var el= document.createElementNS('http://www.w3.org/2000/svg', tag);
@@ -42,6 +26,18 @@ function cancelCurrentAction() {
   $('.intersection,.edge,.hex,.road,.settlement,.city').off('hover');
   $('.intersection,.edge,.hex,.road,.settlement,.city').off('click');
 };
+
+/**
+ * updateFrequencies
+ *
+ * Updates the bar chart with current frequencies
+ */
+function updateFrequencies() {
+  for (var i = 2; i <= 12; i++) {
+    console.log(i + " " + roll_frequency[i-2] + " " + total_rolls + " " + roll_frequency[i-2]/total_rolls); 
+    $('#bar' + i).height(100*roll_frequency[i-2]/total_rolls + "%");
+  }
+}
 
 window.onload = function() {
 
@@ -81,64 +77,46 @@ window.onload = function() {
 
 
   /**
-   * Build Menu
+   * Actions
    */
 
-  // open pop-up on build click
-  $(".build").click(
-      function(){
-      loadPopup();
-      socket.send('Open popup!');
-    }
-  );
-  $("#popupClose").click(
-      function(){
-      disablePopup();
-      socket.send('Closing popup!');
-    }
-  );
-
-  $("#settlement").click(function(){
-    disablePopup();
-    socket.emit('selectSettlement');
-  });
-
-  $("#city").click(function(){
-    disablePopup();
-    socket.emit('selectCity');
-  });
-
-  $("#road").click(function(){
-    disablePopup();
-    socket.emit('selectRoad');
-  });
-
-  $("#development").click(function(){
-    disablePopup();
-    socket.emit('selectDevelopment');
-  });
-
-
-  /**
-   * Dice
-   */
   $(".roll").click(function(){
-    if ($(".roll").css("opacity") === "1") {
-      $(".end").addClass('turn');
-      $(".build").addClass('turn');
-      $(".trade").addClass('turn');
-      $(".roll").removeClass('turn');
-      socket.emit('rollDice');
-    }
+    $('.roll-phase, .robber-phase, .steal-phase').hide();
+    $('.main-phase').show();
+    socket.emit('rollDice');
   });
 
+  // handle stealing
+  $(".player.well").click(function(){
+    if ($(this).hasClass("enabled")) {
+        var id = parseInt($(this).attr('id').substring('player'.length));
+        socket.emit('steal', users[id]);
 
-  /**
-   * End turn
-   */
+   }
+  });
+
+  $(".development").click(function(){
+    alert('Not implemented, silly.');
+  });
+
+  $(".trade").click(function(){
+    alert('Not implemented, silly.');
+  });
+
   $(".end").click(function(){
-    if ($(".end").css("opacity") === "1") {
-      socket.emit('endTurn');
+    socket.emit('endTurn');
+  });
+
+  $("#frequencyChart").click(function() {
+    if (total_rolls > 0) {
+      if ($(this).hasClass("chartShow")) {
+        $(".frequency-container").animate({"right": "30%"}, "slow");
+        $(this).removeClass("chartShow");
+      }
+      else {
+        $(".frequency-container").animate({"right": "5%"}, "slow");      
+        $(this).addClass("chartShow");
+      }
     }
   });
 
@@ -316,6 +294,31 @@ window.onload = function() {
 
 
   /**
+   * canBuild
+   *
+   * Update the build dropdown list.
+   * @param   can_build   object   associated array of booleans
+   */
+   socket.on('canBuild', function(can_build) {
+     for (var key in can_build) {
+       var building = key.toLowerCase();
+       var emit = 'select'+key;
+       if (can_build[key]) {
+         $('#'+building).removeClass('disabled');
+         $('#'+building).click(function(){
+           var id = $(this).attr('id');
+           id = id.charAt(0).toUpperCase() + id.slice(1);
+           socket.emit('select'+id);
+         });
+       } else {
+         $('#'+building).addClass('disabled');
+         $('#'+building).off('click');
+       }
+     }
+   });
+
+
+  /**
    * selectSettlement
    *
    * For every interesection id in `ids`:
@@ -431,6 +434,7 @@ window.onload = function() {
 
   // Dice + Resources
 
+
   /**
    * rollDiceResults
    *
@@ -474,6 +478,13 @@ window.onload = function() {
     setTimeout(function() {
       $('.numberToken.number'+number).removeClass('highlight');
     }, 2000);
+
+    // update bar chart frequency
+    if (number !== 0) {
+      total_rolls += 1;
+      roll_frequency[number-2] += 1;
+      updateFrequencies();
+    }
   });
 
   /**
@@ -489,6 +500,31 @@ window.onload = function() {
        }
       }
     );
+
+   
+
+    socket.on('showRobber', function() {
+      $('.roll-phase, .main-phase, .steal-phase').hide();
+      $('.robber-phase').show();
+    });
+
+    socket.on('showSteal', function(players) {
+      $('.roll-phase, .main-phase, .robber-phase').hide();
+      $('.steal-phase').show();
+      $('.player.well').addClass("disabled");
+      $('#player' + users.indexOf(players[i])).removeClass("disabled");
+      for (var i = 0; i < players.length; i++) {
+        $('#player' + users.indexOf(players[i])).removeClass("disabled");
+        $('#player' + users.indexOf(players[i])).addClass("enabled"); // enable stealing from these player wells
+      }
+    });
+    socket.on('showMain', function() {
+      $('.roll-phase, .robber-phase, .steal-phase').hide();
+      $('.main-phase').show();
+      $('.player.well').removeClass("disabled");
+      $('.player.well').removeClass("enabled");
+    });
+
    /**
      * Move Robber
      * handles robber moving css
@@ -499,6 +535,15 @@ window.onload = function() {
       $("#hex" + start).children(".numberToken").removeClass("robber");
       $("#hex" + start).children(".numberToken").removeClass("highlight");
       $("#hex" + end).children(".numberToken").addClass("robber");
+    });
+
+   /**
+     * stealCard
+     * handles card stealing css
+     */
+    socket.on('stealCard', function(thief, player_id, resource) {
+      $('.roll-phase, .robber-phase, .steal-phase').hide();
+      $('.main-phase').show();
     });
 
   /**
@@ -512,11 +557,9 @@ window.onload = function() {
 
     // Disable action buttons, enable roll if it's this players turn
     if (!starting_phase) {
-      if (turn_user == me) $(".roll").addClass('turn');
-      else $(".roll").removeClass('turn');
-      $(".end").removeClass('turn');
-      $(".build").removeClass('turn');
-      $(".trade").removeClass('turn');
+      if (turn_user == me) $('.roll-phase').show();
+      else $('.roll-phase').hide();
+      $('.main-phase, .robber-phase, .steal-phase').hide();
     }
 
     // Remove past highlights, highlight current player
