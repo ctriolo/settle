@@ -676,7 +676,7 @@ Game.prototype.rollDice = function(user_id) {
   }
 
   this._next(total);
-  return {'number': total, 'resources': new_resources};
+  return {'number': total, 'resources': new_resources, 'breakdown': dice};
 };
 
 /**

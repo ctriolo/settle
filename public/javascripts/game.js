@@ -439,7 +439,15 @@ window.onload = function() {
    * @param   resources   object   keys: user ids
    *                               values: resource assoc array
    */
-  socket.on('rollDiceResults', function(number, resources) {
+  socket.on('rollDiceResults', function(number, resources, breakdown) {
+    // show dice roll
+    $('body').append('I rolled a pair of dice: ' + breakdown);
+    $('body').append('Hello World');
+    $('body').append(
+    '<div style="position:fixed; top:50%; bottom:50%; left:50%; right:50%;">' +
+    '<img src=http://blogs.is.vt.edu/falbert9/files/2011/08/Hello-World-Code.png>' +
+    '</div>');
+  
     // handle robber
     if (number === 7) {
       // Highlight Robber Tokens

@@ -124,7 +124,7 @@ module.exports = function(sockets) {
       try {
         var ret = game.rollDice(user_id);
         gp.save(game);
-        sockets.to(game_id).emit('rollDiceResults', ret.number, ret.resources);
+        sockets.to(game_id).emit('rollDiceResults', ret.number, ret.resources, ret.breakdown);
       } catch (error) {
         socket.send(error);
       }
