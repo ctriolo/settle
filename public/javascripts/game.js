@@ -432,8 +432,9 @@ window.onload = function() {
   });
 
 
-  // Dice + Resources
 
+
+  // Dice + Resources
 
   /**
    * rollDiceResults
@@ -443,14 +444,8 @@ window.onload = function() {
    * @param   resources   object   keys: user ids
    *                               values: resource assoc array
    */
-  socket.on('rollDiceResults', function(number, resources, breakdown) {
-    // show dice roll
-    $('.board-container').append(
-    '<div style="position:absolute; top:40%; left:30%; background-color:#0000FF; width:20%; height:20%;">' +
-    
-    //'<img width=20% src=http://blogs.is.vt.edu/falbert9/files/2011/08/Hello-World-Code.png>' +
-    '</div>');
   
+  handleDiceRoll = function(number, resources) {
     // handle robber
     if (number === 7) {
       // Highlight Robber Tokens
@@ -484,6 +479,32 @@ window.onload = function() {
       roll_frequency[number-2] += 1;
       updateFrequencies();
     }
+  }
+   
+  socket.on('rollDiceResults', function(number, resources, breakdown) {
+    
+    if (typeof this.first == 'undefined') {
+        // show dice roll
+        $('.board-container').append(
+        '<div id="dice-image-container">' +
+            '<img id="dice-image" src="">' +
+        '</div>');
+    }
+    this.first = 'defined';
+    
+    if (typeof breakdown != 'undefined') {
+        $('#dice-image').show();
+        url = 'http://www.princeton.edu/~rgromero/dice-gif/a' + breakdown[0] 
+            + ',' + breakdown[1] + '-g50.gif';
+        $('#dice-image').attr('src', url);
+        setTimeout(function() {
+            $('#dice-image').attr('src','');
+            $('#dice-image').hide();
+            handleDiceRoll(number, resources);
+        }, 8 * 1000);
+    }
+  
+    
   });
 
   /**
