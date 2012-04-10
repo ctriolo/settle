@@ -33,9 +33,13 @@ function cancelCurrentAction() {
  * Updates the bar chart with current frequencies
  */
 function updateFrequencies() {
+  var max = 0;
   for (var i = 2; i <= 12; i++) {
-    console.log(i + " " + roll_frequency[i-2] + " " + total_rolls + " " + roll_frequency[i-2]/total_rolls); 
-    $('#bar' + i).height(100*roll_frequency[i-2]/total_rolls + "%");
+    if (roll_frequency[i-2]/total_rolls > max)
+      max = roll_frequency[i-2]/total_rolls;
+  }
+  for (var i = 2; i <= 12; i++) {
+    $('#bar' + i).height(100*roll_frequency[i-2]/total_rolls/max/1.05 + "%");
   }
 }
 
@@ -110,12 +114,15 @@ window.onload = function() {
   $("#frequencyChart").click(function() {
     if (total_rolls > 0) {
       if ($(this).hasClass("chartShow")) {
+        $(".frequency-container").show();
         $(".frequency-container").animate({"right": "30%"}, "slow");
         $(this).removeClass("chartShow");
+
       }
       else {
         $(".frequency-container").animate({"right": "5%"}, "slow");      
         $(this).addClass("chartShow");
+        $(".frequency-container").hide();
       }
     }
   });
@@ -483,6 +490,9 @@ window.onload = function() {
       total_rolls += 1;
       roll_frequency[number-2] += 1;
       updateFrequencies();
+    }
+    if (total_rolls == 1) {
+	$("#frequencyChart").css({"opacity":"1.0"});
     }
   });
 

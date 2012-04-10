@@ -261,6 +261,7 @@ ul.resource-cards li .resource-card { background: blue }
   right: 5%;
   width: 20%;
   height: 50%;
+  opacity: .2;
 }
 #frequencyChart img {
   width: 100%;
