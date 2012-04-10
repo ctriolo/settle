@@ -85,3 +85,40 @@ for (var i = 0; i < b.hexes.length; i++) {
 }
 */
 
+testLongestRoad = function(b) 
+{
+    b.placeStartingSettlement(0,2);
+    b.placeStartingRoad(0,1);
+
+    console.log(b.longestRoad(0)); // should be 1
+
+    b.buildRoad(0,43);
+    b.buildRoad(0,44);
+    b.buildRoad(0,2);
+    b.buildRoad(0,32);
+    b.buildRoad(0,33);
+
+    console.log(b.longestRoad(0)); // should be 6
+
+    b.buildRoad(0,45);
+    b.buildRoad(0,46);
+    b.buildRoad(0,3);
+    b.buildRoad(0,34);
+    b.buildRoad(0,35);
+
+    console.log(b.longestRoad(0)); // should be 11
+
+    b.buildRoad(0,7);
+    b.buildRoad(0,8);
+    b.buildRoad(0,55);
+    b.buildRoad(0,56);
+
+    console.log(b.longestRoad(0)); // should be 14
+
+    b.placeStartingSettlement(1,4);
+    b.placeStartingSettlement(1,15);
+
+    console.log(b.longestRoad(0)); // should be 8
+}
+
+testLongestRoad(b);

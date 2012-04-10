@@ -445,11 +445,10 @@ window.onload = function() {
    */
   socket.on('rollDiceResults', function(number, resources, breakdown) {
     // show dice roll
-    $('body').append('I rolled a pair of dice: ' + breakdown);
-    $('body').append('Hello World');
-    $('body').append(
-    '<div style="position:fixed; top:50%; bottom:50%; left:50%; right:50%;">' +
-    '<img src=http://blogs.is.vt.edu/falbert9/files/2011/08/Hello-World-Code.png>' +
+    $('.board-container').append(
+    '<div style="position:absolute; top:40%; left:30%; background-color:#0000FF; width:20%; height:20%;">' +
+    
+    //'<img width=20% src=http://blogs.is.vt.edu/falbert9/files/2011/08/Hello-World-Code.png>' +
     '</div>');
   
     // handle robber

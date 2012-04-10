@@ -8,7 +8,7 @@ var express = require('express')
   , io = require('socket.io').listen(app)
   , environment = require('./config/environment.js')
   , routes = require('./config/routes')
-  , everyauth = require('everyauth')
+    //  , everyauth = require('everyauth')
   , connect = require('connect');
 
 //var fb_app = connect(everyauth.middleware()).listen(80);

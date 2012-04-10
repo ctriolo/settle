@@ -53,6 +53,8 @@ function Board(mn, mx) {
 
     this.instantiateEdges();
     this.assignPorts();
+    
+    this.json2(); /// assign IDs; GIANT HACK; TODO = FIX
 }
 
 
@@ -999,3 +1001,81 @@ Board.prototype.getStartingResources = function(intersection_id) {
 
   return resources;
 };
+
+Board.prototype._dfs = function(arr, player_id)
+{
+
+    var lastInter = arr[arr.length-1];
+    var lastEdge = arr[arr.length-2];
+    
+    // check if inactive, wrong settlement, not my road, etc.
+    if (!lastEdge.isActive(this) // non-active road
+        || lastEdge.token == null // no road
+        || lastEdge.token.player != player_id) // road not mine
+    {
+        var len = arr.length/2 - 1;
+        this.longestRoadLength = Math.max(len, this.longestRoadLength);
+        return;
+    }
+
+    // road cut by someone else's settlement
+    if (lastInter.token != null && lastInter.token.player != player_id)
+    {
+        var len = arr.length/2;
+        this.longestRoadLength = Math.max(len, this.longestRoadLength);
+        return;
+    }
+    
+    // go on to next edge
+    var edges = lastInter.eNeighbors(this);
+    for (var i in edges)
+        if (!arr.contains(edges[i])) 
+        {
+            var nextEdge = edges[i];
+            var nextInter = null;
+            
+            var inters = nextEdge.iNeighbors(this);
+            for (var j in inters)
+                if (inters[j] != lastInter)
+                    nextInter = inters[j];
+                
+            var copy = arr.slice(0);
+            copy.push(nextEdge);
+            copy.push(nextInter);
+            this._dfs(copy, player_id);
+        }
+        
+    var len = arr.length/2;
+    this.longestRoadLength = Math.max(len, this.longestRoadLength);
+    return;
+}
+
+Board.prototype.longestRoad = function(player_id) 
+{
+    this.longestRoadLength = 0;
+    
+    var allEdges = this.allEdges();
+    for (var i = 0; i < allEdges.length; i++)
+    {
+        var edge = allEdges[i];
+
+        var iNeighbors = edge.iNeighbors(this);
+        for (var j in iNeighbors) {
+            var arr = new Array();
+            arr.push(edge);
+            arr.push(iNeighbors[j]);
+            this._dfs(arr, player_id);
+        }
+    }
+    
+    var ret = this.longestRoadLength;
+    delete this.longestRoadLength;
+    return ret;
+}
+
+Array.prototype.contains = function(obj) {
+    for (var i = 0; i < this.length; i++)
+        if (this[i] == obj)
+            return true;
+    return false;
+}
