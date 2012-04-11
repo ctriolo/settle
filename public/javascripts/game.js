@@ -624,8 +624,13 @@ window.onload = function() {
 
     // Disable action buttons, enable roll if it's this players turn
     if (!starting_phase) {
-      if (turn_user == me) $('.roll-phase').show();
-      else $('.roll-phase').hide();
+      if (turn_user == me) {
+        $('.roll-phase').show();
+        $('.waiting-phase').hide();
+      } else {
+        $('.roll-phase').hide();
+        $('.waiting-phase').show();
+      }
       $('.main-phase, .robber-phase, .steal-phase').hide();
     }
 
