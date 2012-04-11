@@ -97,6 +97,12 @@ function Player(index, user_id) {
   this.unbuilt_roads = 15;
   this.unbuilt_settlements = 5;
   this.unbuilt_cities = 5;
+
+  // Tophies
+  this.longest_road = 0;
+  this.has_longest_road = false;
+  this.army_size = 0;
+  this.has_largest_army = false;
 }
 
 /**
@@ -341,6 +347,28 @@ Game.prototype.isStarted = function() {
 };
 
 /**
+ * updateLongestRoad
+ */
+Game.prototype.updateLongestRoad = function() {
+  var max = 0;
+  var player = -1;
+
+  for (var i = 0; i < this.players.length; i++) {
+    var roads = this.board.longestRoad(i);
+    this.players[i]['longest_road'] = roads;
+    this.players[i]['has_longest_road'] = false;
+    if (roads > max) {
+      max = roads;
+      player = i;
+    }
+  }
+
+  if (player !== -1 && max >= 5) {
+    this.players[player]['has_longest_road'] = true;
+  }
+}
+
+/**
  * canStart
  *
  * @return   boolean   whether or not the game can start
@@ -583,6 +611,7 @@ Game.prototype.placeStartingRoad = function(user_id, edge_id) {
 
   this.players[player_id].unbuilt_roads--;
   this.board.placeStartingRoad(player_id, edge_id);
+  this.updateLongestRoad();
 
   this._next();
 };
@@ -605,6 +634,7 @@ Game.prototype.buildSettlement = function(user_id, intersection_id) {
   this.players[player_id].unbuilt_settlements--;
   this._subtractResources(player_id, SETTLEMENT_COST);
   this.board.buildSettlement(player_id, intersection_id);
+  this.updateLongestRoad();
 };
 
 
@@ -646,6 +676,7 @@ Game.prototype.buildRoad = function(user_id, edge_id) {
   this.players[player_id].unbuilt_roads--;
   this._subtractResources(player_id, ROAD_COST);
   this.board.buildRoad(player_id, edge_id);
+  this.updateLongestRoad();
 }
 
 
@@ -762,7 +793,7 @@ Game.prototype.steal = function(player_id) {
   var removed = false;
   while(!removed) {
     var random = Math.floor(Math.random()*RESOURCE_ARRAY.length);
-    
+
     if (this.players[player_id].resource_cards[RESOURCE_ARRAY[random]] > 0) {
       this.players[player_id].resource_cards[RESOURCE_ARRAY[random]] -= 1;
       console.log("STEALING: " + RESOURCE_ARRAY[random]);

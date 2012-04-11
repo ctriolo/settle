@@ -116,6 +116,7 @@ module.exports = function(sockets) {
       game.placeStartingRoad(user_id, edge_id);
       gp.save(game);
       sockets.to(game_id).emit('startingRoadPlacement', edge_id, game._translate(user_id));
+      updatePlayerInfo(sockets, game);
       if (game.whichPhase() == PHASE.STARTING_SETTLEMENT) {
         sockets.to(game_id).emit('newTurn', game.whoseTurn(), true);
         sockets.to(game.whoseTurn()).emit('startingSettlementSelect',

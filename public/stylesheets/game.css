@@ -33,7 +33,7 @@ body {
   margin:0;
 }
 
-/**                                   
+/**
  * Dice Image
  */
 
@@ -173,6 +173,15 @@ body {
   height: 75px;
   width: 75px;
 }
+
+/**
+ * Points
+ */
+
+.points .highlight {
+  font-weight: bold;
+}
+
 
 /**
  * Resource Cards

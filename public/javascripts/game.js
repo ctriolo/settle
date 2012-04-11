@@ -334,10 +334,11 @@ window.onload = function() {
    socket.on('updatePlayerInfo', function(players) {
      console.log(players);
 
-     // Update Resources
      for (var i = 0; i < players.length; i++) {
        var player = players[i];
        var player_id = users.indexOf(player.user_id);
+
+       // Update Resources
        var total = 0;
        for (var resource in player.resource_cards) {
          var r = resource.toLowerCase();
@@ -350,6 +351,26 @@ window.onload = function() {
        if (player.user_id !== me) {
          $('#player'+player_id+' .js-resource-number').text(total);
        }
+
+       // Update Roads
+       if (player.has_longest_road) {
+         $('#player'+player_id+' .js-road-value').addClass('highlight');
+       } else {
+         $('#player'+player_id+' .js-road-value').removeClass('highlight');
+       }
+       $('#player'+player_id+' .js-road-value').text(player.longest_road);
+
+       // Update Army
+       if (player.has_largest_army) {
+         $('#player'+player_id+' .js-army-value').addClass('highlight');
+       } else {
+         $('#player'+player_id+' .js-army-value').removeClass('highlight');
+       }
+       $('#player'+player_id+' .js-army-value').text(player.army_size);
+
+       // Update Victory Points
+
+
      }
    });
 
