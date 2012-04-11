@@ -194,6 +194,7 @@ body {
 }
 
 .cards .card {
+  display: none;
   float: left;
   margin-right: 7px;
 }

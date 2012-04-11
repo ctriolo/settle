@@ -43,6 +43,15 @@ function updateFrequencies() {
   }
 }
 
+function updateCards() {
+  $('.card').each(function() {
+    if ($(this).children('.card-number').text() === "0")
+      $(this).hide();
+    else
+      $(this).show(); 
+  });
+}
+
 window.onload = function() {
 
   var CONFIG = {
@@ -333,7 +342,7 @@ window.onload = function() {
    */
    socket.on('updatePlayerInfo', function(players) {
      console.log(players);
-
+     updateCards();
      for (var i = 0; i < players.length; i++) {
        var player = players[i];
        var player_id = users.indexOf(player.user_id);
@@ -523,7 +532,7 @@ window.onload = function() {
       roll_frequency[number-2] += 1;
       updateFrequencies();
     }
-
+    updateCards();
     if (total_rolls == 1) {
       $("#frequencyChart").css({"opacity":"1.0"});
     }
