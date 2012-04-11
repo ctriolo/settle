@@ -7,6 +7,21 @@ var GameProvider = require('../models/GameProvider');
 
 var uid_to_gid = {}; // user to game
 
+
+/**
+ * updatePlayerInfo
+ *
+ * Places an road at edge_id for the player who sent the message
+ * @param   socket   object
+ * @param   game     object
+ */
+function updatePlayerInfo(sockets, game) {
+  var user_ids = game.getPlayers();
+  for (var i = 0; i < user_ids.length; i++) {
+    sockets.to(user_ids[i]).emit('updatePlayerInfo', game.players);
+  }
+}
+
 module.exports = function(sockets) {
   var gp = GameProvider.getInstance();
 
@@ -77,11 +92,10 @@ module.exports = function(sockets) {
       var game = gp.findById(game_id);
       if (DEBUG) { console.log('name:startingSettlementPlacement ', user_id, game); }
       console.log(intersection_id);
-      var resources = {}
-      resources[user_id] = game.placeStartingSettlement(user_id, intersection_id);
+      game.placeStartingSettlement(user_id, intersection_id);
       gp.save(game);
       sockets.to(game_id).emit('startingSettlementPlacement', intersection_id, game._translate(user_id));
-      sockets.to(game_id).emit('rollDiceResults', 0, resources); // GIANT HACK TODO: FIXME
+      updatePlayerInfo(sockets, game);
       sockets.to(game.whoseTurn()).emit('startingRoadSelect',
         game.getValidStartingRoadEdges(game.whoseTurn()));
     });
@@ -128,6 +142,7 @@ module.exports = function(sockets) {
           sockets.to(game.whoseTurn()).emit('showRobber');
         sockets.to(game_id).emit('rollDiceResults', ret.number, ret.resources, ret.breakdown);
         socket.emit('canBuild', game.canBuild(user_id));
+        updatePlayerInfo(sockets, game);
       } catch (error) {
         socket.send(error);
       }
@@ -174,6 +189,7 @@ module.exports = function(sockets) {
         gp.save(game);
         sockets.to(game.whoseTurn()).emit('stealCard', game.whoseTurn(), player_id,  resource);
         sockets.to(game.whoseTurn()).emit('showMain');
+        updatePlayerInfo(sockets, game);
       } catch (error) {
         socket.send(error);
       }
@@ -264,6 +280,7 @@ module.exports = function(sockets) {
       var game = gp.findById(game_id);
       game.buildSettlement(user_id, intersection_id);
       gp.save(game);
+      updatePlayerInfo(sockets, game);
       socket.emit('canBuild', game.canBuild(user_id));
       sockets.to(game_id).emit('buildSettlement', intersection_id, game._translate(user_id));
     });
@@ -282,6 +299,7 @@ module.exports = function(sockets) {
       var game = gp.findById(game_id);
       game.buildCity(user_id, intersection_id);
       gp.save(game);
+      updatePlayerInfo(sockets, game);
       socket.emit('canBuild', game.canBuild(user_id));
       sockets.to(game_id).emit('buildCity', intersection_id, game._translate(user_id));
     });
@@ -300,6 +318,7 @@ module.exports = function(sockets) {
       var game = gp.findById(game_id);
       game.buildRoad(user_id, edge_id);
       gp.save(game);
+      updatePlayerInfo(sockets, game);
       socket.emit('canBuild', game.canBuild(user_id));
       sockets.to(game_id).emit('buildRoad', edge_id, game._translate(user_id));
     });

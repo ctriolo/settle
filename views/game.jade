@@ -30,83 +30,175 @@ block labels
 
 block player
   #player0.player.well
-    h2.name Empty
-    .cardwell
+    .left
+      img(src='http://i.imgur.com/TFOqB.jpg').pic
+      h3.name Empty
+    .right
       .cards
-        ul.resource-cards
-    .actions
-      .btn-toolbar.roll-phase
-        .btn-group
-          button.btn.roll Roll
-        .btn-group
-          button.btn.development Development
-      .btn-toolbar.robber-phase
-        .btn-group
-          button.btn.big.disabled Move the Robber
-      .btn-toolbar.steal-phase
-        .btn-group
-          button.btn.big.disabled Select Player to Steal From
-      .btn-toolbar.main-phase
-        .btn-group
-          button.btn.dropdown-toggle(data-toggle="dropdown")
-            | Build <span class="caret" />
-          ul.dropdown-menu
-            li
-              a#settlement
-                i.icon-home
-                | Settlement
-                span.brick &bull;
-                span.sheep &bull;
-                span.wheat &bull;
-                span.wood  &bull;
-            li
-              a#city
-                i.icon-home
-                | City
-                span.stone &bull;
-                span.stone &bull;
-                span.stone &bull;
-                span.wheat &bull;
-                span.wheat &bull;
-            li
-              a#road
-                i.icon-road
-                | Road
-                span.brick &bull;
-                span.wood  &bull;
-            li
-              a#development
-                i.icon-book
-                | Development
-                span.stone &bull;
-                span.wheat &bull;
-                span.sheep &bull;
-        .btn-group
-          button.btn.trade
-            | Trade <span class="caret" />
-      .btn-toolbar.main-phase
-        .btn-group
-          button.btn.development
-            | Development <span class="caret" />
-        .btn-group
-          button.btn.end End
+        .card
+          .wheat-card
+          .card-number.js-wheat-number 0
+        .card
+          .wood-card
+          .card-number.js-wood-number 0
+        .card
+          .sheep-card
+          .card-number.js-sheep-number 0
+        .card
+          .brick-card
+          .card-number.js-brick-number 0
+        .card
+          .stone-card
+          .card-number.js-stone-number 0
+        .card
+          .development-card
+          .card-number.js-development-number 0
+      br.clearBoth
+      .points
+        .victory-points
+          span.descriptor= 'V: '
+          span.value 0
+        .road-points
+          span.descriptor= 'R: '
+          span.value 0
+        .army-points
+          span.descriptor= 'A: '
+          span.value 0
+      br.clearBoth
+
+block actions
+  .actions
+    .btn-toolbar.roll-phase
+      .btn-group
+        button.btn.roll Roll
+      .btn-group
+        button.btn.development Development
+    .btn-toolbar.robber-phase
+      .btn-group
+        button.btn.big.disabled Move the Robber
+    .btn-toolbar.steal-phase
+      .btn-group
+        button.btn.big.disabled Select Player to Steal From
+    .btn-toolbar.main-phase
+      .btn-group
+        button.btn.dropdown-toggle(data-toggle="dropdown")
+          | Build <span class="caret" />
+        ul.dropdown-menu
+          li
+            a#settlement
+              i.icon-home
+              | Settlement
+              span.brick &bull;
+              span.sheep &bull;
+              span.wheat &bull;
+              span.wood  &bull;
+          li
+            a#city
+              i.icon-home
+              | City
+              span.stone &bull;
+              span.stone &bull;
+              span.stone &bull;
+              span.wheat &bull;
+              span.wheat &bull;
+          li
+            a#road
+              i.icon-road
+              | Road
+              span.brick &bull;
+              span.wood  &bull;
+          li
+            a#development
+              i.icon-book
+              | Development
+              span.stone &bull;
+              span.wheat &bull;
+              span.sheep &bull;
+      .btn-group
+        button.btn.trade
+          | Trade <span class="caret" />
+    .btn-toolbar.main-phase
+      .btn-group
+        button.btn.development
+          | Development <span class="caret" />
+      .btn-group
+        button.btn.end End
 
 block others
   #player1.player.well
-    h2.name Empty
-    .opponentcardwell
-      .opponentcards
-        ul.resource-cards
+    .left
+      img(src='http://i.imgur.com/TFOqB.jpg').pic
+      h3.name Empty
+    .right
+      .cards
+        .card
+          .resource-card
+          .card-number.js-resource-number 0
+        .card
+          .development-card
+          .card-number.js-development-number 0
+      br.clearBoth
+      .points
+        .victory-points
+          span.descriptor= 'V: '
+          span.value 0
+        .road-points
+          span.descriptor= 'R: '
+          span.value 0
+        .army-points
+          span.descriptor= 'A: '
+          span.value 0
+      br.clearBoth
+
   #player2.player.well
-    h2.name Empty
-    .opponentcardwell
-      .opponentcards
-        ul.resource-cards
+    .left
+      img(src='http://i.imgur.com/TFOqB.jpg').pic
+      h3.name Empty
+    .right
+      .cards
+        .card
+          .resource-card
+          .card-number.js-resource-number 0
+        .card
+          .development-card
+          .card-number.js-development-number 0
+      br.clearBoth
+      .points
+        .victory-points
+          span.descriptor= 'V: '
+          span.value 0
+        .road-points
+          span.descriptor= 'R: '
+          span.value 0
+        .army-points
+          span.descriptor= 'A: '
+          span.value 0
+      br.clearBoth
+
   #player3.player.well
-    h2.name Empty
-    .opponentcardwell
-      .opponentcards
-        ul.resource-cards
+    .left
+      img(src='http://i.imgur.com/TFOqB.jpg').pic
+      h3.name Empty
+    .right
+      .cards
+        .card
+          .resource-card
+          .card-number.js-resource-number 0
+        .card
+          .development-card
+          .card-number.js-development-number 0
+      br.clearBoth
+      .points
+        .victory-points
+          span.descriptor= 'V: '
+          span.value 0
+        .road-points
+          span.descriptor= 'R: '
+          span.value 0
+        .army-points
+          span.descriptor= 'A: '
+          span.value 0
+      br.clearBoth
 
 block messages
   .message.well

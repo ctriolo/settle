@@ -120,7 +120,7 @@ window.onload = function() {
 
       }
       else {
-        $(".frequency-container").animate({"right": "5%"}, "slow");      
+        $(".frequency-container").animate({"right": "5%"}, "slow");
         $(this).addClass("chartShow");
         $(".frequency-container").hide();
       }
@@ -326,6 +326,35 @@ window.onload = function() {
 
 
   /**
+   * updatePlayerInfo
+   *
+   * Update player info.
+   * @param   players   array
+   */
+   socket.on('updatePlayerInfo', function(players) {
+     console.log(players);
+
+     // Update Resources
+     for (var i = 0; i < players.length; i++) {
+       var player = players[i];
+       var player_id = users.indexOf(player.user_id);
+       var total = 0;
+       for (var resource in player.resource_cards) {
+         var r = resource.toLowerCase();
+         if (player.user_id === me) {
+           $('#player'+player_id+' .js-'+r+'-number')
+             .text(player.resource_cards[resource])
+         }
+         total += player.resource_cards[resource];
+       }
+       if (player.user_id !== me) {
+         $('#player'+player_id+' .js-resource-number').text(total);
+       }
+     }
+   });
+
+
+  /**
    * selectSettlement
    *
    * For every interesection id in `ids`:
@@ -451,27 +480,14 @@ window.onload = function() {
    * @param   resources   object   keys: user ids
    *                               values: resource assoc array
    */
-  
   handleDiceRoll = function(number, resources) {
-    // handle robber
+   // handle robber
     if (number === 7) {
       // Highlight Robber Tokens
       $('.numberToken.robber').addClass('highlight');
       setTimeout(function() {
         $('.numberToken.robber').removeClass('highlight');
       }, 2000);
-    }
-    // Give Resources
-    for (var user in resources) {
-      for (var resource in resources[user]) {
-        var player = users.indexOf(user);
-        var r = resource.toLowerCase();
-        if (user != me) r = 'resource';
-        for (var i = 0; i < resources[user][resource]; i++) {
-          $('#player'+player+' .resource-cards')
-            .append('<li><div class="'+r+'-card"</li>');
-        }
-      }
     }
 
     // Highlight Tokens
@@ -486,14 +502,14 @@ window.onload = function() {
       roll_frequency[number-2] += 1;
       updateFrequencies();
     }
-    
+
     if (total_rolls == 1) {
       $("#frequencyChart").css({"opacity":"1.0"});
     }
   }
-   
+
   socket.on('rollDiceResults', function(number, resources, breakdown) {
-    
+
     if (typeof this.first == 'undefined') {
         // show dice roll
         $('.board-container').append(
@@ -502,10 +518,10 @@ window.onload = function() {
         '</div>');
     }
     this.first = 'defined';
-    
+
     if (typeof breakdown != 'undefined') {
         $('#dice-image').show();
-        url = 'http://www.princeton.edu/~rgromero/dice-gif/a' + breakdown[0] 
+        url = 'http://www.princeton.edu/~rgromero/dice-gif/a' + breakdown[0]
             + ',' + breakdown[1] + '-g50.gif';
         $('#dice-image').attr('src', url);
         setTimeout(function() {
@@ -514,7 +530,7 @@ window.onload = function() {
             handleDiceRoll(number, resources);
         }, 8 * 1000);
     }
-  
+
   });
 
   /**
@@ -531,7 +547,7 @@ window.onload = function() {
       }
     );
 
-   
+
 
     socket.on('showRobber', function() {
       $('.roll-phase, .main-phase, .steal-phase').hide();

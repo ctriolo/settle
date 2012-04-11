@@ -56,7 +56,16 @@ body {
  */
 
 .actions {
+  position: relative;
+  border: 3px solid black;
+  moz-border-radius: 3px;
+      border-radius: 3px;
+  padding: 10px;
+  min-width: 275px;
+  background: whiteSmoke;
   text-align: center;
+  margin-bottom: 20px;
+  z-index: 3;
 }
 
 .actions .roll-phase,
@@ -67,7 +76,7 @@ body {
 }
 
 .actions .btn-toolbar {
-  margin-bottom: 0px;
+  margin: 0px;
   display: none;
 }
 
@@ -129,7 +138,6 @@ body {
   border: 3px solid;
   border-color: black;
   z-index: 3;
-
 }
 
 .player.well.disabled {
@@ -142,82 +150,96 @@ body {
   color: lime;
 }
 
-/* card wells */
-.cardwell {
-  width: 90%;
-  height: 120px;
-  position: relative;
-}
-.opponentcardwell {
-  width: 90%;
-  height: 50px;
-  position: relative;
-}
-.cards, .opponentcards {
-  moz-border-radius: 10px;
-  border-radius: 10px;
-  border: 3px solid rgba(0, 0, 0, 0.07);
-  background-color: white;
-  position:absolute;
+.player {
+  min-width: 305px;
+  min-height: 100px;
+  padding: 0px;
 }
 
-.cards {
-  top: 0px;
-  width: 98%;
-  height: 100px;
+.player .left {
+  float: left;
+  width: 75px;
+  text-align: center;
 }
 
-.opponentcards {
-  top: 0px;
-  width: 50%;
-  height: 50px;
+.player .right {
+  float:left;
+  margin-right: 10px;
+  min-width: 200px;
+  padding: 10px;
+}
+
+.player .pic {
+  height: 75px;
+  width: 75px;
 }
 
 /**
  * Resource Cards
  */
 
-ul.resource-cards {
-  position: absolute;
-  top:10%;
-  left: 1%;
-  height: 80%;
+.cards {
+  margin: auto;
+  padding: 0;
+  height: 34px;
 }
 
-ul.resource-cards li { display: inline; }
-
-ul.resource-cards li .sheep-card,
-ul.resource-cards li .wheat-card,
-ul.resource-cards li .wood-card,
-ul.resource-cards li .brick-card,
-ul.resource-cards li .stone-card,
-ul.resource-cards li .resource-card {
+.cards .card {
   float: left;
-  height: 100%;
-  width:  40px;
-  border: 2px solid black;
+  margin-right: 7px;
+}
+
+.cards .sheep-card,
+.cards .wheat-card,
+.cards .wood-card,
+.cards .brick-card,
+.cards .stone-card,
+.cards .resource-card,
+.cards .development-card {
+  height: 30px;
+  width:  20px;
+  border: 3px solid black;
   moz-border-radius: 3px;
       border-radius: 3px;
-  margin-left: -10px;
 }
 
-.opponentcards ul.resource-cards li .sheep-card,
-.opponentcards ul.resource-cards li .wheat-card,
-.opponentcards ul.resource-cards li .wood-card,
-.opponentcards ul.resource-cards li .brick-card,
-.opponentcards ul.resource-cards li .stone-card,
-.opponentcards ul.resource-cards li .resource-card {
-  width: 20px;
+.cards .card .card-number {
+  text-align: center;
 }
-ul.resource-cards li .wood-card     { background: forestgreen; }
-ul.resource-cards li .wheat-card    { background: khaki; }
-ul.resource-cards li .sheep-card    { background: lime; }
-ul.resource-cards li .brick-card    { background: orangered; }
-ul.resource-cards li .stone-card    { background: grey; }
-ul.resource-cards li .resource-card { background: blue }
+
+.cards .wood-card        { background: forestgreen; }
+.cards .wheat-card       { background: khaki; }
+.cards .sheep-card       { background: lime; }
+.cards .brick-card       { background: orangered; }
+.cards .stone-card       { background: grey; }
+.cards .resource-card    { background: blue; }
+.cards .development-card { background: gold; }
+
+.clearBoth {clear:both;}
+.clearRight {clear:right;}
+.clearLeft {clear:left;}
+
+
+/**
+ * Points
+ */
+
+.points {
+  margin: auto;
+  padding: 0;
+  height: 34px;
+}
+
+.points .victory-points,
+.points .army-points,
+.points .road-points {
+  float: left;
+  margin-right: 10px;
+  text-align: center;
+}
 
 /*****
-  * frequency chart 
+  * frequency chart
   *****/
 .frequency-container {
   position: absolute;
