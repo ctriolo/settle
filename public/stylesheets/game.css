@@ -253,6 +253,7 @@ body {
   *****/
 .frequency-container {
   position: absolute;
+  display: none;
   top: 3%;
   right: 2%;
   width: 22.91%;
@@ -261,7 +262,7 @@ body {
   border: 2px solid black;
   moz-border-radius: 3px;
   border-radius: 3px;
-  z-index: 2;
+  z-index: 0;
 }
 .bar-container {
   position:relative;

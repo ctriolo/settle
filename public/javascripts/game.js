@@ -45,11 +45,33 @@ function updateFrequencies() {
 
 function updateCards() {
   $('.card').each(function() {
-    if ($(this).children('.card-number').text() === "0")
+    var number = $(this).children('.card-number');
+    if (number.text() === "0")
       $(this).hide();
     else
       $(this).show(); 
+    if (number.hasClass("js-resource-number")) {
+      var num = parseInt(number.text());
+      if (num >= 7) {
+        number.css({"color": "red"});
+      }
+      else
+        number.css({"color": "black"});
+    }
   });
+}
+
+/* show main buttons */
+function showMainPhase() {
+    $('.roll-phase, .robber-phase, .steal-phase, .waiting-phase, .place-phase').hide();
+    $('.main-phase').show();
+}
+
+/* show place button with specified text */
+function showPlacePhase(phrase) {
+    $(".place-phase button").text(phrase);
+    $(".place-phase").show();
+    $('.roll-phase, .main-phase, .steal-phase, .waiting-phase, .robber-phase').hide();
 }
 
 window.onload = function() {
@@ -94,8 +116,7 @@ window.onload = function() {
    */
 
   $(".roll").click(function(){
-    $('.roll-phase, .robber-phase, .steal-phase').hide();
-    $('.main-phase').show();
+    showMainPhase();
     socket.emit('rollDice');
   });
 
@@ -187,6 +208,7 @@ window.onload = function() {
     $('#start').text("Start");
     $('#start').css("background-color", "#05C");
     $("#startBackground").fadeOut("slow");
+    $(".player").css({"z-index":"1"});
     $('#start').click(function(){
       $('#start').off('click');
       $('#start').remove();
@@ -247,6 +269,7 @@ window.onload = function() {
         socket.emit('startingSettlementPlacement', id, '0');
       });
     }
+    showPlacePhase("Place Settlement");
   });
 
 
@@ -290,6 +313,7 @@ window.onload = function() {
         socket.emit('startingRoadPlacement', id);
       });
     }
+    showPlacePhase("Place Road");
   });
 
 
@@ -306,6 +330,8 @@ window.onload = function() {
     $('#edge' + id).hide();
     $('#road' + id).show();
     $('#road' + id).addClass('player'+playerid);
+    $(".waiting-phase").show();
+    $('.roll-phase, .main-phase, .steal-phase, .place-phase, .robber-phase').hide();
   });
 
 
@@ -342,7 +368,6 @@ window.onload = function() {
    */
    socket.on('updatePlayerInfo', function(players) {
      console.log(players);
-     updateCards();
      for (var i = 0; i < players.length; i++) {
        var player = players[i];
        var player_id = users.indexOf(player.user_id);
@@ -379,7 +404,7 @@ window.onload = function() {
 
        // Update Victory Points
 
-
+     	updateCards();
      }
    });
 
@@ -406,6 +431,7 @@ window.onload = function() {
         socket.emit('buildSettlement', id);
       });
     }
+    showPlacePhase("Place Settlement");
   });
 
 
@@ -419,6 +445,7 @@ window.onload = function() {
    * @param   ids   array   the ids of the valid intersections
    */
   socket.on('selectCity', function(ids) {
+    showPlacePhase("Place City");
     for (var i = 0; i < ids.length; i++) {
       $("#settlement"+ids[i]).addClass('selectable');
       $("#settlement"+ids[i]).hover(function(){$(this).addClass('hover')},
@@ -431,6 +458,7 @@ window.onload = function() {
         socket.emit('buildCity', id);
       });
     }
+    
   });
 
 
@@ -444,6 +472,7 @@ window.onload = function() {
    * @param   ids   array   the ids of the valid edges
    */
   socket.on('selectRoad', function(ids) {
+    showPlacePhase("Place Road");
     for (var i = 0; i < ids.length; i++) {
       $("#edge"+ids[i]).addClass('selectable');
       $("#edge"+ids[i]).hover(function(){$(this).addClass('hover')},
@@ -466,6 +495,7 @@ window.onload = function() {
    * @param   id   num   the intersection id to show the settlement at
    */
   socket.on('buildSettlement', function(id, playerid) {
+    showMainPhase();
     $('#intersection' + id).hide();
     $('#settlement' + id).show();
     $('#settlement' + id).addClass('player'+playerid);
@@ -479,6 +509,7 @@ window.onload = function() {
    * @param   id   num   the intersection id to show the city at
    */
   socket.on('buildCity', function(id, playerid) {
+    showMainPhase();
     $('#settlement' + id).hide();
     $('#city' + id).show();
     $('#city' + id).addClass('player'+playerid);
@@ -492,6 +523,7 @@ window.onload = function() {
    * @param   id   num   the edge id to show the road at
    */
   socket.on('buildRoad', function(id, playerid) {
+    showMainPhase();
     $('#edge' + id).hide();
     $('#road' + id).show();
     $('#road' + id).addClass('player'+playerid);
@@ -554,10 +586,10 @@ window.onload = function() {
         url = 'http://www.princeton.edu/~rgromero/dice-gif/a' + breakdown[0]
             + ',' + breakdown[1] + '-g50.gif';
         $('#dice-image').attr('src', url);
+        handleDiceRoll(number, resources);
         setTimeout(function() {
             $('#dice-image').attr('src','');
             $('#dice-image').hide();
-            handleDiceRoll(number, resources);
         }, 8 * 1000);
     }
 
@@ -585,7 +617,7 @@ window.onload = function() {
     });
 
     socket.on('showSteal', function(players) {
-      $('.roll-phase, .main-phase, .robber-phase').hide();
+      $('.roll-phase, .main-phase, .place-phase, .robber-phase').hide();
       $('.steal-phase').show();
       $('.player.well').addClass("disabled");
       $('#player' + users.indexOf(players[i])).removeClass("disabled");
@@ -595,8 +627,7 @@ window.onload = function() {
       }
     });
     socket.on('showMain', function() {
-      $('.roll-phase, .robber-phase, .steal-phase').hide();
-      $('.main-phase').show();
+      showMainPhase();
       $('.player.well').removeClass("disabled");
       $('.player.well').removeClass("enabled");
     });
@@ -618,7 +649,7 @@ window.onload = function() {
      * handles card stealing css
      */
     socket.on('stealCard', function(thief, player_id, resource) {
-      $('.roll-phase, .robber-phase, .steal-phase').hide();
+      $('.roll-phase, .robber-phase, .place-phase, .steal-phase').hide();
       $('.main-phase').show();
     });
 
@@ -642,7 +673,10 @@ window.onload = function() {
       }
       $('.main-phase, .robber-phase, .steal-phase').hide();
     }
-
+    else {
+      $(".waiting-phase").show();
+      $('.roll-phase, .main-phase, .steal-phase, .place-phase, .robber-phase').hide();
+    }
     // Remove past highlights, highlight current player
     $('.name.highlight').removeClass('highlight');
     $('#player'+users.indexOf(turn_user)+' .name').addClass('highlight');
