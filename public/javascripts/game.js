@@ -7,7 +7,7 @@ var users = [];
 var me;
 var roll_frequency = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 var total_rolls = 0.0;
-
+var recent_offer = {};
 function makeSVG(tag, attrs) {
   var el= document.createElementNS('http://www.w3.org/2000/svg', tag);
   for (var k in attrs)
@@ -46,10 +46,15 @@ function updateFrequencies() {
 function updateCards() {
   $('.card').each(function() {
     var number = $(this).children('.card-number');
-    if (number.text() === "0")
+    var class_name = number.attr("class").split(" ");
+    if (number.text() === "0") {
       $(this).hide();
-    else
+      $('.offer-cards .trade-card .' + class_name[1]).parent().hide();
+    }
+    else {
       $(this).show(); 
+      $('.offer-cards .trade-card .' + class_name[1]).parent().show();
+    }
     if (number.hasClass("js-resource-number")) {
       var num = parseInt(number.text());
       if (num >= 7) {
@@ -59,8 +64,19 @@ function updateCards() {
         number.css({"color": "black"});
     }
   });
-}
 
+}
+function tradeCleanup() {
+    $(".trade-container").animate({"right": "5%"}, "slow");
+    $(".tradeBtn").addClass("popupShow");
+    $(".trade-container").hide();
+    $(".trade-card .card-number").text("0");
+
+    $(".showtrade-container").animate({"right": "5%"}, "slow");
+    $(".showtrade-container").hide();
+    $(".showtrade-card .card-number").text("0");
+}
+       
 /* show main buttons */
 function showMainPhase() {
     $('.roll-phase, .robber-phase, .steal-phase, .waiting-phase, .place-phase').hide();
@@ -133,12 +149,94 @@ window.onload = function() {
     alert('Not implemented, silly.');
   });
 
-  $(".trade").click(function(){
-    alert('Not implemented, silly.');
+  $(".tradebtn").click(function(){
+    if ($(this).hasClass("popupShow")) {
+      $(".trade-container").show();
+      $(".trade-container").animate({"right": "30%"}, "slow");
+      $(this).removeClass("popupShow");
+    }
+    else {
+      $(".trade-container").animate({"right": "5%"}, "slow");
+      $(this).addClass("popupShow");
+      $(".trade-container").hide();
+    }
+  });
+
+  $(".offerbtn").click(function(){
+    var offer = {"for": [], "offer":[]};
+    $('.for-cards .cards .card-number').each(function() {
+      offer["for"].push(parseInt($(this).text()));
+    });
+    $('.offer-cards .cards .card-number').each(function() {
+      offer["offer"].push(parseInt($(this).text()));
+    });
+    socket.emit('offerTrade', offer);
+  });
+
+  socket.on('showTrade', function(offer, offerer) {
+    if (me !== offerer) {
+      var acceptable = true;
+      $('.showtrade-popup .offer-cards .showtrade-card').each(function(index) {
+        if (offer['offer'][index] === 0)
+          $(this).hide();
+        else {
+          $(this).children('.card-number').text(offer['offer'][index]);
+          $(this).show();
+        }
+       });
+      $('.showtrade-popup .for-cards .showtrade-card').each(function(index) {
+        if (offer['for'][index] === 0)
+          $(this).hide();
+        else {
+          // check if player can accept this trade
+          var card = $(this).children('.card-number');
+          var type = card.attr("class").split(" ")[1];
+          var available = parseInt($('.cards .card .' + type).text());
+          if (available < offer['for'][index])
+            acceptable = false;
+          card.text(offer['for'][index]);
+          $(this).show();
+        }
+      });
+      if (acceptable)
+        $('.acceptTrade').removeClass('disabled');
+      else
+        $('.acceptTrade').addClass('disabled');
+      $(".showtrade-container").show();
+      $(".showtrade-container").animate({"right": "30%"}, "slow");
+      recent_offer = offer;
+    }
+  });
+  socket.on('tradeCleanup', function() {
+     tradeCleanup();
+  });
+  $(".acceptTrade").click(function() {
+    socket.emit('acceptTrade', recent_offer, me);
+  });
+
+  $(".reset").click(function() {
+    $('.trade-card').each(function() {
+      $(this).children('.card-number').text("0");
+    });
+  });
+
+  $(".trade-card").click(function(){
+    var num = parseInt($(this).children(".card-number").text());
+    var class_name = $(this).children(".card-number").attr("class").split(" ");
+    var has_num = parseInt($('.cards .card .' + class_name[1]).text());
+    if (has_num > num || $(this).parent().parent().hasClass('for-cards')) {
+      $(this).children(".card-number").text(num+1);
+    }
   });
 
   $(".end").click(function(){
     socket.emit('endTurn');
+    if (!$('.tradebtn').hasClass("popupShow")) {
+      $(".trade-container").animate({"right": "5%"}, "slow");
+      $(".tradebtn").addClass("popupShow");
+      $(".trade-container").hide();
+    }
+    tradeCleanup();
   });
 
   $("#frequencyChart").click(function() {

@@ -40,7 +40,7 @@ RESOURCE = {
   WOOD:  'Wood',
 };
 
-RESOURCE_ARRAY = [RESOURCE.SHEEP, RESOURCE.STONE, RESOURCE.WHEAT, RESOURCE.BRICK, RESOURCE.WOOD];
+RESOURCE_ARRAY = [ RESOURCE.WHEAT, RESOURCE.WOOD, RESOURCE.SHEEP, RESOURCE.BRICK, RESOURCE.STONE];
 
 DEVELOPMENT = {
   KNIGHT:         'Knight',
@@ -570,7 +570,24 @@ Game.prototype.endTurn = function(user_id) {
   this._validatePhase(PHASE.MAIN);
   this._next();
 }
+/**
+  * acceptTrade
+  *
+  */
 
+Game.prototype.acceptTrade = function(offer, accepter) {
+  var accepter = this._translate(accepter);
+  var offerer = this.whoseTurn();
+  offerer = this._translate(offerer);
+  for(var i = 0; i < offer['for'].length; i++) {
+      this.players[accepter].resource_cards[RESOURCE_ARRAY[i]] -= offer['for'][i];
+      this.players[offerer].resource_cards[RESOURCE_ARRAY[i]] += offer['for'][i];
+  }
+  for(var i = 0; i < offer['offer'].length; i++) {
+      this.players[accepter].resource_cards[RESOURCE_ARRAY[i]] += offer['offer'][i];
+      this.players[offerer].resource_cards[RESOURCE_ARRAY[i]] -= offer['offer'][i];
+  }
+}
 /**
  * placeStartingSettlement
  *

@@ -13,7 +13,99 @@ block board
   #startBackground
   include includes/board
 
+block trade
+  .trade-popup
+    .offer-cards
+      .trade-text 
+        p Offer:
+      .cards.trade
+        .trade-card
+          .wheat-card
+          .card-number.js-wheat-number 0
+        .trade-card
+          .wood-card
+          .card-number.js-wood-number 0
+        .trade-card
+          .sheep-card
+          .card-number.js-sheep-number 0
+        .trade-card
+          .brick-card
+          .card-number.js-brick-number 0
+         .trade-card
+          .stone-card
+          .card-number.js-stone-number 0
+    .for-cards
+      .trade-text For:
+      .cards.trade
+        .trade-card
+          .wheat-card
+          .card-number.js-wheat-number 0
+        .trade-card
+          .wood-card
+          .card-number.js-wood-number 0
+        .trade-card
+          .sheep-card
+          .card-number.js-sheep-number 0
+        .trade-card
+          .brick-card
+          .card-number.js-brick-number 0
+        .trade-card
+          .stone-card
+          .card-number.js-stone-number 0
+  .trade-actions
+    .btn-toolbar
+      .btn-group
+        button.btn.reset Reset
+      .btn-group
+        button.btn.bank.disabled Bank
+      .btn-group
+        button.btn.offerbtn Offer
+block showTrade
+  .showtrade-popup
+    .offer-cards
+      .trade-text 
+        p Offering:
+      .cards.trade
+        .showtrade-card
+          .wheat-card
+          .card-number.js-wheat-number 0
+        .showtrade-card
+          .wood-card
+          .card-number.js-wood-number 0
+        .showtrade-card
+          .sheep-card
+          .card-number.js-sheep-number 0
+        .showtrade-card
+          .brick-card
+          .card-number.js-brick-number 0
+         .showtrade-card
+          .stone-card
+          .card-number.js-stone-number 0
+    .for-cards
+      .trade-text For:
+      .cards.trade
+        .showtrade-card
+          .wheat-card
+          .card-number.js-wheat-number 0
+        .showtrade-card
+          .wood-card
+          .card-number.js-wood-number 0
+        .showtrade-card
+          .sheep-card
+          .card-number.js-sheep-number 0
+        .showtrade-card
+          .brick-card
+          .card-number.js-brick-number 0
+        .showtrade-card
+          .stone-card
+          .card-number.js-stone-number 0
+  .trade-actions
+    .btn-toolbar
+      .btn-group
+        button.btn.acceptTrade Accept Trade
 
+
+    
 block bars
   - var diceRolls = [2,3,4,5,6,7,8,9,10,11,12];
   .bar-container
@@ -121,8 +213,7 @@ block actions
               span.wheat &bull;
               span.sheep &bull;
       .btn-group
-        button.btn.trade
-          | Trade <span class="caret" />
+        button.btn.tradebtn.popupShow Trade
     .btn-toolbar.main-phase
       .btn-group
         button.btn.development

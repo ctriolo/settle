@@ -210,12 +210,45 @@ module.exports = function(sockets) {
       try {
         var ret = game.endTurn(user_id);
         gp.save(game);
+        sockets.to(game_id).emit('tradeCleanup');
         sockets.to(game_id).emit('newTurn', game.whoseTurn(), false);
       } catch (error) {
         socket.send(error);
       }
     });
 
+    /**
+      * send offer
+      **/
+      socket.on('offerTrade', function(offer) {
+        var user_id = socket.handshake.sessionID;
+        var game_id = uid_to_gid[user_id];
+        var game = gp.findById(game_id);
+        try {
+          sockets.to(game_id).emit('showTrade', offer, game.whoseTurn());
+        } catch (error) {
+          socket.send(error);
+        }
+      });
+
+    /**
+      * accept trade from accepter
+      **/
+      socket.on('acceptTrade', function(offer, accepter) {
+        var user_id = socket.handshake.sessionID;
+        var game_id = uid_to_gid[user_id];
+        var game = gp.findById(game_id);
+        if (accepter === game.whoseTurn())
+          return;
+        try {
+          var ret = game.acceptTrade(offer, accepter);
+          updatePlayerInfo(sockets, game);
+          gp.save(game);
+          sockets.to(game_id).emit('tradeCleanup');
+        } catch (error) {
+          socket.send(error);
+        }
+      });
 
     /**
      * Purchse Selections

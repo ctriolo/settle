@@ -54,7 +54,14 @@ body {
 /**
  * Action Buttons
  */
-
+.trade-actions {
+  position: relative;
+  margin-top: 20px;
+  min-width: 275px;
+  background: whiteSmoke;
+  text-align: center;
+  z-index: 3;
+}
 .actions {
   position: relative;
   border: 3px solid black;
@@ -198,6 +205,10 @@ body {
   float: left;
   margin-right: 7px;
 }
+.cards .trade-card, .cards .showtrade-card {
+  float: left;
+  margin-right: 7px;
+}
 
 .cards .sheep-card,
 .cards .wheat-card,
@@ -213,7 +224,7 @@ body {
       border-radius: 3px;
 }
 
-.cards .card .card-number {
+.cards .card .card-number, .cards .trade-card .card-number, .cards .showtrade-card .card-number {
   text-align: center;
 }
 
@@ -246,6 +257,59 @@ body {
   float: left;
   margin-right: 10px;
   text-align: center;
+}
+
+/*****
+  * trade popup
+  *****/
+
+.trade-container, .showtrade-container {
+  display:none;
+  position: absolute;
+  top: 3%;
+  right: 2%;
+  width: 22.91%;
+  height: 19%;
+  background-color: whiteSmoke;
+  border: 2px solid black;
+  moz-border-radius: 3px;
+  border-radius: 3px;
+  z-index: 5;
+}
+.trade-popup, .showtrade-popup {
+  position:relative;
+  border: 2px solid black;
+  top:5%;
+  left: 5%;
+  height: 70%;
+  width: 90%;
+}
+.trade-text {
+  width: 20%;
+  height: 100%;
+  text-align: center;
+  vertical-align: middle;
+  font-size: 20px;
+}
+.trade-text p {
+  text-align: center;
+  vertical-align: middle;
+  font-size: 20px;
+}
+.offer-cards, .for-cards {
+  position: absolute;
+  top: 5%;
+  left: 5%;
+  width: 90%;
+  height: 45%;
+}
+.for-cards {
+  top: 45%;
+}
+.cards.trade {
+  position: absolute;
+  top: 0%;
+  left: 20%;
 }
 
 /*****
