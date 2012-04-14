@@ -16,7 +16,7 @@ block board
 block trade
   .trade-popup
     .offer-cards
-      .trade-text 
+      .trade-text
         p Offer:
       .cards.trade
         .trade-card
@@ -63,7 +63,7 @@ block trade
 block showTrade
   .showtrade-popup
     .offer-cards
-      .trade-text 
+      .trade-text
         p Offering:
       .cards.trade
         .showtrade-card
@@ -105,7 +105,7 @@ block showTrade
         button.btn.acceptTrade Accept Trade
 
 
-    
+
 block bars
   - var diceRolls = [2,3,4,5,6,7,8,9,10,11,12];
   .bar-container
@@ -222,80 +222,12 @@ block actions
         button.btn.end End
 
 block others
-  #player1.player.well
-    .left
-      img(src='http://i.imgur.com/TFOqB.jpg').pic
-      h3.name Empty
-    .right
-      .cards
-        .card
-          .resource-card
-          .card-number.js-resource-number 0
-        .card
-          .development-card
-          .card-number.js-development-number 0
-      br.clearBoth
-      .points
-        .victory-points
-          span.descriptor= 'V: '
-          span.value.js-victory-value 0
-        .road-points
-          span.descriptor= 'R: '
-          span.value.js-road-value 0
-        .army-points
-          span.descriptor= 'A: '
-          span.value.js-army-value 0
-      br.clearBoth
-
-  #player2.player.well
-    .left
-      img(src='http://i.imgur.com/TFOqB.jpg').pic
-      h3.name Empty
-    .right
-      .cards
-        .card
-          .resource-card
-          .card-number.js-resource-number 0
-        .card
-          .development-card
-          .card-number.js-development-number 0
-      br.clearBoth
-      .points
-        .victory-points
-          span.descriptor= 'V: '
-          span.value.js-victory-value 0
-        .road-points
-          span.descriptor= 'R: '
-          span.value.js-road-value 0
-        .army-points
-          span.descriptor= 'A: '
-          span.value.js-army-value 0
-      br.clearBoth
-
-  #player3.player.well
-    .left
-      img(src='http://i.imgur.com/TFOqB.jpg').pic
-      h3.name Empty
-    .right
-      .cards
-        .card
-          .resource-card
-          .card-number.js-resource-number 0
-        .card
-          .development-card
-          .card-number.js-development-number 0
-      br.clearBoth
-      .points
-        .victory-points
-          span.descriptor= 'V: '
-          span.value.js-victory-value 0
-        .road-points
-          span.descriptor= 'R: '
-          span.value.js-road-value 0
-        .army-points
-          span.descriptor= 'A: '
-          span.value.js-army-value 0
-      br.clearBoth
+  #player1
+    include includes/opponent
+  #player2
+    include includes/opponent
+  #player3
+    include includes/opponent
 
 block messages
   .message.well
