@@ -57,7 +57,7 @@ body {
 .trade-actions {
   position: relative;
   margin-top: 20px;
-  min-width: 275px;
+  margin-bottom: 10px;
   background: whiteSmoke;
   text-align: center;
   z-index: 3;
@@ -276,6 +276,10 @@ body {
   border-radius: 3px;
   z-index: 5;
 }
+.showtrade-container {
+  width: 50%;
+  height: 100%;
+}
 .trade-popup, .showtrade-popup {
   position:relative;
   border: 2px solid black;
@@ -285,7 +289,7 @@ body {
   width: 90%;
 }
 .trade-text {
-  width: 20%;
+  width: 30%;
   height: 100%;
   text-align: center;
   vertical-align: middle;
@@ -309,7 +313,7 @@ body {
 .cards.trade {
   position: absolute;
   top: 0%;
-  left: 20%;
+  left: 30%;
 }
 
 /*****
