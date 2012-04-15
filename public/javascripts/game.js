@@ -43,27 +43,38 @@ function updateFrequencies() {
   }
 }
 
-function updateCards() {
-  $('.card').each(function() {
-    var number = $(this).children('.card-number');
-    var class_name = number.attr("class").split(" ");
-    if (number.text() === "0") {
-      $(this).hide();
-      $('.offer-cards .trade-card .' + class_name[1]).parent().hide();
-    }
-    else {
-      $(this).show(); 
-      $('.offer-cards .trade-card .' + class_name[1]).parent().show();
-    }
-    if (number.hasClass("js-resource-number")) {
-      var num = parseInt(number.text());
-      if (num >= 7) {
-        number.css({"color": "red"});
+function updateCards(offer) {
+  if (offer) {
+    $('.trade-card').each(function() {
+      var number = $(this).children('.card-number');
+      if (number.text() === "0") {
+        $(this).hide();
       }
-      else
-        number.css({"color": "black"});
-    }
-  });
+    });
+  }
+  else {
+    $('.card').each(function() {
+      var number = $(this).children('.card-number');
+      var class_name = number.attr("class").split(" ");
+      if (number.text() === "0") {
+        $(this).hide();
+        $('.offer-cards .trade-card .' + class_name[1]).parent().hide();
+      }
+      else {
+        $(this).show(); 
+        $('.offer-cards .trade-card .' + class_name[1]).parent().show();
+      }
+      if (number.hasClass("js-resource-number")) {
+        var num = parseInt(number.text());
+        if (num >= 7) {
+          number.css({"color": "red"});
+        }
+        else
+          number.css({"color": "black"});
+      }
+    });
+    $('.for-cards .trade-card').show();
+  }
 
 }
 function tradeCleanup() {
@@ -163,6 +174,8 @@ window.onload = function() {
   });
 
   $(".offerbtn").click(function(){
+    $(this).addClass("disabled");
+    updateCards(true);
     var offer = {"for": [], "offer":[]};
     $('.trade-container .for-cards .cards .card-number').each(function() {
       offer["for"].push(parseInt($(this).text()));
@@ -220,6 +233,8 @@ window.onload = function() {
     $('.trade-card').each(function() {
       $(this).children('.card-number').text("0");
     });
+    $(".offerbtn").removeClass("disabled");
+    updateCards(false);
   });
 
   $(".trade-card").click(function(){
@@ -504,7 +519,7 @@ window.onload = function() {
 
        // Update Victory Points
 
-     	updateCards();
+     	updateCards(false);
      }
    });
 
@@ -661,7 +676,7 @@ window.onload = function() {
       roll_frequency[number-2] += 1;
       updateFrequencies();
     }
-    updateCards();
+    updateCards(false);
     if (total_rolls == 1) {
       $("#frequencyChart").css({"opacity":"1.0"});
     }
