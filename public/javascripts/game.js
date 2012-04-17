@@ -43,32 +43,43 @@ function updateFrequencies() {
   }
 }
 
-function updateCards() {
-  $('.card').each(function() {
-    var number = $(this).children('.card-number');
-    var class_name = number.attr("class").split(" ");
-    if (number.text() === "0") {
-      $(this).hide();
-      $('.offer-cards .trade-card .' + class_name[1]).parent().hide();
-    }
-    else {
-      $(this).show(); 
-      $('.offer-cards .trade-card .' + class_name[1]).parent().show();
-    }
-    if (number.hasClass("js-resource-number")) {
-      var num = parseInt(number.text());
-      if (num >= 7) {
-        number.css({"color": "red"});
+function updateCards(offer) {
+  if (offer) {
+    $('.trade-card').each(function() {
+      var number = $(this).children('.card-number');
+      if (number.text() === "0") {
+        $(this).hide();
       }
-      else
-        number.css({"color": "black"});
-    }
-  });
+    });
+  }
+  else {
+    $('.card').each(function() {
+      var number = $(this).children('.card-number');
+      var class_name = number.attr("class").split(" ");
+      if (number.text() === "0") {
+        $(this).hide();
+        $('.offer-cards .trade-card .' + class_name[1]).parent().hide();
+      }
+      else {
+        $(this).show(); 
+        $('.offer-cards .trade-card .' + class_name[1]).parent().show();
+      }
+      if (number.hasClass("js-resource-number")) {
+        var num = parseInt(number.text());
+        if (num >= 7) {
+          number.css({"color": "red"});
+        }
+        else
+          number.css({"color": "black"});
+      }
+    });
+    $('.for-cards .trade-card').show();
+  }
 
 }
 function tradeCleanup() {
     $(".trade-container").animate({"right": "5%"}, "slow");
-    $(".tradeBtn").addClass("popupShow");
+    $(".tradebtn").addClass("popupShow");
     $(".trade-container").hide();
     $(".trade-card .card-number").text("0");
 
@@ -139,7 +150,7 @@ window.onload = function() {
   // handle stealing
   $(".player.well").click(function(){
     if ($(this).hasClass("enabled")) {
-        var id = parseInt($(this).attr('id').substring('player'.length));
+        var id = parseInt($(this).parent().attr('id').substring('player'.length));
         socket.emit('steal', users[id]);
 
    }
@@ -163,11 +174,13 @@ window.onload = function() {
   });
 
   $(".offerbtn").click(function(){
+    $(this).addClass("disabled");
+    updateCards(true);
     var offer = {"for": [], "offer":[]};
-    $('.for-cards .cards .card-number').each(function() {
+    $('.trade-container .for-cards .cards .card-number').each(function() {
       offer["for"].push(parseInt($(this).text()));
     });
-    $('.offer-cards .cards .card-number').each(function() {
+    $('.trade-container .offer-cards .cards .card-number').each(function() {
       offer["offer"].push(parseInt($(this).text()));
     });
     socket.emit('offerTrade', offer);
@@ -175,8 +188,10 @@ window.onload = function() {
 
   socket.on('showTrade', function(offer, offerer) {
     if (me !== offerer) {
+      var player_num = users.indexOf(offerer);
+      var player_tag = '#player' + player_num;
       var acceptable = true;
-      $('.showtrade-popup .offer-cards .showtrade-card').each(function(index) {
+      $(player_tag + ' .showtrade-container .showtrade-popup .offer-cards .showtrade-card').each(function(index) {
         if (offer['offer'][index] === 0)
           $(this).hide();
         else {
@@ -184,7 +199,7 @@ window.onload = function() {
           $(this).show();
         }
        });
-      $('.showtrade-popup .for-cards .showtrade-card').each(function(index) {
+      $(player_tag + ' .showtrade-popup .for-cards .showtrade-card').each(function(index) {
         if (offer['for'][index] === 0)
           $(this).hide();
         else {
@@ -202,8 +217,8 @@ window.onload = function() {
         $('.acceptTrade').removeClass('disabled');
       else
         $('.acceptTrade').addClass('disabled');
-      $(".showtrade-container").show();
-      $(".showtrade-container").animate({"right": "30%"}, "slow");
+      $(player_tag + " .showtrade-container").show();
+      $(player_tag + " .showtrade-container").animate({"right": "30%"}, "slow");
       recent_offer = offer;
     }
   });
@@ -218,6 +233,8 @@ window.onload = function() {
     $('.trade-card').each(function() {
       $(this).children('.card-number').text("0");
     });
+    $(".offerbtn").removeClass("disabled");
+    updateCards(false);
   });
 
   $(".trade-card").click(function(){
@@ -330,7 +347,7 @@ window.onload = function() {
     }
 
     for (var i = 0; i < players.length; i++) {
-      $('#player' + i).css({"border-color":player_colors[players.indexOf(users[i])]});
+      $('#player' + i + " .player").css({"border-color":player_colors[players.indexOf(users[i])]});
 	$('#player' + i).css({"border-width":"4px"});
     }
 
@@ -502,7 +519,7 @@ window.onload = function() {
 
        // Update Victory Points
 
-     	updateCards();
+     	updateCards(false);
      }
    });
 
@@ -645,9 +662,6 @@ window.onload = function() {
     if (number === 7) {
       // Highlight Robber Tokens
       $('.numberToken.robber').addClass('highlight');
-      setTimeout(function() {
-        $('.numberToken.robber').removeClass('highlight');
-      }, 2000);
     }
 
     // Highlight Tokens
@@ -662,7 +676,7 @@ window.onload = function() {
       roll_frequency[number-2] += 1;
       updateFrequencies();
     }
-    updateCards();
+    updateCards(false);
     if (total_rolls == 1) {
       $("#frequencyChart").css({"opacity":"1.0"});
     }
@@ -718,10 +732,9 @@ window.onload = function() {
       $('.roll-phase, .main-phase, .place-phase, .robber-phase').hide();
       $('.steal-phase').show();
       $('.player.well').addClass("disabled");
-      $('#player' + users.indexOf(players[i])).removeClass("disabled");
       for (var i = 0; i < players.length; i++) {
-        $('#player' + users.indexOf(players[i])).removeClass("disabled");
-        $('#player' + users.indexOf(players[i])).addClass("enabled"); // enable stealing from these player wells
+        $('#player' + users.indexOf(players[i]) + " .player.well").removeClass("disabled");
+        $('#player' + users.indexOf(players[i]) + " .player.well").addClass("enabled"); // enable stealing from these player wells
       }
     });
     socket.on('showMain', function() {

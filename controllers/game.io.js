@@ -245,6 +245,7 @@ module.exports = function(sockets) {
           updatePlayerInfo(sockets, game);
           gp.save(game);
           sockets.to(game_id).emit('tradeCleanup');
+          socket.emit('canBuild', game.canBuild(user_id));
         } catch (error) {
           socket.send(error);
         }
