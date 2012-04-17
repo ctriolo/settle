@@ -93,6 +93,8 @@ function Player(index, user_id) {
   // Developments
   this.development_cards = [];
 
+  // unique list of ports
+  this.ports = [];
   // Unbuilts
   this.unbuilt_roads = 15;
   this.unbuilt_settlements = 5;
@@ -570,6 +572,22 @@ Game.prototype.endTurn = function(user_id) {
   this._validatePhase(PHASE.MAIN);
   this._next();
 }
+
+/**
+  * bankTrade
+  *
+  */
+
+Game.prototype.bankTrade = function(offer, offerer) {
+  var offerer = this._translate(offerer);
+  for(var i = 0; i < offer['for'].length; i++) {
+      this.players[offerer].resource_cards[RESOURCE_ARRAY[i]] += offer['for'][i];
+  }
+  for(var i = 0; i < offer['offer'].length; i++) {
+      this.players[offerer].resource_cards[RESOURCE_ARRAY[i]] -= offer['offer'][i];
+  }
+}
+
 /**
   * acceptTrade
   *
@@ -585,6 +603,28 @@ Game.prototype.acceptTrade = function(offer, accepter, offerer) {
   for(var i = 0; i < offer['offer'].length; i++) {
       this.players[accepter].resource_cards[RESOURCE_ARRAY[i]] += offer['offer'][i];
       this.players[offerer].resource_cards[RESOURCE_ARRAY[i]] -= offer['offer'][i];
+  }
+}
+
+/*****
+  * updatePorts
+  *
+  * Updates the ports array for the given user_id after placing on intersection_id
+  ****/
+Game.prototype.updatePorts = function(user_id, intersection_id) {
+  var player_id = this._translate(user_id);
+  var intersection = this.board._getIntersection(intersection_id);
+  var edges = intersection.eNeighbors(this.board);
+  for (var edge in edges) {
+    if (edges.hasOwnProperty(edge)) {
+      e_port = edges[edge].port;
+      console.log(e_port);
+      if (e_port == null || e_port === PortTypeEnum.NONE)
+        continue;
+      if (this.players[player_id].ports.indexOf(e_port) === -1) {
+        this.players[player_id].ports.push(e_port);
+      }
+    }
   }
 }
 /**
@@ -606,7 +646,7 @@ Game.prototype.placeStartingSettlement = function(user_id, intersection_id) {
   var is_second = 2 == this.board.getNumberOfSettlements(player_id);
   var resources = (is_second) ? this.board.getStartingResources(intersection_id) : {};
   this._addResources(player_id, resources);
-
+  this.updatePorts(user_id, intersection_id);
   this._next();
   return resources;
 };
@@ -651,6 +691,7 @@ Game.prototype.buildSettlement = function(user_id, intersection_id) {
   this._subtractResources(player_id, SETTLEMENT_COST);
   this.board.buildSettlement(player_id, intersection_id);
   this.updateLongestRoad();
+  this.updatePorts(user_id, intersection_id);
 };
 
 

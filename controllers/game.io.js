@@ -241,6 +241,24 @@ module.exports = function(sockets) {
           socket.send(error);
         }
       });
+
+    /**
+      * allow bank trades
+      **/
+      socket.on('bankTrade', function(offer, offerer) {
+        var user_id = socket.handshake.sessionID;
+        var game_id = uid_to_gid[user_id];
+        var game = gp.findById(game_id);
+        try {
+          var ret = game.bankTrade(offer, offerer);
+          updatePlayerInfo(sockets, game);
+          gp.save(game);
+          sockets.to(game_id).emit('tradeCleanup');
+          socket.emit('canBuild', game.canBuild(user_id));
+        } catch (error) {
+          socket.send(error);
+        }
+      });
     /**
       * accept trade from accepter
       **/

@@ -8,6 +8,7 @@ var me;
 var roll_frequency = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 var total_rolls = 0.0;
 var recent_offer = {};
+var ports = [];
 function makeSVG(tag, attrs) {
   var el= document.createElementNS('http://www.w3.org/2000/svg', tag);
   for (var k in attrs)
@@ -248,7 +249,6 @@ window.onload = function() {
     var num1 = parseInt($(this).parents(".player").parent().attr('id').substring('player'.length));
     if (!$(this).hasClass("disabled")) {
       var container = $(this).parents(".showtrade-container");
-      console.log("ACCEPT TRADE FROM " + users[num1] + " to " + me);
       // check if this is the second accept or not
       if (container.hasClass("accepted"))
         socket.emit('acceptTrade', recent_offer[num1], me, users[num1], "done");
@@ -259,7 +259,6 @@ window.onload = function() {
   $(".rejectTrade").click(function() {
     var num1 = parseInt($(this).parents(".player").parent().attr('id').substring('player'.length));
     if (!$(this).hasClass("disabled")) {
-      console.log("REJECTED TRADE FROM " + users[num1] + " to " + me);
       socket.emit('rejectTrade', recent_offer[num1], me, users[num1]);
     }
   });
@@ -279,16 +278,77 @@ window.onload = function() {
       $(this).children('.card-number').text("0");
     });
     $(".offerbtn").removeClass("disabled");
+    $(".bank").addClass("disabled");
     updateCards(false);
   });
 
+  $('.bank').click(function() {
+    if ($(this).hasClass("disabled"))
+      return;
+    var offer = {"for": [], "offer":[]};
+    $('.trade-container .for-cards .cards .card-number').each(function() {
+      offer["for"].push(parseInt($(this).text()));
+    });
+    $('.trade-container .offer-cards .cards .card-number').each(function() {
+      offer["offer"].push(parseInt($(this).text()));
+    });
+    socket.emit('bankTrade', offer, me);
+  });
+    
+
   $(".trade-card").click(function(){
+    if ($('.offer').hasClass('disabled'))
+      return;
     var num = parseInt($(this).children(".card-number").text());
     var class_name = $(this).children(".card-number").attr("class").split(" ");
     var has_num = parseInt($('.cards .card .' + class_name[1]).text());
     if (has_num > num || $(this).parent().parent().hasClass('for-cards')) {
       $(this).children(".card-number").text(num+1);
     }
+  
+    // check if banking is allowed
+    var for_found = 0; // store number of types of cards offered/desired. (must be 1 for bank trading)
+    var offer_found = 0;
+    var for_total = 0;
+    var offer_total = 0;
+    var offer_type = "";
+
+    $('.for-cards .trade-card').each(function() {
+      var number = $(this).children('.card-number');
+      if (number.text() !== "0") {
+        for_found += 1;
+        for_total += parseInt(number.text());
+      }
+    });
+
+    $('.offer-cards .trade-card').each(function() {
+      var number = $(this).children('.card-number');
+      if (number.text() !== "0") {
+        offer_found += 1;
+        offer_type = number.attr("class").split(" ")[1];
+        offer_total += parseInt(number.text());
+      }
+    });
+    var TypeEnum = {
+      "js-wood-number": "Wood21",
+      "js-sheep-number": "Sheep21",
+      "js-wheat-number": "Wheat21",
+      "js-stone-number": "Stone21",
+      "js-brick-number": "Brick21",
+    }
+
+    if (offer_found !== 1 || for_found !== 1) {
+      $('.bank').addClass('disabled');
+      return;
+    }
+    if (offer_total === for_total * 4)
+      $('.bank').removeClass('disabled');
+    else if (ports.indexOf('Any31') !== -1 && offer_total === for_total * 3)
+      $('.bank').removeClass('disabled');
+    else if (ports.indexOf(TypeEnum[offer_type]) !== -1 && offer_total === for_total*2)
+      $('.bank').removeClass('disabled');  
+    else
+      $('.bank').addClass('disabled');
   });
 
   $(".end").click(function(){
@@ -544,6 +604,10 @@ window.onload = function() {
        }
        if (player.user_id !== me) {
          $('#player'+player_id+' .js-resource-number').text(total);
+       }
+       // update ports array
+       else {
+         ports = player.ports;
        }
 
        // Update Roads
