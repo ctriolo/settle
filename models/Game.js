@@ -575,9 +575,8 @@ Game.prototype.endTurn = function(user_id) {
   *
   */
 
-Game.prototype.acceptTrade = function(offer, accepter) {
+Game.prototype.acceptTrade = function(offer, accepter, offerer) {
   var accepter = this._translate(accepter);
-  var offerer = this.whoseTurn();
   offerer = this._translate(offerer);
   for(var i = 0; i < offer['for'].length; i++) {
       this.players[accepter].resource_cards[RESOURCE_ARRAY[i]] -= offer['for'][i];

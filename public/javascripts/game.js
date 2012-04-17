@@ -86,6 +86,8 @@ function tradeCleanup() {
     $(".showtrade-container").animate({"right": "5%"}, "slow");
     $(".showtrade-container").hide();
     $(".showtrade-card .card-number").text("0");
+
+    $(".offerbtn").removeClass("disabled");
 }
        
 /* show main buttons */
@@ -183,15 +185,31 @@ window.onload = function() {
     $('.trade-container .offer-cards .cards .card-number').each(function() {
       offer["offer"].push(parseInt($(this).text()));
     });
-    socket.emit('offerTrade', offer);
+    socket.emit('offerTrade', offer, me);
   });
 
-  socket.on('showTrade', function(offer, offerer) {
+  socket.on('showTrade', function(offer, offerer, type) {
     if (me !== offerer) {
       var player_num = users.indexOf(offerer);
+      // get id name of player well
       var player_tag = '#player' + player_num;
       var acceptable = true;
-      $(player_tag + ' .showtrade-container .showtrade-popup .offer-cards .showtrade-card').each(function(index) {
+
+      // change color based on whether this trade was accepted/rejected/offered
+      $(".showtrade-container .trade-actions").show();
+      if (type === "accepted")
+        $(".showtrade-container").addClass("accepted");
+      else if (type === "rejected") {
+        $(".showtrade-container").addClass("rejected");
+        $(".showtrade-container .trade-actions").hide();
+      }
+      else {
+        $(".showtrade-container").removeClass("accepted");
+        $(".showtrade-container").removeClass("rejected");
+      }
+
+      // show the given cards from the offer
+      $(player_tag + ' .offer-cards .showtrade-card').each(function(index) {
         if (offer['offer'][index] === 0)
           $(this).hide();
         else {
@@ -199,7 +217,7 @@ window.onload = function() {
           $(this).show();
         }
        });
-      $(player_tag + ' .showtrade-popup .for-cards .showtrade-card').each(function(index) {
+      $(player_tag + ' .for-cards .showtrade-card').each(function(index) {
         if (offer['for'][index] === 0)
           $(this).hide();
         else {
@@ -217,16 +235,43 @@ window.onload = function() {
         $('.acceptTrade').removeClass('disabled');
       else
         $('.acceptTrade').addClass('disabled');
+      // animate container pop-up
       $(player_tag + " .showtrade-container").show();
-      $(player_tag + " .showtrade-container").animate({"right": "30%"}, "slow");
-      recent_offer = offer;
+      $(player_tag + " .showtrade-container").animate({"right": "100%"}, "slow");
+      recent_offer[player_num] = offer;
     }
   });
   socket.on('tradeCleanup', function() {
      tradeCleanup();
   });
   $(".acceptTrade").click(function() {
-    socket.emit('acceptTrade', recent_offer, me);
+    var num1 = parseInt($(this).parents(".player").parent().attr('id').substring('player'.length));
+    if (!$(this).hasClass("disabled")) {
+      var container = $(this).parents(".showtrade-container");
+      console.log("ACCEPT TRADE FROM " + users[num1] + " to " + me);
+      // check if this is the second accept or not
+      if (container.hasClass("accepted"))
+        socket.emit('acceptTrade', recent_offer[num1], me, users[num1], "done");
+      else
+        socket.emit('acceptTrade', recent_offer[num1], me, users[num1], "");
+    }
+  });
+  $(".rejectTrade").click(function() {
+    var num1 = parseInt($(this).parents(".player").parent().attr('id').substring('player'.length));
+    if (!$(this).hasClass("disabled")) {
+      console.log("REJECTED TRADE FROM " + users[num1] + " to " + me);
+      socket.emit('rejectTrade', recent_offer[num1], me, users[num1]);
+    }
+  });
+  $(".counterTrade").click(function() {
+    $('.trade-card').each(function() {
+      $(this).children('.card-number').text("0");
+    });
+    $(".offerbtn").removeClass("disabled");
+    updateCards(false);
+    $(".trade-container").show();
+    $(".trade-container").animate({"right": "30%"}, "slow");
+    $(this).removeClass("popupShow");
   });
 
   $(".reset").click(function() {

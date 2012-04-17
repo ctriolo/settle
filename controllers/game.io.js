@@ -220,35 +220,62 @@ module.exports = function(sockets) {
     /**
       * send offer
       **/
-      socket.on('offerTrade', function(offer) {
+      socket.on('offerTrade', function(offer, offerer) {
         var user_id = socket.handshake.sessionID;
         var game_id = uid_to_gid[user_id];
         var game = gp.findById(game_id);
         try {
-          sockets.to(game_id).emit('showTrade', offer, game.whoseTurn());
+          sockets.to(game_id).emit('showTrade', offer, offerer, "");
         } catch (error) {
           socket.send(error);
         }
       });
 
-    /**
-      * accept trade from accepter
-      **/
-      socket.on('acceptTrade', function(offer, accepter) {
+      socket.on('rejectTrade', function(offer, rejecter, offerer) {
         var user_id = socket.handshake.sessionID;
         var game_id = uid_to_gid[user_id];
         var game = gp.findById(game_id);
-        if (accepter === game.whoseTurn())
-          return;
         try {
-          var ret = game.acceptTrade(offer, accepter);
-          updatePlayerInfo(sockets, game);
-          gp.save(game);
-          sockets.to(game_id).emit('tradeCleanup');
-          socket.emit('canBuild', game.canBuild(user_id));
+          sockets.to(game_id).emit('showTrade', offer, rejecter, "rejected");
         } catch (error) {
           socket.send(error);
         }
+      });
+    /**
+      * accept trade from accepter
+      **/
+      socket.on('acceptTrade', function(offer, accepter, offerer, type) {
+        var user_id = socket.handshake.sessionID;
+        var game_id = uid_to_gid[user_id];
+        var game = gp.findById(game_id);
+
+	// trade finally accepted!
+        if (type === "done") {
+          try {
+            console.log(accepter + " " + user_id);
+            var ret = game.acceptTrade(offer, accepter, offerer);
+            updatePlayerInfo(sockets, game);
+            gp.save(game);
+            sockets.to(game_id).emit('tradeCleanup');
+            socket.emit('canBuild', game.canBuild(user_id));
+          } catch (error) {
+            socket.send(error);
+          }
+        }
+
+        // send back to original trader for acceptance
+        else {
+          // reverse offer
+          var temp = offer['offer'];
+          offer['offer'] = offer['for'];
+          offer['for'] = temp;
+          try {
+            sockets.to(game_id).emit('showTrade', offer, accepter, "accepted");
+          } catch (error) {
+            socket.send(error);
+          }
+        }
+
       });
 
     /**
