@@ -16,7 +16,13 @@ body {
 }
 
 .info-container {
-  padding: 20px;
+  /*padding: 20px;*/
+  position:fixed;
+  top:0;
+  right:0;
+  bottom:0;
+  width:40%;
+  box-shadow: -5px 0px 25px 0px #000;
 }
 
 #messages {
@@ -31,6 +37,31 @@ body {
 #messageInput {
   width: 100%;
   margin:0;
+}
+
+#player0 {
+  height:16%;
+  position:static;
+}
+
+.others, .message {
+  position:static;
+  height:33%;
+}
+
+#player1, #player2, #player3 {
+  position:static;
+  height:100%;
+  width:33.3333%;
+  float:left;
+}
+
+.video {
+  max-height: 50%;
+  max-width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
 }
 
 /**
@@ -63,15 +94,17 @@ body {
   z-index: 3;
 }
 .actions {
-  position: relative;
-  border: 3px solid black;
-  moz-border-radius: 3px;
-      border-radius: 3px;
+  position: static;
+  height:16%;
+  
+  /*border: 3px solid black;*/
+  /*moz-border-radius: 3px;
+      border-radius: 3px;*/
   padding: 10px;
   min-width: 275px;
   background: whiteSmoke;
   text-align: center;
-  margin-bottom: 20px;
+  /*margin-bottom: 20px;*/
   z-index: 3;
 }
 
@@ -123,7 +156,7 @@ body {
   opacity:.7;
   background:#000000;
   border: 1px solid #cecece;
-  z-index: 1;
+  z-index: 4;
 }
 
 #start {
@@ -136,13 +169,13 @@ body {
   opacity: .8;
   background-color:#CD0000;
   color:#FFFFFF;
-  z-index:2;
+  z-index: 5;
 }
 
 /* player wells */
 .player, .message {
   position: relative;
-  border: 3px solid;
+  /*border: 3px solid;*/
   border-color: black;
   z-index: 3;
 }
@@ -158,9 +191,14 @@ body {
 }
 
 .player {
-  min-width: 305px;
-  min-height: 100px;
-  padding: 0px;
+  /*min-width: 305px;*/
+  /*min-height: 100px;*/
+  height:100%;
+  padding: 5%;
+  margin-bottom:0px;
+  -webkit-border-radius:0px;
+  -moz-border-radius:0px;
+  border-radius:0px;
 }
 
 .player .left {
