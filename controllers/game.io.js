@@ -189,6 +189,7 @@ module.exports = function(sockets) {
         var resource = game.steal(player_id);
         gp.save(game);
         sockets.to(game.whoseTurn()).emit('stealCard', game.whoseTurn(), player_id,  resource);
+        socket.emit('canBuild', game.canBuild(user_id));
         sockets.to(game.whoseTurn()).emit('showMain');
         updatePlayerInfo(sockets, game);
       } catch (error) {
