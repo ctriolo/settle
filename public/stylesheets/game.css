@@ -281,12 +281,12 @@ body {
 }
 
 .showtrade-container.rejected {
-  background-color: rgb(100, 0, 0);
-  background-color: rgba(100, 0, 0,.6);
+  background-color: rgb(175, 0, 0);
+  background-color: rgba(175, 0, 0,.7);
 }
 .showtrade-container.accepted {
   background-color: rgb(0, 175, 0);
-  background-color: rgba(0, 175, 0,.6);
+  background-color: rgba(0, 175, 0,.7);
 }
 .trade-popup, .showtrade-popup {
   position:relative;

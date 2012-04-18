@@ -44,6 +44,12 @@ function updateFrequencies() {
   }
 }
 
+function createPopup(tag, title, content) {
+      // set up popups
+      $(tag).attr('rel', 'popover');
+      $(tag).popover({"animation":false, "placement":"top", "trigger":"manual", "title": title, "selector":true, "content": content, "delay":{"show": 0, "hide":1000}});
+}
+
 function updateCards(offer) {
   if (offer) {
     $('.trade-card').each(function() {
@@ -162,10 +168,12 @@ window.onload = function() {
   $(".tradebtn").click(function(){
     if ($(this).hasClass("popupShow")) {
       $(".trade-container").show();
+      $(this).addClass("active");
       $(".trade-container").animate({"right": "30%"}, "slow");
       $(this).removeClass("popupShow");
     }
     else {
+      $(this).removeClass("active");
       $(".trade-container").animate({"right": "5%"}, "slow");
       $(this).addClass("popupShow");
       $(".trade-container").hide();
@@ -457,6 +465,7 @@ window.onload = function() {
     }
     $('#start').off('click');
     $('#start').remove();
+
   });
 
 
@@ -475,17 +484,22 @@ window.onload = function() {
   socket.on('startingSettlementSelect', function(ids) {
     for (var i = 0; i < ids.length; i++) {
       $("#intersection"+ids[i]).addClass('selectable');
-      $("#intersection"+ids[i]).hover(function(){$(this).addClass('hover')},
-                                      function(){$(this).removeClass('hover')});
+      // set up popups
+      createPopup("#intersection" + ids[i], "Settlement Placement", "Click this intersection to place a new settlement");
+      $("#intersection"+ids[i]).hover(function(){$(this).addClass('hover'); $(this).popover("show"); },
+                                      function(){$(this).removeClass('hover'); $(this).popover("hide")});
       $("#intersection"+ids[i]).click(function() {
         $('.intersection').off('click');
         $('.intersection').off('hover');
         $('.intersection').removeClass('selectable');
+        $(this).popover('hide');
         var id = parseInt($(this).attr('id').substring('intersection'.length));
         socket.emit('startingSettlementPlacement', id, '0');
       });
     }
-    showPlacePhase("Place Settlement");
+
+
+    showPlacePhase("Click Intersection to Place Settlement");
   });
 
 
@@ -519,17 +533,19 @@ window.onload = function() {
       console.log(ids);
     for (var i = 0; i < ids.length; i++) {
       $("#edge"+ids[i]).addClass('selectable');
-      $("#edge"+ids[i]).hover(function(){$(this).addClass('hover')},
-                              function(){$(this).removeClass('hover')});
+      createPopup("#edge" + ids[i], "Road Placement", "Click this edge to place a new road");
+      $("#edge"+ids[i]).hover(function(){$(this).addClass('hover'); $(this).popover("show")},
+                              function(){$(this).removeClass('hover');$(this).popover("hide")});
       $("#edge"+ids[i]).click(function() {
         $('.edge').off('click');
         $('.edge').off('hover');
         $('.edge').removeClass('selectable');
+        $(this).popover("hide")
         var id = parseInt($(this).attr('id').substring('edge'.length));
         socket.emit('startingRoadPlacement', id);
       });
     }
-    showPlacePhase("Place Road");
+    showPlacePhase("Click Edge to Place Road");
   });
 
 
@@ -666,17 +682,21 @@ window.onload = function() {
   socket.on('selectSettlement', function(ids) {
     for (var i = 0; i < ids.length; i++) {
       $("#intersection"+ids[i]).addClass('selectable');
-      $("#intersection"+ids[i]).hover(function(){$(this).addClass('hover')},
-                                      function(){$(this).removeClass('hover')});
+      // set up popups
+      createPopup("#intersection" + ids[i], "Settlement Placement", "Click this intersection to place a new settlement");
+
+      $("#intersection"+ids[i]).hover(function(){$(this).addClass('hover'); $(this).popover('show');},
+                                      function(){$(this).removeClass('hover'); $(this).popover('hide');});
       $("#intersection"+ids[i]).click(function() {
         $('.intersection').off('click');
         $('.intersection').off('hover');
+        $(this).popover('hide');
         $('.intersection').removeClass('selectable');
         var id = parseInt($(this).attr('id').substring('intersection'.length));
         socket.emit('buildSettlement', id);
       });
     }
-    showPlacePhase("Place Settlement");
+    showPlacePhase("Click Intersection to Place Settlement");
   });
 
 
@@ -690,7 +710,7 @@ window.onload = function() {
    * @param   ids   array   the ids of the valid intersections
    */
   socket.on('selectCity', function(ids) {
-    showPlacePhase("Place City");
+    showPlacePhase("Click a Settlement to Place City");
     for (var i = 0; i < ids.length; i++) {
       $("#settlement"+ids[i]).addClass('selectable');
       $("#settlement"+ids[i]).hover(function(){$(this).addClass('hover')},
@@ -717,14 +737,16 @@ window.onload = function() {
    * @param   ids   array   the ids of the valid edges
    */
   socket.on('selectRoad', function(ids) {
-    showPlacePhase("Place Road");
+    showPlacePhase("Click Edge to Place Road");
     for (var i = 0; i < ids.length; i++) {
       $("#edge"+ids[i]).addClass('selectable');
-      $("#edge"+ids[i]).hover(function(){$(this).addClass('hover')},
-                              function(){$(this).removeClass('hover')});
+      createPopup("#edge" + ids[i], "Road Placement", "Click this edge to place a new road");
+      $("#edge"+ids[i]).hover(function(){$(this).addClass('hover'); $(this).popover('show')},
+                              function(){$(this).removeClass('hover'); $(this).popover('hide')});
       $("#edge"+ids[i]).click(function() {
         $('.edge').off('click');
         $('.edge').off('hover');
+        $(this).popover('hide');
         $('.edge').removeClass('selectable');
         var id = parseInt($(this).attr('id').substring('edge'.length));
         socket.emit('buildRoad', id);
@@ -788,11 +810,6 @@ window.onload = function() {
    *                               values: resource assoc array
    */
   handleDiceRoll = function(number, resources) {
-   // handle robber
-    if (number === 7) {
-      // Highlight Robber Tokens
-      $('.numberToken.robber').addClass('highlight');
-    }
 
     // Highlight Tokens
     $('.numberToken.number'+number).addClass('highlight');
@@ -856,6 +873,7 @@ window.onload = function() {
     socket.on('showRobber', function() {
       $('.roll-phase, .main-phase, .steal-phase').hide();
       $('.robber-phase').show();
+      $('.numberToken.robber').addClass('highlight');
     });
 
     socket.on('showSteal', function(players) {
