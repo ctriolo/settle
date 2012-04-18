@@ -88,6 +88,7 @@ function tradeCleanup() {
     $(".trade-container").animate({"right": "5%"}, "slow");
     $(".tradebtn").addClass("popupShow");
     $(".trade-container").hide();
+    $(".tradebtn").removeClass("active");
     $(".trade-card .card-number").text("0");
 
     $(".showtrade-container").animate({"right": "5%"}, "slow");
@@ -360,6 +361,7 @@ window.onload = function() {
     if (!$('.tradebtn').hasClass("popupShow")) {
       $(".trade-container").animate({"right": "5%"}, "slow");
       $(".tradebtn").addClass("popupShow");
+      $(".tradebtn").removeClass("active");
       $(".trade-container").hide();
     }
     tradeCleanup();
@@ -609,7 +611,10 @@ window.onload = function() {
      for (var i = 0; i < players.length; i++) {
        var player = players[i];
        var player_id = users.indexOf(player.user_id);
-
+       // update Victory Points
+       var victory_points = player.victory_points;
+       if (player.has_longest_road === true) victory_points += 2;
+       if (player.has_largest_army === true) victory_points += 2;
        // Update Resources
        var total = 0;
        for (var resource in player.resource_cards) {
@@ -626,7 +631,12 @@ window.onload = function() {
        // update ports array
        else {
          ports = player.ports;
+         // see your own victory cards
+         victory_points += player.victory_cards;
        }
+
+       // update victory point total
+       $('#player'+player_id+' .js-victory-value').text(victory_points);
 
        // Update Developments
        if (player.user_id == me) {

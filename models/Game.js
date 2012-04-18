@@ -56,6 +56,8 @@ DEVELOPMENT = {
   CHAPEL:         'Chapel',
 }
 
+VICTORY_CARDS = [DEVELOPMENT.UNIVERSITY, DEVELOPMENT.MARKET, DEVELOPMENT.LIBRARY, DEVELOPMENT.PALACE, DEVELOPMENT.CHAPEL];
+
 SETTLEMENT_COST = {};
 SETTLEMENT_COST[RESOURCE.WOOD]  = 1;
 SETTLEMENT_COST[RESOURCE.BRICK] = 1;
@@ -95,7 +97,8 @@ function Player(index, user_id) {
   // Developments
   this.development_cards = {};
   for (var i in DEVELOPMENT) this.development_cards[DEVELOPMENT[i]] = 0;
-
+  this.victory_points = 0;
+  this.victory_cards = 0;
   // unique list of ports
   this.ports = [];
   // Unbuilts
@@ -692,6 +695,7 @@ Game.prototype.placeStartingSettlement = function(user_id, intersection_id) {
   this._validatePhase(PHASE.STARTING_SETTLEMENT);
 
   this.players[player_id].unbuilt_settlements--;
+  this.players[player_id].victory_points++;
   this.board.placeStartingSettlement(player_id, intersection_id);
 
   var is_second = 2 == this.board.getNumberOfSettlements(player_id);
@@ -739,6 +743,7 @@ Game.prototype.buildSettlement = function(user_id, intersection_id) {
   if (!this.canBuildSettlement(user_id)) throw 'You are not able to build a settlement!';
 
   this.players[player_id].unbuilt_settlements--;
+  this.players[player_id].victory_points;
   this._subtractResources(player_id, SETTLEMENT_COST);
   this.board.buildSettlement(player_id, intersection_id);
   this.updateLongestRoad();
@@ -762,6 +767,7 @@ Game.prototype.buildCity = function(user_id, intersection_id) {
 
   this.players[player_id].unbuilt_settlements++;
   this.players[player_id].unbuilt_cities--;
+  this.players[player_id].victory_points++;
   this._subtractResources(player_id, CITY_COST);
   this.board.buildCity(player_id, intersection_id);
 };
@@ -803,7 +809,10 @@ Game.prototype.buildDevelopment = function(user_id) {
 console.log('DEFINIATELY', this, this.development_cards);
   this._subtractResources(player_id, DEVELOPMENT_COST);
   var card = this.development_cards.pop();
-  if (card) this.players[player_id].development_cards[card]++;
+  if (card) {
+    this.players[player_id].development_cards[card]++;
+    if (VICTORY_CARDS.indexOf(card) != -1) this.players[player_id].victory_cards++;
+  }
 
   return card;
 }
