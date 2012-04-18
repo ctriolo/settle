@@ -406,6 +406,83 @@ module.exports = function(sockets) {
 
 
     /**
+     * buildDevelopment
+     *
+     * Gives a random dev card to the user who called the socket type
+     */
+    socket.on('buildDevelopment', function(edge_id) {
+      var user_id = socket.handshake.sessionID;
+      var game_id = uid_to_gid[user_id];
+      var game = gp.findById(game_id);
+      game.buildDevelopment(user_id);
+      gp.save(game);
+      updatePlayerInfo(sockets, game);
+      socket.emit('canBuild', game.canBuild(user_id));
+    });
+
+
+    /**
+     * playKnight
+     *
+     * Initiates Knight
+     */
+    socket.on('playKnight', function(edge_id) {
+      var user_id = socket.handshake.sessionID;
+      var game_id = uid_to_gid[user_id];
+      var game = gp.findById(game_id);
+      game.playKnight(user_id);
+      gp.save(game);
+      sockets.to(game.whoseTurn()).emit('showRobber');
+      updatePlayerInfo(sockets, game);
+    });
+
+
+    /**
+     * playYearOfPlenty
+     *
+     * Initiates Year Of Plenty
+     */
+    socket.on('playYearOfPlenty', function(edge_id) {
+      var user_id = socket.handshake.sessionID;
+      var game_id = uid_to_gid[user_id];
+      var game = gp.findById(game_id);
+      game.playYearOfPlenty(user_id);
+      gp.save(game);
+      updatePlayerInfo(sockets, game);
+    });
+
+
+    /**
+     * playMonopoly
+     *
+     * Initiates Monopoly
+     */
+    socket.on('playMonopoly', function(edge_id) {
+      var user_id = socket.handshake.sessionID;
+      var game_id = uid_to_gid[user_id];
+      var game = gp.findById(game_id);
+      game.playMonopoly(user_id);
+      gp.save(game);
+      updatePlayerInfo(sockets, game);
+    });
+
+
+    /**
+     * playRoadBuilding
+     *
+     * Initiates Road Building
+     */
+    socket.on('playRoadBuilding', function(edge_id) {
+      var user_id = socket.handshake.sessionID;
+      var game_id = uid_to_gid[user_id];
+      var game = gp.findById(game_id);
+      game.playRoadBuilding(user_id);
+      gp.save(game);
+      updatePlayerInfo(sockets, game);
+    });
+
+
+    /**
      * message
      *
      * Received `message`s are to be treated like chat messages from others

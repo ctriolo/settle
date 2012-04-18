@@ -173,8 +173,29 @@ block actions
         button.btn.tradebtn.popupShow Trade
     .btn-toolbar.main-phase
       .btn-group
-        button.btn.development
+        button.btn.dropdown-toggle(data-toggle="dropdown")
           | Development <span class="caret" />
+        ul.dropdown-menu
+          li
+            a#knight
+              span.amount
+              i.icon-fire
+              | Knight
+          li
+            a#yearOfPlenty
+              span.amount
+              i.icon-gift
+              | Year of Plenty
+          li
+            a#monopoly
+              span.amount
+              i.icon-resize-small
+              | Monopoly
+          li
+            a#roadBuilding
+              span.amount
+              i.icon-road
+              | Road Building
       .btn-group
         button.btn.end End
 

@@ -62,7 +62,7 @@ function updateCards(offer) {
         $('.offer-cards .trade-card .' + class_name[1]).parent().hide();
       }
       else {
-        $(this).show(); 
+        $(this).show();
         $('.offer-cards .trade-card .' + class_name[1]).parent().show();
       }
       if (number.hasClass("js-resource-number")) {
@@ -90,7 +90,7 @@ function tradeCleanup() {
 
     $(".offerbtn").removeClass("disabled");
 }
-       
+
 /* show main buttons */
 function showMainPhase() {
     $('.roll-phase, .robber-phase, .steal-phase, .waiting-phase, .place-phase').hide();
@@ -157,10 +157,6 @@ window.onload = function() {
         socket.emit('steal', users[id]);
 
    }
-  });
-
-  $(".development").click(function(){
-    alert('Not implemented, silly.');
   });
 
   $(".tradebtn").click(function(){
@@ -294,7 +290,7 @@ window.onload = function() {
     });
     socket.emit('bankTrade', offer, me);
   });
-    
+
 
   $(".trade-card").click(function(){
     if ($('.offer').hasClass('disabled'))
@@ -305,7 +301,7 @@ window.onload = function() {
     if (has_num > num || $(this).parent().parent().hasClass('for-cards')) {
       $(this).children(".card-number").text(num+1);
     }
-  
+
     // check if banking is allowed
     var for_found = 0; // store number of types of cards offered/desired. (must be 1 for bank trading)
     var offer_found = 0;
@@ -346,7 +342,7 @@ window.onload = function() {
     else if (ports.indexOf('Any31') !== -1 && offer_total === for_total * 3)
       $('.bank').removeClass('disabled');
     else if (ports.indexOf(TypeEnum[offer_type]) !== -1 && offer_total === for_total*2)
-      $('.bank').removeClass('disabled');  
+      $('.bank').removeClass('disabled');
     else
       $('.bank').addClass('disabled');
   });
@@ -569,8 +565,14 @@ window.onload = function() {
          $('#'+building).removeClass('disabled');
          $('#'+building).click(function(){
            var id = $(this).attr('id');
+
+           // DISABLE IMMEDIATELY TO STOP FROM BEING CLICKED TWICE
+           $('#'+id).off('click');
+           $('#'+id).addClass('disabled');
+
            id = id.charAt(0).toUpperCase() + id.slice(1);
-           socket.emit('select'+id);
+           if (id === "Development") socket.emit('buildDevelopment');
+           else socket.emit('select'+id);
          });
        } else {
          $('#'+building).addClass('disabled');
@@ -608,6 +610,25 @@ window.onload = function() {
        // update ports array
        else {
          ports = player.ports;
+       }
+
+       // Update Developments
+       if (player.user_id == me) {
+         for (var key in player.development_cards) {
+           var id = key.charAt(0).toLowerCase() + key.slice(1);
+           if (player.development_cards[key] > 0) {
+             $('#'+id).removeClass('disabled');
+             $('#'+id).click(function(){
+               var id = $(this).attr('id');
+               id = id.charAt(0).toUpperCase() + id.slice(1);
+               socket.emit('play'+id);
+             });
+           } else {
+             $('#'+id).addClass('disabled');
+             $('#'+id).off('click');
+           }
+           $('#'+id+' .amount').text(player.development_cards[key]);
+         }
        }
 
        // Update Roads
@@ -682,7 +703,7 @@ window.onload = function() {
         socket.emit('buildCity', id);
       });
     }
-    
+
   });
 
 

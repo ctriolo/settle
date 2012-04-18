@@ -3,6 +3,7 @@
  */
 
 // Dependencies
+var _ = require('underscore');
 var Board = require('./Board/Board');
 
 /**
@@ -17,6 +18,7 @@ PHASE = {
   MAIN: 'Main',
   ROBBER: 'Robber',
   STEAL: 'Steal',
+  KNIGHT: 'Knight',
   // TODO: fill these in as we go along
   END: 'End',
   NOT_IMPLEMENTED: 'Not Implemented' // placeholder
@@ -44,9 +46,9 @@ RESOURCE_ARRAY = [ RESOURCE.WHEAT, RESOURCE.WOOD, RESOURCE.SHEEP, RESOURCE.BRICK
 
 DEVELOPMENT = {
   KNIGHT:         'Knight',
-  ROAD_BUILDING:  'Road Building',
+  ROAD_BUILDING:  'RoadBuilding',
   MONOPOLY:       'Monopoly',
-  YEAR_OF_PLENTY: 'Year Of Plenty',
+  YEAR_OF_PLENTY: 'YearOfPlenty',
   UNIVERSITY:     'University',
   MARKET:         'Market',
   LIBRARY:        'Library',
@@ -91,7 +93,8 @@ function Player(index, user_id) {
   this.resource_cards[RESOURCE.WOOD]  = 0;
 
   // Developments
-  this.development_cards = [];
+  this.development_cards = {};
+  for (var i in DEVELOPMENT) this.development_cards[DEVELOPMENT[i]] = 0;
 
   // unique list of ports
   this.ports = [];
@@ -118,6 +121,28 @@ function Game() {
   this.development_cards = [];
   this.current_player = -1;
   this.current_phase = PHASE.START;
+
+  // Add Knight Cards
+  for (var i = 0; i < 14; i++) {
+    this.development_cards.push(DEVELOPMENT.KNIGHT);
+  }
+
+  // Add Progress Cards
+  for (var i = 0; i < 2; i++) {
+    this.development_cards.push(DEVELOPMENT.YEAR_OF_PLENTY);
+    this.development_cards.push(DEVELOPMENT.ROAD_BUILDING);
+    this.development_cards.push(DEVELOPMENT.MONOPOLY);
+  }
+
+  // Add Victory Point Cards
+  this.development_cards.push(DEVELOPMENT.UNIVERSITY);
+  this.development_cards.push(DEVELOPMENT.MARKET);
+  this.development_cards.push(DEVELOPMENT.LIBRARY);
+  this.development_cards.push(DEVELOPMENT.PALACE);
+  this.development_cards.push(DEVELOPMENT.CHAPEL);
+
+  this.development_cards = _.shuffle(this.development_cards);
+
 };
 
 /**
@@ -161,11 +186,11 @@ Game.prototype._validatePlayer = function(player_id) {
  * phase == this.current_phase. It throws an exception if it isn't
  * @param   phase   string   the phase to check
  */
-Game.prototype._validatePhase = function(phase) {
-  if (phase != this.current_phase) {
-    throw 'It is not the ' + phase + ' phase. It is the '
-          + this.current_phase + ' phase.';
-  }
+Game.prototype._validatePhase = function(phase1, phase2) {
+  if (phase1 == this.current_phase || phase2 == this.current_phase) return;
+
+  throw 'It is not the ' + phase1 + 'or the' + phase2 + ' phase. It is the '
+        + this.current_phase + ' phase.';
 };
 
 
@@ -226,24 +251,29 @@ Game.prototype._next = function(diceRoll) {
     this._nextPlayer();
     if (this.board.getNumberOfSettlements(this.current_player) == 2) {
       this.current_phase = PHASE.DICE;
+      this.has_dice_rolled = false;
     } else {
       this.current_phase = PHASE.STARTING_SETTLEMENT;
     }
     break;
   case PHASE.DICE:
+    this.has_dice_rolled = true;
     if (diceRoll === 7)
       this.current_phase = PHASE.ROBBER
     else
       this.current_phase = PHASE.MAIN
     break;
   case PHASE.ROBBER:
-    this.current_phase = PHASE.STEAL
+  case PHASE.KNIGHT:
+    this.current_phase = PHASE.STEAL;
     break;
   case PHASE.STEAL:
-    this.current_phase = PHASE.MAIN
+    if (!this.has_dice_rolled)  this.current_phase = PHASE.DICE;
+    else this.current_phase = PHASE.MAIN;
     break;
   case PHASE.MAIN:
-    this.current_phase = PHASE.DICE
+    this.current_phase = PHASE.DICE;
+    this.has_dice_rolled = false;
     this._nextPlayer();
     break;
   }
@@ -371,6 +401,27 @@ Game.prototype.updateLongestRoad = function() {
 }
 
 /**
+ * updateLargestArmy
+ */
+Game.prototype.updateLargestArmy = function() {
+  var max = 0;
+  var player = -1;
+
+  for (var i = 0; i < this.players.length; i++) {
+    var army = this.players[i]['army_size'];
+    this.players[i]['has_largest_army'] = false;
+    if (army > max) {
+      max = army;
+      player = i;
+    }
+  }
+
+  if (player !== -1 && max >= 3) {
+    this.players[player]['has_largest_army'] = true;
+  }
+}
+
+/**
  * canStart
  *
  * @return   boolean   whether or not the game can start
@@ -455,7 +506,7 @@ Game.prototype.canBuild = function(user_id) {
   can_build['Settlement'] =  this.canBuildSettlement(user_id);
   can_build['City'] =        this.canBuildCity(user_id);
   can_build['Road'] =        this.canBuildRoad(user_id);
-  can_build['Development'] = this.canBuildSettlement(user_id);
+  can_build['Development'] = this.canBuildDevelopment(user_id);
 
   return can_build;
 }
@@ -749,14 +800,98 @@ Game.prototype.buildDevelopment = function(user_id) {
   this._validatePlayer(player_id);
   this._validatePhase(PHASE.MAIN);
   if (!this.canBuildDevelopment(user_id)) throw 'You are not able to build a development!';
-
+console.log('DEFINIATELY', this, this.development_cards);
   this._subtractResources(player_id, DEVELOPMENT_COST);
-  // var card = this.development_cards.pop();
-  // this.players[player_id].push(card);
+  var card = this.development_cards.pop();
+  if (card) this.players[player_id].development_cards[card]++;
 
-  throw 'Not implemenented';
-  // return card;
+  return card;
 }
+
+/**
+ * playKnight
+ *
+ * Initiates a knight.
+ * Throws an exception if the action is invalid.
+ * @param   user_id           string   the user who wants to play the dev
+ */
+Game.prototype.playKnight = function(user_id) {
+  var player_id = this._translate(user_id);
+  this._validatePlayer(player_id);
+  //this._validatePhase(PHASE.MAIN);
+  if (!this.players[player_id].development_cards[DEVELOPMENT.KNIGHT]) {
+    throw 'You are not able to play a knight!';
+  }
+
+  this.players[player_id].development_cards[DEVELOPMENT.KNIGHT]--;
+  this.players[player_id].army_size++;
+
+  this.current_phase = PHASE.KNIGHT;
+
+  this.updateLargestArmy();
+};
+
+/**
+ * playYearOfPlenty
+ *
+ * Initiates a year of plenty.
+ * Throws an exception if the action is invalid.
+ * @param   user_id           string   the user who wants to play the dev
+ */
+Game.prototype.playYearOfPlenty = function(user_id) {
+  var player_id = this._translate(user_id);
+  this._validatePlayer(player_id);
+  this._validatePhase(PHASE.MAIN);
+  if (!this.players[player_id].development_cards[DEVELOPMENT.YEAR_OF_PLENTY]) {
+    throw 'You are not able to play a year of plenty!';
+  }
+
+  this.players[player_id].development_cards[DEVELOPMENT.YEAR_OF_PLENTY]--;
+
+  // YEAR_OF_PLENTY PHASE?
+};
+
+
+/**
+ * playMonopoly
+ *
+ * Initiates a monopoly
+ * Throws an exception if the action is invalid.
+ * @param   user_id           string   the user who wants to play the dev
+ */
+Game.prototype.playMonopoly = function(user_id) {
+  var player_id = this._translate(user_id);
+  this._validatePlayer(player_id);
+  this._validatePhase(PHASE.MAIN);
+  if (!this.players[player_id].development_cards[DEVELOPMENT.MONOPOLY]) {
+    throw 'You are not able to play a monopoly!';
+  }
+
+  this.players[player_id].development_cards[DEVELOPMENT.MONOPOLY]--;
+
+  // MONOPOLY PHASE?
+};
+
+
+/**
+ * playRoadBuilding
+ *
+ * Initiates a road building
+ * Throws an exception if the action is invalid.
+ * @param   user_id           string   the user who wants to play the dev
+ */
+Game.prototype.playRoadBuilding = function(user_id) {
+  var player_id = this._translate(user_id);
+  this._validatePlayer(player_id);
+  this._validatePhase(PHASE.MAIN);
+  if (!this.players[player_id].development_cards[DEVELOPMENT.ROAD_BUILDING]) {
+    throw 'You are not able to play a road building!';
+  }
+
+  this.players[player_id].development_cards[DEVELOPMENT.ROAD_BUILDING]--;
+
+  // ROAD BUILDING PHASE?
+};
 
 
 /**
@@ -802,7 +937,7 @@ Game.prototype.getRobber = function() {
  * moves the robber to new tile
  */
 Game.prototype.updateRobber = function(user_id, move_id) {
-  this._validatePhase(PHASE.ROBBER);
+  this._validatePhase(PHASE.ROBBER, PHASE.KNIGHT);
   var players = this.board.updateRobber(move_id);
   var me = this._translate(user_id);
 
