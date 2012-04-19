@@ -46,14 +46,72 @@ body {
 
 .others, .message {
   position:static;
-  height:33%;
+  height:34%;
 }
 
 #player1, #player2, #player3 {
   position:static;
   height:100%;
-  width:33.3333%;
+  width:33.333333333%;
   float:left;
+}
+
+/* player wells */
+.player, .message {
+  padding: 5%;
+  position: relative;
+  /*border: 3px solid;*/
+  border-color: black;
+  z-index: 3;
+  -webkit-border-radius:0px;
+  -border-radius:0px;
+}
+
+.message {
+    height:28%;
+}
+
+.player.well.disabled {
+  opacity: .6;
+}
+.name {
+  color: #333;
+}
+.name.highlight {
+  color: lime;
+}
+
+.player .left {
+  float: left;
+  width: 75px;
+  text-align: center;
+}
+
+.player .right {
+  float:left;
+  margin-right: 10px;
+  min-width: 200px;
+  padding: 10px;
+}
+
+.player .pic {
+  height: 75px;
+  width: 75px;
+}
+
+.player {
+  /*min-width: 305px;*/
+  /*min-height: 100px;*/
+  height:100%;
+  padding: 0%;
+  margin-bottom:0px;
+  -webkit-border-radius:0px;
+  -moz-border-radius:0px;
+  border-radius:0px;
+}
+
+.opponent {
+    padding:5%;
 }
 
 .video {
@@ -99,7 +157,7 @@ body {
   /*border: 3px solid black;*/
   /*moz-border-radius: 3px;
       border-radius: 3px;*/
-  padding: 10px;
+  padding: 0px;
   min-width: 275px;
   background: whiteSmoke;
   text-align: center;
@@ -163,7 +221,7 @@ body {
   width: 26%;
   height: 10%;
   top: 44%;
-  left: 18.8%;
+  left: 14.6%;
   font-size: 55px;
   opacity: .8;
   background-color:#CD0000;
@@ -171,52 +229,6 @@ body {
   z-index: 5;
 }
 
-/* player wells */
-.player, .message {
-  position: relative;
-  /*border: 3px solid;*/
-  border-color: black;
-  z-index: 3;
-}
-
-.player.well.disabled {
-  opacity: .6;
-}
-.name {
-  color: #333;
-}
-.name.highlight {
-  color: lime;
-}
-
-.player {
-  /*min-width: 305px;*/
-  /*min-height: 100px;*/
-  height:100%;
-  padding: 5%;
-  margin-bottom:0px;
-  -webkit-border-radius:0px;
-  -moz-border-radius:0px;
-  border-radius:0px;
-}
-
-.player .left {
-  float: left;
-  width: 75px;
-  text-align: center;
-}
-
-.player .right {
-  float:left;
-  margin-right: 10px;
-  min-width: 200px;
-  padding: 10px;
-}
-
-.player .pic {
-  height: 75px;
-  width: 75px;
-}
 
 /**
  * Points
