@@ -189,6 +189,7 @@ module.exports = function(sockets) {
         var resource = game.steal(player_id);
         gp.save(game);
         sockets.to(game.whoseTurn()).emit('stealCard', game.whoseTurn(), player_id,  resource);
+        socket.emit('canBuild', game.canBuild(user_id));
         sockets.to(game.whoseTurn()).emit('showMain');
         updatePlayerInfo(sockets, game);
       } catch (error) {
@@ -220,28 +221,37 @@ module.exports = function(sockets) {
     /**
       * send offer
       **/
-      socket.on('offerTrade', function(offer) {
+      socket.on('offerTrade', function(offer, offerer) {
         var user_id = socket.handshake.sessionID;
         var game_id = uid_to_gid[user_id];
         var game = gp.findById(game_id);
         try {
-          sockets.to(game_id).emit('showTrade', offer, game.whoseTurn());
+          sockets.to(game_id).emit('showTrade', offer, offerer, "");
+        } catch (error) {
+          socket.send(error);
+        }
+      });
+
+      socket.on('rejectTrade', function(offer, rejecter, offerer) {
+        var user_id = socket.handshake.sessionID;
+        var game_id = uid_to_gid[user_id];
+        var game = gp.findById(game_id);
+        try {
+          sockets.to(game_id).emit('showTrade', offer, rejecter, "rejected");
         } catch (error) {
           socket.send(error);
         }
       });
 
     /**
-      * accept trade from accepter
+      * allow bank trades
       **/
-      socket.on('acceptTrade', function(offer, accepter) {
+      socket.on('bankTrade', function(offer, offerer) {
         var user_id = socket.handshake.sessionID;
         var game_id = uid_to_gid[user_id];
         var game = gp.findById(game_id);
-        if (accepter === game.whoseTurn())
-          return;
         try {
-          var ret = game.acceptTrade(offer, accepter);
+          var ret = game.bankTrade(offer, offerer);
           updatePlayerInfo(sockets, game);
           gp.save(game);
           sockets.to(game_id).emit('tradeCleanup');
@@ -249,6 +259,42 @@ module.exports = function(sockets) {
         } catch (error) {
           socket.send(error);
         }
+      });
+    /**
+      * accept trade from accepter
+      **/
+      socket.on('acceptTrade', function(offer, accepter, offerer, type) {
+        var user_id = socket.handshake.sessionID;
+        var game_id = uid_to_gid[user_id];
+        var game = gp.findById(game_id);
+
+	// trade finally accepted!
+        if (type === "done") {
+          try {
+            console.log(accepter + " " + user_id);
+            var ret = game.acceptTrade(offer, accepter, offerer);
+            updatePlayerInfo(sockets, game);
+            gp.save(game);
+            sockets.to(game_id).emit('tradeCleanup');
+            socket.emit('canBuild', game.canBuild(user_id));
+          } catch (error) {
+            socket.send(error);
+          }
+        }
+
+        // send back to original trader for acceptance
+        else {
+          // reverse offer
+          var temp = offer['offer'];
+          offer['offer'] = offer['for'];
+          offer['for'] = temp;
+          try {
+            sockets.to(game_id).emit('showTrade', offer, accepter, "accepted");
+          } catch (error) {
+            socket.send(error);
+          }
+        }
+
       });
 
     /**
@@ -356,6 +402,83 @@ module.exports = function(sockets) {
       updatePlayerInfo(sockets, game);
       socket.emit('canBuild', game.canBuild(user_id));
       sockets.to(game_id).emit('buildRoad', edge_id, game._translate(user_id));
+    });
+
+
+    /**
+     * buildDevelopment
+     *
+     * Gives a random dev card to the user who called the socket type
+     */
+    socket.on('buildDevelopment', function(edge_id) {
+      var user_id = socket.handshake.sessionID;
+      var game_id = uid_to_gid[user_id];
+      var game = gp.findById(game_id);
+      game.buildDevelopment(user_id);
+      gp.save(game);
+      updatePlayerInfo(sockets, game);
+      socket.emit('canBuild', game.canBuild(user_id));
+    });
+
+
+    /**
+     * playKnight
+     *
+     * Initiates Knight
+     */
+    socket.on('playKnight', function(edge_id) {
+      var user_id = socket.handshake.sessionID;
+      var game_id = uid_to_gid[user_id];
+      var game = gp.findById(game_id);
+      game.playKnight(user_id);
+      gp.save(game);
+      sockets.to(game.whoseTurn()).emit('showRobber');
+      updatePlayerInfo(sockets, game);
+    });
+
+
+    /**
+     * playYearOfPlenty
+     *
+     * Initiates Year Of Plenty
+     */
+    socket.on('playYearOfPlenty', function(edge_id) {
+      var user_id = socket.handshake.sessionID;
+      var game_id = uid_to_gid[user_id];
+      var game = gp.findById(game_id);
+      game.playYearOfPlenty(user_id);
+      gp.save(game);
+      updatePlayerInfo(sockets, game);
+    });
+
+
+    /**
+     * playMonopoly
+     *
+     * Initiates Monopoly
+     */
+    socket.on('playMonopoly', function(edge_id) {
+      var user_id = socket.handshake.sessionID;
+      var game_id = uid_to_gid[user_id];
+      var game = gp.findById(game_id);
+      game.playMonopoly(user_id);
+      gp.save(game);
+      updatePlayerInfo(sockets, game);
+    });
+
+
+    /**
+     * playRoadBuilding
+     *
+     * Initiates Road Building
+     */
+    socket.on('playRoadBuilding', function(edge_id) {
+      var user_id = socket.handshake.sessionID;
+      var game_id = uid_to_gid[user_id];
+      var game = gp.findById(game_id);
+      game.playRoadBuilding(user_id);
+      gp.save(game);
+      updatePlayerInfo(sockets, game);
     });
 
 
