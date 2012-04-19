@@ -9,6 +9,7 @@ var roll_frequency = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 var total_rolls = 0.0;
 var recent_offer = {};
 var ports = [];
+var toRemove = 0;
 function makeSVG(tag, attrs) {
   var el= document.createElementNS('http://www.w3.org/2000/svg', tag);
   for (var k in attrs)
@@ -66,14 +67,16 @@ function updateCards(offer) {
       if (number.text() === "0") {
         $(this).hide();
         $('.offer-cards .trade-card .' + class_name[1]).parent().hide();
+        $('.remove-card .' + class_name[1]).parent().hide();
       }
       else {
         $(this).show();
         $('.offer-cards .trade-card .' + class_name[1]).parent().show();
+        $('.remove-card .' + class_name[1]).parent().show();
       }
       if (number.hasClass("js-resource-number")) {
         var num = parseInt(number.text());
-        if (num >= 7) {
+        if (num > 7) {
           number.css({"color": "red"});
         }
         else
@@ -194,6 +197,15 @@ window.onload = function() {
     socket.emit('offerTrade', offer, me);
   });
 
+  socket.on('removeCards', function(number) {
+    // set button text
+    $('.removebtn').text('Remove ' + number + ' more cards');
+    $('.removebtn').attr('id', number);
+    toRemove = number;
+    $(".remove-container").show();
+    $(".remove-container").animate({"right": "30%"}, "slow");
+  });
+
   socket.on('showTrade', function(offer, offerer, type) {
     if (me !== offerer) {
       var player_num = users.indexOf(offerer);
@@ -300,7 +312,51 @@ window.onload = function() {
     socket.emit('bankTrade', offer, me);
   });
 
+  $(".remove-card").click(function(){
+    var num = parseInt($(this).children(".card-number").text());
+    var class_name = $(this).children(".card-number").attr("class").split(" ");
+    var has_num = parseInt($('.cards .card .' + class_name[1]).text());
+    if (has_num > num || $(this).parent().parent().hasClass('for-cards')) {
+      var left = parseInt($('.removebtn').attr('id'));
+      if (left === 0)
+        return;
+      $(this).children(".card-number").text(num+1);
 
+      left--;
+      if (left === 0) {
+        $('.removebtn').text("Accept");
+        $('.removebtn').removeClass('disabled');
+      }
+      else
+        $('.removebtn').text("Remove " + left + " more cards");
+      $('.removebtn').attr('id', left);
+    }
+  });
+
+  $(".removebtn").click(function() {
+    if ($(this).hasClass("disabled"))
+      return;
+    $(this).addClass("disabled");
+    var removeCards = [];
+    $('.remove-card .card-number').each(function() {
+      removeCards.push(parseInt($(this).text()));
+    });
+    $(".remove-container").animate({"right": "5%"}, "slow");
+    $(".remove-container").hide();
+    $(".remove-card .card-number").text("0");
+    socket.emit('removed', removeCards, me);
+  });
+
+  $(".resetRemove").click(function() {
+    $('.remove-card').each(function() {
+      $(this).children('.card-number').text("0");
+    });
+
+    $('.removebtn').text("Remove " + toRemove + " more cards");
+    $('.removebtn').attr('id', toRemove);
+    $('.removebtn').addClass("disabled");
+    updateCards(false);
+  });
   $(".trade-card").click(function(){
     if ($('.offer').hasClass('disabled'))
       return;
@@ -880,9 +936,14 @@ window.onload = function() {
 
 
 
-    socket.on('showRobber', function() {
+    socket.on('showRobber', function(removeWaiting) {
       $('.roll-phase, .main-phase, .steal-phase').hide();
       $('.robber-phase').show();
+      if (removeWaiting) {
+        $('.robber-phase .btn').text("Waiting for Players to Remove Cards");
+      }
+      else
+        $('.robber-phase .btn').text("Move the Robber");
       $('.numberToken.robber').addClass('highlight');
     });
 

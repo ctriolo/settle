@@ -138,9 +138,21 @@ module.exports = function(sockets) {
       var game = gp.findById(game_id);
       try {
         var ret = game.rollDice(user_id);
+
+        if (ret.number == 7) {
+          var remove = game.removeCards();
+          console.log(remove);
+          console.log("LENGTH: " + remove.length);
+          if (Object.keys(remove).length > 0) {
+            sockets.to(game.whoseTurn()).emit('showRobber', true);
+            for (var player in remove) {
+              sockets.to(player).emit('removeCards', remove[player]);
+            }
+          }
+          else
+            sockets.to(game.whoseTurn()).emit('showRobber', false);
+        }
         gp.save(game);
-        if (ret.number == 7)
-          sockets.to(game.whoseTurn()).emit('showRobber');
         sockets.to(game_id).emit('rollDiceResults', ret.number, ret.resources, ret.breakdown);
         socket.emit('canBuild', game.canBuild(user_id));
         updatePlayerInfo(sockets, game);
@@ -148,6 +160,24 @@ module.exports = function(sockets) {
         socket.send(error);
       }
     });
+
+    socket.on('removed', function(removedCards, player) {
+      var user_id = socket.handshake.sessionID;
+      var game_id = uid_to_gid[user_id];
+      var game = gp.findById(game_id);
+      try {
+        var done = game.remove(removedCards, player);
+        gp.save(game);
+        updatePlayerInfo(sockets, game);
+        socket.emit('canBuild', game.canBuild(user_id));
+        if (done) {
+            sockets.to(game.whoseTurn()).emit('showRobber', false);
+        }
+      } catch (error) {
+        socket.send(error);
+      }
+    });
+
 
     /**
       * updateRobber
@@ -397,11 +427,15 @@ module.exports = function(sockets) {
       var user_id = socket.handshake.sessionID;
       var game_id = uid_to_gid[user_id];
       var game = gp.findById(game_id);
-      game.buildRoad(user_id, edge_id);
-      gp.save(game);
-      updatePlayerInfo(sockets, game);
-      socket.emit('canBuild', game.canBuild(user_id));
-      sockets.to(game_id).emit('buildRoad', edge_id, game._translate(user_id));
+      try {
+        game.buildRoad(user_id, edge_id);
+        gp.save(game);
+        updatePlayerInfo(sockets, game);
+        socket.emit('canBuild', game.canBuild(user_id));
+        sockets.to(game_id).emit('buildRoad', edge_id, game._translate(user_id));
+      } catch (error) {
+        socket.send(error);
+      }
     });
 
 
@@ -432,7 +466,7 @@ module.exports = function(sockets) {
       var game = gp.findById(game_id);
       game.playKnight(user_id);
       gp.save(game);
-      sockets.to(game.whoseTurn()).emit('showRobber');
+      sockets.to(game.whoseTurn()).emit('showRobber', false);
       updatePlayerInfo(sockets, game);
     });
 

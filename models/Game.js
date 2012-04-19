@@ -16,6 +16,7 @@ PHASE = {
   STARTING_ROAD: 'Starting Road',
   DICE: 'Dice',
   MAIN: 'Main',
+  REMOVE: 'Remove',
   ROBBER: 'Robber',
   STEAL: 'Steal',
   KNIGHT: 'Knight',
@@ -124,7 +125,7 @@ function Game() {
   this.development_cards = [];
   this.current_player = -1;
   this.current_phase = PHASE.START;
-
+  this.steal_players = 0; // number of players that need to lose cards
   // Add Knight Cards
   for (var i = 0; i < 14; i++) {
     this.development_cards.push(DEVELOPMENT.KNIGHT);
@@ -262,9 +263,13 @@ Game.prototype._next = function(diceRoll) {
   case PHASE.DICE:
     this.has_dice_rolled = true;
     if (diceRoll === 7)
-      this.current_phase = PHASE.ROBBER
+      this.current_phase = PHASE.REMOVE
     else
       this.current_phase = PHASE.MAIN
+    break;
+  case PHASE.REMOVE:
+    if (this.steal_players === 0)
+      this.current_phase = PHASE.ROBBER
     break;
   case PHASE.ROBBER:
   case PHASE.KNIGHT:
@@ -660,6 +665,21 @@ Game.prototype.acceptTrade = function(offer, accepter, offerer) {
   }
 }
 
+Game.prototype.remove = function(removedCards, player) {
+  var player = this._translate(player);
+  this._validatePhase(PHASE.REMOVE);
+  for(var i = 0; i < removedCards.length; i++) {
+      this.players[player].resource_cards[RESOURCE_ARRAY[i]] -= removedCards[i];
+      console.log("Removing " + removedCards[i] + " of " + RESOURCE_ARRAY[i] + " player " + player);
+  }
+  this.steal_players--;
+  this._next();
+  if (this.steal_players === 0)
+    return true;
+  else
+    return false;
+}
+
 /*****
   * updatePorts
   *
@@ -902,6 +922,28 @@ Game.prototype.playRoadBuilding = function(user_id) {
   // ROAD BUILDING PHASE?
 };
 
+/**
+ * removeCards
+ *
+ * Returns the player ids that need to remove cards after 7 rolls
+ */
+Game.prototype.removeCards = function() {
+  this._validatePhase(PHASE.REMOVE);
+  var remove_players = {};
+  for (var i = 0; i < this.players.length; i++) {
+    var cards = 0;
+    for (var resource in this.players[i].resource_cards) {
+      cards += this.players[i].resource_cards[resource];
+    }
+    console.log(cards);
+    if (cards > 7) {
+      remove_players[this.players[i].user_id] = Math.floor(cards/2);
+      this.steal_players++;
+    }
+  }
+  this._next();
+  return remove_players;
+}
 
 /**
  * rollDice
@@ -947,8 +989,10 @@ Game.prototype.getRobber = function() {
  */
 Game.prototype.updateRobber = function(user_id, move_id) {
   this._validatePhase(PHASE.ROBBER, PHASE.KNIGHT);
+
   var players = this.board.updateRobber(move_id);
   var me = this._translate(user_id);
+  this._validatePlayer(me);
 
   if (players.indexOf(me) >= 0)
     players.splice(players.indexOf(me), 1) // take out me
