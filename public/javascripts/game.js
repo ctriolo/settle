@@ -853,13 +853,13 @@ window.onload = function() {
     if (typeof breakdown != 'undefined') {
         $('#dice-image').show();
         url = 'http://www.princeton.edu/~rgromero/dice-gif/a' + breakdown[0]
-            + ',' + breakdown[1] + '-g50.gif';
+            + ',' + breakdown[1] + '_mod6.gif';
         $('#dice-image').attr('src', url);
-        handleDiceRoll(number, resources);
         setTimeout(function() {
+            handleDiceRoll(number, resources);
             $('#dice-image').attr('src','');
             $('#dice-image').hide();
-        }, 8 * 1000);
+        }, 4 * 1000);
     }
 
   });
