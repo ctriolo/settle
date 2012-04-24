@@ -983,6 +983,60 @@ window.onload = function() {
       $('.main-phase').show();
     });
 
+
+  /**
+   * Year of plenty
+   *
+   */
+  socket.on('yearOfPlentyFirst', function() {
+    $('.main-phase').hide();
+    $('.year-of-plenty-phase').show();
+    var RESOURCES = ['brick', 'stone', 'wheat', 'wood', 'sheep'];
+    for (var i = 0; i < RESOURCES.length; i++) {
+      $('.year-of-plenty-phase .'+RESOURCES[i]).click(function(){
+        var resource = '';
+        var RESOURCES = ['brick', 'stone', 'wheat', 'wood', 'sheep'];
+
+        // need to figure out which button was clicked
+        for (var i = 0; i < RESOURCES.length; i++) {
+          if ($(this).hasClass(RESOURCES[i])) resource = RESOURCES[i];
+        }
+
+        // DISABLE IMMEDIATELY TO STOP FROM BEING CLICKED TWICE
+        $('.year-of-plenty-phase button').off('click');
+
+        resource = resource.charAt(0).toUpperCase() + resource.slice(1);
+        socket.emit('playYearOfPlentyFirst', resource);
+      });
+    }
+  });
+
+  socket.on('yearOfPlentySecond', function() {
+    var RESOURCES = ['brick', 'stone', 'wheat', 'wood', 'sheep'];
+    for (var i = 0; i < RESOURCES.length; i++) {
+      $('.year-of-plenty-phase .'+RESOURCES[i]).click(function(){
+        var resource = '';
+        var RESOURCES = ['brick', 'stone', 'wheat', 'wood', 'sheep'];
+
+        // need to figure out which button was clicked
+        for (var i = 0; i < RESOURCES.length; i++) {
+          if ($(this).hasClass(RESOURCES[i])) resource = RESOURCES[i];
+        }
+
+        // DISABLE IMMEDIATELY TO STOP FROM BEING CLICKED TWICE
+        $('.year-of-plenty-phase button').off('click');
+
+        resource = resource.charAt(0).toUpperCase() + resource.slice(1);
+        socket.emit('playYearOfPlentySecond', resource);
+      });
+    }
+  });
+
+  socket.on('yearOfPlentyDone', function() {
+    $('.year-of-plenty-phase').hide();
+    $('.main-phase').show();
+  });
+
   /**
     * newTurn
     *

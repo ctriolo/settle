@@ -20,6 +20,8 @@ PHASE = {
   ROBBER: 'Robber',
   STEAL: 'Steal',
   KNIGHT: 'Knight',
+  YEAR_OF_PLENTY_FIRST: 'Year Of Plenty First',
+  YEAR_OF_PLENTY_SECOND: 'Year Of Plenty Second',
   // TODO: fill these in as we go along
   END: 'End',
   NOT_IMPLEMENTED: 'Not Implemented' // placeholder
@@ -128,22 +130,22 @@ function Game() {
   this.steal_players = 0; // number of players that need to lose cards
   // Add Knight Cards
   for (var i = 0; i < 14; i++) {
-    this.development_cards.push(DEVELOPMENT.KNIGHT);
+    //this.development_cards.push(DEVELOPMENT.KNIGHT);
   }
 
   // Add Progress Cards
   for (var i = 0; i < 2; i++) {
     this.development_cards.push(DEVELOPMENT.YEAR_OF_PLENTY);
-    this.development_cards.push(DEVELOPMENT.ROAD_BUILDING);
-    this.development_cards.push(DEVELOPMENT.MONOPOLY);
+    //this.development_cards.push(DEVELOPMENT.ROAD_BUILDING);
+    //this.development_cards.push(DEVELOPMENT.MONOPOLY);
   }
 
   // Add Victory Point Cards
-  this.development_cards.push(DEVELOPMENT.UNIVERSITY);
-  this.development_cards.push(DEVELOPMENT.MARKET);
-  this.development_cards.push(DEVELOPMENT.LIBRARY);
-  this.development_cards.push(DEVELOPMENT.PALACE);
-  this.development_cards.push(DEVELOPMENT.CHAPEL);
+  //this.development_cards.push(DEVELOPMENT.UNIVERSITY);
+  //this.development_cards.push(DEVELOPMENT.MARKET);
+  //this.development_cards.push(DEVELOPMENT.LIBRARY);
+  //this.development_cards.push(DEVELOPMENT.PALACE);
+  //this.development_cards.push(DEVELOPMENT.CHAPEL);
 
   this.development_cards = _.shuffle(this.development_cards);
 
@@ -860,6 +862,7 @@ Game.prototype.playKnight = function(user_id) {
   this.updateLargestArmy();
 };
 
+
 /**
  * playYearOfPlenty
  *
@@ -877,7 +880,43 @@ Game.prototype.playYearOfPlenty = function(user_id) {
 
   this.players[player_id].development_cards[DEVELOPMENT.YEAR_OF_PLENTY]--;
 
-  // YEAR_OF_PLENTY PHASE?
+  this.current_phase = PHASE.YEAR_OF_PLENTY_FIRST;
+};
+
+
+/**
+ * playYearOfPlentyFirst
+ *
+ * Initiates a year of plenty.
+ * Throws an exception if the action is invalid.
+ * @param   user_id           string   the user who wants to play the dev
+ */
+Game.prototype.playYearOfPlentyFirst = function(user_id, resource) {
+  var player_id = this._translate(user_id);
+  this._validatePlayer(player_id);
+  this._validatePhase(PHASE.YEAR_OF_PLENTY_FIRST);
+
+  this.players[player_id].resource_cards[resource]++;
+
+  this.current_phase = PHASE.YEAR_OF_PLENTY_SECOND;
+};
+
+
+/**
+ * playYearOfPlentySecond
+ *
+ * Initiates a year of plenty.
+ * Throws an exception if the action is invalid.
+ * @param   user_id           string   the user who wants to play the dev
+ */
+Game.prototype.playYearOfPlentySecond = function(user_id, resource) {
+  var player_id = this._translate(user_id);
+  this._validatePlayer(player_id);
+  this._validatePhase(PHASE.YEAR_OF_PLENTY_SECOND);
+
+  this.players[player_id].resource_cards[resource]++;
+
+  this.current_phase = PHASE.MAIN;
 };
 
 

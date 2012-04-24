@@ -476,13 +476,47 @@ module.exports = function(sockets) {
      *
      * Initiates Year Of Plenty
      */
-    socket.on('playYearOfPlenty', function(edge_id) {
+    socket.on('playYearOfPlenty', function() {
       var user_id = socket.handshake.sessionID;
       var game_id = uid_to_gid[user_id];
       var game = gp.findById(game_id);
       game.playYearOfPlenty(user_id);
       gp.save(game);
       updatePlayerInfo(sockets, game);
+      socket.emit('yearOfPlentyFirst');
+    });
+
+
+    /**
+     * playYearOfPlentyFirst
+     *
+     * Initiates Year Of Plenty
+     */
+    socket.on('playYearOfPlentyFirst', function(resource) {
+      var user_id = socket.handshake.sessionID;
+      var game_id = uid_to_gid[user_id];
+      var game = gp.findById(game_id);
+      game.playYearOfPlentyFirst(user_id, resource);
+      gp.save(game);
+      updatePlayerInfo(sockets, game);
+      socket.emit('yearOfPlentySecond');
+    });
+
+
+    /**
+     * playYearOfPlentySecond
+     *
+     * Initiates Year Of Plenty
+     */
+    socket.on('playYearOfPlentySecond', function(resource) {
+      var user_id = socket.handshake.sessionID;
+      var game_id = uid_to_gid[user_id];
+      var game = gp.findById(game_id);
+      game.playYearOfPlentySecond(user_id, resource);
+      gp.save(game);
+      updatePlayerInfo(sockets, game);
+      socket.emit('canBuild', game.canBuild(user_id));
+      socket.emit('yearOfPlentyDone');
     });
 
 
