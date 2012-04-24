@@ -5,13 +5,16 @@
  */
 
 function User(obj) {
-  this.name = "";
-  this.id = 0;
-  this.wins = 0;
-  this.loses = 0;
+  if (obj._id) this._id = obj._id;
+  this.id = parseInt(obj.id) || 0;
+  this.name = obj.name || "";
+  this.first_name = obj.first_name || "";
+  this.last_name = obj.last_name || "";
+  this.wins = obj.wins || 0;
+  this.loses = obj.loses || 0;
 
   // If an object was passed then initialize properties from that object
-  for (var prop in obj) this[prop] = obj[prop];
+  //for (var prop in obj) this[prop] = obj[prop];
 };
 
 module.exports = User;
