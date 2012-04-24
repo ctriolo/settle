@@ -22,6 +22,7 @@ PHASE = {
   KNIGHT: 'Knight',
   YEAR_OF_PLENTY_FIRST: 'Year Of Plenty First',
   YEAR_OF_PLENTY_SECOND: 'Year Of Plenty Second',
+  MONOPOLY: 'MONOPOLY',
   // TODO: fill these in as we go along
   END: 'End',
   NOT_IMPLEMENTED: 'Not Implemented' // placeholder
@@ -130,22 +131,22 @@ function Game() {
   this.steal_players = 0; // number of players that need to lose cards
   // Add Knight Cards
   for (var i = 0; i < 14; i++) {
-    //this.development_cards.push(DEVELOPMENT.KNIGHT);
+    this.development_cards.push(DEVELOPMENT.KNIGHT);
   }
 
   // Add Progress Cards
   for (var i = 0; i < 2; i++) {
     this.development_cards.push(DEVELOPMENT.YEAR_OF_PLENTY);
-    //this.development_cards.push(DEVELOPMENT.ROAD_BUILDING);
-    //this.development_cards.push(DEVELOPMENT.MONOPOLY);
+    this.development_cards.push(DEVELOPMENT.ROAD_BUILDING);
+    this.development_cards.push(DEVELOPMENT.MONOPOLY);
   }
 
   // Add Victory Point Cards
-  //this.development_cards.push(DEVELOPMENT.UNIVERSITY);
-  //this.development_cards.push(DEVELOPMENT.MARKET);
-  //this.development_cards.push(DEVELOPMENT.LIBRARY);
-  //this.development_cards.push(DEVELOPMENT.PALACE);
-  //this.development_cards.push(DEVELOPMENT.CHAPEL);
+  this.development_cards.push(DEVELOPMENT.UNIVERSITY);
+  this.development_cards.push(DEVELOPMENT.MARKET);
+  this.development_cards.push(DEVELOPMENT.LIBRARY);
+  this.development_cards.push(DEVELOPMENT.PALACE);
+  this.development_cards.push(DEVELOPMENT.CHAPEL);
 
   this.development_cards = _.shuffle(this.development_cards);
 
@@ -937,7 +938,31 @@ Game.prototype.playMonopoly = function(user_id) {
 
   this.players[player_id].development_cards[DEVELOPMENT.MONOPOLY]--;
 
-  // MONOPOLY PHASE?
+  this.current_phase = PHASE.MONOPOLY;
+};
+
+
+/**
+ * chooseMonopolyResource
+ *
+ * Gives all the resources of the type chosen to the user
+ * Throws an exception if the action is invalid.
+ * @param   user_id   string   the user who wants to play the dev
+ * @param   resource  string   resource to hoard
+ */
+Game.prototype.chooseMonopolyResource = function(user_id, resource) {
+  var player_id = this._translate(user_id);
+  this._validatePlayer(player_id);
+  this._validatePhase(PHASE.MONOPOLY);
+
+  var sum = 0;
+  for (var i = 0; i < this.players.length; i++) {
+    sum += this.players[i].resource_cards[resource];
+    this.players[i].resource_cards[resource] = 0;
+  }
+  this.players[player_id].resource_cards[resource] = sum;
+
+  this.current_phase = PHASE.MAIN;
 };
 
 

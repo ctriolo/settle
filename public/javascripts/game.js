@@ -1037,6 +1037,40 @@ window.onload = function() {
     $('.main-phase').show();
   });
 
+
+  /**
+   * Monopoly
+   **/
+
+  socket.on('monopoly', function() {
+    $('.main-phase').hide();
+    $('.monopoly-phase').show();
+    var RESOURCES = ['brick', 'stone', 'wheat', 'wood', 'sheep'];
+    for (var i = 0; i < RESOURCES.length; i++) {
+      $('.monopoly-phase .'+RESOURCES[i]).click(function(){
+        var resource = '';
+        var RESOURCES = ['brick', 'stone', 'wheat', 'wood', 'sheep'];
+
+        // need to figure out which button was clicked
+        for (var i = 0; i < RESOURCES.length; i++) {
+          if ($(this).hasClass(RESOURCES[i])) resource = RESOURCES[i];
+        }
+
+        // DISABLE IMMEDIATELY TO STOP FROM BEING CLICKED TWICE
+        $('.monopoly-phase button').off('click');
+
+        resource = resource.charAt(0).toUpperCase() + resource.slice(1);
+        socket.emit('chooseMonopolyResource', resource);
+      });
+    }
+  });
+
+  socket.on('monopolyDone', function() {
+    $('.monopoly-phase').hide();
+    $('.main-phase').show();
+  });
+
+
   /**
     * newTurn
     *

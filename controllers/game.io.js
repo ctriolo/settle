@@ -525,13 +525,31 @@ module.exports = function(sockets) {
      *
      * Initiates Monopoly
      */
-    socket.on('playMonopoly', function(edge_id) {
+    socket.on('playMonopoly', function() {
       var user_id = socket.handshake.sessionID;
       var game_id = uid_to_gid[user_id];
       var game = gp.findById(game_id);
       game.playMonopoly(user_id);
       gp.save(game);
       updatePlayerInfo(sockets, game);
+      socket.emit('monopoly');
+    });
+
+
+    /**
+     * chooseMonopolyResource
+     *
+     * Initiates Monopoly
+     */
+    socket.on('chooseMonopolyResource', function(resource) {
+      var user_id = socket.handshake.sessionID;
+      var game_id = uid_to_gid[user_id];
+      var game = gp.findById(game_id);
+      game.chooseMonopolyResource(user_id, resource);
+      gp.save(game);
+      updatePlayerInfo(sockets, game);
+      socket.emit('canBuild', game.canBuild(user_id));
+      socket.emit('monopolyDone');
     });
 
 
