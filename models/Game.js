@@ -22,7 +22,9 @@ PHASE = {
   KNIGHT: 'Knight',
   YEAR_OF_PLENTY_FIRST: 'Year Of Plenty First',
   YEAR_OF_PLENTY_SECOND: 'Year Of Plenty Second',
-  MONOPOLY: 'MONOPOLY',
+  MONOPOLY: 'Monopoly',
+  ROAD_BUILDING: 'Road Building First',
+  ROAD_BUILDING: 'Road Building Second',
   // TODO: fill these in as we go along
   END: 'End',
   NOT_IMPLEMENTED: 'Not Implemented' // placeholder
@@ -131,7 +133,7 @@ function Game() {
   this.steal_players = 0; // number of players that need to lose cards
   // Add Knight Cards
   for (var i = 0; i < 14; i++) {
-    this.development_cards.push(DEVELOPMENT.KNIGHT);
+    //this.development_cards.push(DEVELOPMENT.KNIGHT);
   }
 
   // Add Progress Cards
@@ -922,6 +924,65 @@ Game.prototype.playYearOfPlentySecond = function(user_id, resource) {
 
 
 /**
+ * playRoadBuilding
+ *
+ * Initiates a road building
+ * Throws an exception if the action is invalid.
+ * @param   user_id           string   the user who wants to play the dev
+ */
+Game.prototype.playRoadBuilding = function(user_id) {
+  var player_id = this._translate(user_id);
+  this._validatePlayer(player_id);
+  this._validatePhase(PHASE.MAIN);
+  if (!this.players[player_id].development_cards[DEVELOPMENT.ROAD_BUILDING]) {
+    throw 'You are not able to play a road building!';
+  }
+
+  this.players[player_id].development_cards[DEVELOPMENT.ROAD_BUILDING]--;
+
+  this.current_phase = PHASE.ROAD_BUILDING_FIRST;
+};
+
+
+/**
+ * playRoadBuildingFirst
+ *
+ * Throws an exception if the action is invalid.
+ * @param   user_id           string   the user who wants to play the dev
+ */
+Game.prototype.playRoadBuildingFirst = function(user_id, edge_id) {
+  var player_id = this._translate(user_id);
+  this._validatePlayer(player_id);
+  this._validatePhase(PHASE.ROAD_BUILDING_FIRST);
+
+  this.players[player_id].unbuilt_roads--;
+  this.board.buildRoad(player_id, edge_id);
+  this.updateLongestRoad();
+
+  this.current_phase = PHASE.ROAD_BUILDING_SECOND;
+};
+
+
+/**
+ * playRoadBuildingSecond
+ *
+ * Throws an exception if the action is invalid.
+ * @param   user_id           string   the user who wants to play the dev
+ */
+Game.prototype.playRoadBuildingSecond = function(user_id, edge_id) {
+  var player_id = this._translate(user_id);
+  this._validatePlayer(player_id);
+  this._validatePhase(PHASE.ROAD_BUILDING_SECOND);
+
+  this.players[player_id].unbuilt_roads--;
+  this.board.buildRoad(player_id, edge_id);
+  this.updateLongestRoad();
+
+  this.current_phase = PHASE.MAIN;
+};
+
+
+/**
  * playMonopoly
  *
  * Initiates a monopoly
@@ -965,26 +1026,6 @@ Game.prototype.chooseMonopolyResource = function(user_id, resource) {
   this.current_phase = PHASE.MAIN;
 };
 
-
-/**
- * playRoadBuilding
- *
- * Initiates a road building
- * Throws an exception if the action is invalid.
- * @param   user_id           string   the user who wants to play the dev
- */
-Game.prototype.playRoadBuilding = function(user_id) {
-  var player_id = this._translate(user_id);
-  this._validatePlayer(player_id);
-  this._validatePhase(PHASE.MAIN);
-  if (!this.players[player_id].development_cards[DEVELOPMENT.ROAD_BUILDING]) {
-    throw 'You are not able to play a road building!';
-  }
-
-  this.players[player_id].development_cards[DEVELOPMENT.ROAD_BUILDING]--;
-
-  // ROAD BUILDING PHASE?
-};
 
 /**
  * removeCards

@@ -558,13 +558,49 @@ module.exports = function(sockets) {
      *
      * Initiates Road Building
      */
-    socket.on('playRoadBuilding', function(edge_id) {
+    socket.on('playRoadBuilding', function() {
       var user_id = socket.handshake.sessionID;
       var game_id = uid_to_gid[user_id];
       var game = gp.findById(game_id);
       game.playRoadBuilding(user_id);
       gp.save(game);
       updatePlayerInfo(sockets, game);
+      socket.emit('roadBuildingFirst', game.getValidRoadEdges(user_id));
+    });
+
+
+    /**
+     * playRoadBuilding
+     *
+     * Initiates Road Building
+     */
+    socket.on('playRoadBuildingFirst', function(edge_id) {
+      var user_id = socket.handshake.sessionID;
+      var game_id = uid_to_gid[user_id];
+      var game = gp.findById(game_id);
+      game.playRoadBuildingFirst(user_id, edge_id);
+      gp.save(game);
+      updatePlayerInfo(sockets, game);
+      sockets.to(game_id).emit('buildRoad', edge_id, game._translate(user_id));
+      socket.emit('roadBuildingSecond', game.getValidRoadEdges(user_id));
+    });
+
+
+    /**
+     * playRoadBuilding
+     *
+     * Initiates Road Building
+     */
+    socket.on('playRoadBuildingSecond', function(edge_id) {
+      var user_id = socket.handshake.sessionID;
+      var game_id = uid_to_gid[user_id];
+      var game = gp.findById(game_id);
+      game.playRoadBuildingSecond(user_id, edge_id);
+      gp.save(game);
+      updatePlayerInfo(sockets, game);
+      sockets.to(game_id).emit('buildRoad', edge_id, game._translate(user_id));
+      socket.emit('canBuild', game.canBuild(user_id));
+      socket.emit('roadBuildingDone');
     });
 
 

@@ -1072,6 +1072,56 @@ window.onload = function() {
 
 
   /**
+   * Road Building
+   **/
+
+  socket.on('roadBuildingFirst', function(ids) {
+    $('.main-phase').hide();
+    $('.road-building-phase').show();
+    for (var i = 0; i < ids.length; i++) {
+      $("#edge"+ids[i]).addClass('selectable');
+      createPopup("#edge" + ids[i], "Road Placement", "Click this edge to place a new road");
+      $("#edge"+ids[i]).hover(function(){$(this).addClass('hover'); $(this).popover('show')},
+                              function(){$(this).removeClass('hover'); $(this).popover('hide')});
+      $("#edge"+ids[i]).click(function() {
+        $('.edge').off('click');
+        $('.edge').off('hover');
+        $(this).popover('hide');
+        $('.edge').removeClass('selectable');
+        var id = parseInt($(this).attr('id').substring('edge'.length));
+        socket.emit('playRoadBuildingFirst', id);
+      });
+    }
+  });
+
+
+  socket.on('roadBuildingSecond', function(ids) {
+    for (var i = 0; i < ids.length; i++) {
+      $("#edge"+ids[i]).addClass('selectable');
+      createPopup("#edge" + ids[i], "Road Placement", "Click this edge to place a new road");
+      $("#edge"+ids[i]).hover(
+        function(){$(this).addClass('hover'); $(this).popover('show')},
+        function(){$(this).removeClass('hover'); $(this).popover('hide')}
+      );
+      $("#edge"+ids[i]).click(function() {
+        $('.edge').off('click');
+        $('.edge').off('hover');
+        $(this).popover('hide');
+        $('.edge').removeClass('selectable');
+        var id = parseInt($(this).attr('id').substring('edge'.length));
+        socket.emit('playRoadBuildingSecond', id);
+      });
+    }
+  });
+
+
+  socket.on('roadBuildingDone', function() {
+    $('.main-phase').show();
+    $('.road-building-phase').hide();
+  });
+
+
+  /**
     * newTurn
     *
     * updates opacities and highlights for whose turn it is next
