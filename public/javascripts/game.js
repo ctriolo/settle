@@ -95,6 +95,7 @@ function tradeCleanup() {
     $(".trade-card .card-number").text("0");
 
     $(".showtrade-container").animate({"right": "5%"}, "slow");
+
     $(".showtrade-container").hide();
     $(".showtrade-card .card-number").text("0");
 
@@ -173,7 +174,7 @@ window.onload = function() {
     if ($(this).hasClass("popupShow")) {
       $(".trade-container").show();
       $(this).addClass("active");
-      $(".trade-container").animate({"right": "30%"}, "slow");
+      $(".trade-container").animate({"right": "40.5%"}, "slow");
       $(this).removeClass("popupShow");
     }
     else {
@@ -203,7 +204,7 @@ window.onload = function() {
     $('.removebtn').attr('id', number);
     toRemove = number;
     $(".remove-container").show();
-    $(".remove-container").animate({"right": "30%"}, "slow");
+    $(".remove-container").animate({"right": "40.5%"}, "slow");
   });
 
   socket.on('showTrade', function(offer, offerer, type) {
@@ -211,19 +212,21 @@ window.onload = function() {
       var player_num = users.indexOf(offerer);
       // get id name of player well
       var player_tag = '#player' + player_num;
+      var container = $(player_tag + ' .showtrade-container');
       var acceptable = true;
-
+      container.removeClass("accept");
+      container.removeClass("reject");
       // change color based on whether this trade was accepted/rejected/offered
-      $(".showtrade-container .trade-actions").show();
+      $(player_tag + " .showtrade-container .trade-actions").show();
       if (type === "accepted")
-        $(".showtrade-container").addClass("accepted");
+        container.addClass("accepted");
       else if (type === "rejected") {
-        $(".showtrade-container").addClass("rejected");
-        $(".showtrade-container .trade-actions").hide();
+        container.addClass("rejected");
+        $(player_tag + " .showtrade-container .trade-actions").hide();
       }
       else {
-        $(".showtrade-container").removeClass("accepted");
-        $(".showtrade-container").removeClass("rejected");
+        container.removeClass("accepted");
+        container.removeClass("rejected");
       }
 
       // show the given cards from the offer
@@ -266,6 +269,8 @@ window.onload = function() {
     var num1 = parseInt($(this).parents(".player").parent().attr('id').substring('player'.length));
     if (!$(this).hasClass("disabled")) {
       var container = $(this).parents(".showtrade-container");
+      container.addClass("accept");
+      container.removeClass("reject");
       // check if this is the second accept or not
       if (container.hasClass("accepted"))
         socket.emit('acceptTrade', recent_offer[num1], me, users[num1], "done");
@@ -276,6 +281,9 @@ window.onload = function() {
   $(".rejectTrade").click(function() {
     var num1 = parseInt($(this).parents(".player").parent().attr('id').substring('player'.length));
     if (!$(this).hasClass("disabled")) {
+      var container = $(this).parents(".showtrade-container");
+      container.removeClass("accept");
+      container.addClass("reject");
       socket.emit('rejectTrade', recent_offer[num1], me, users[num1]);
     }
   });
@@ -286,7 +294,7 @@ window.onload = function() {
     $(".offerbtn").removeClass("disabled");
     updateCards(false);
     $(".trade-container").show();
-    $(".trade-container").animate({"right": "30%"}, "slow");
+    $(".trade-container").animate({"right": "40.5%"}, "slow");
     $(this).removeClass("popupShow");
   });
 
@@ -427,7 +435,7 @@ window.onload = function() {
     if (total_rolls > 0) {
       if ($(this).hasClass("chartShow")) {
         $(".frequency-container").show();
-        $(".frequency-container").animate({"right": "30%"}, "slow");
+        $(".frequency-container").animate({"right": "40.5%"}, "slow");
         $(this).removeClass("chartShow");
 
       }
@@ -669,8 +677,8 @@ window.onload = function() {
        var player_id = users.indexOf(player.user_id);
        // update Victory Points
        var victory_points = player.victory_points;
-       if (player.has_longest_road === true) victory_points += 2;
-       if (player.has_largest_army === true) victory_points += 2;
+       if (player.has_longest_road) victory_points += 2;
+       if (player.has_largest_army) victory_points += 2;
        // Update Resources
        var total = 0;
        for (var resource in player.resource_cards) {
@@ -689,6 +697,12 @@ window.onload = function() {
          ports = player.ports;
          // see your own victory cards
          victory_points += player.victory_cards;
+         // make your own cards red if over 7
+         if (total > 7) {
+           $('#player'+player_id+' .card-number').css({"color": "red"});
+         }
+         else
+           $('#player'+player_id+' .card-number').css({"color": "black"});
        }
 
        // update victory point total

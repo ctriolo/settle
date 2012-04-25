@@ -330,11 +330,11 @@ body {
   z-index: 5;
 }
 
-.showtrade-container.rejected {
+.showtrade-container.rejected, .showtrade-container.reject {
   background-color: rgb(175, 0, 0);
   background-color: rgba(175, 0, 0,.7);
 }
-.showtrade-container.accepted {
+.showtrade-container.accepted,  .showtrade-container.accept{
   background-color: rgb(0, 175, 0);
   background-color: rgba(0, 175, 0,.7);
 }
