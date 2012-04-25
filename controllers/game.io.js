@@ -82,6 +82,20 @@ module.exports = function(sockets) {
       }
     });
 
+    socket.on('gameover', function(winner) {
+      var user_id = socket.handshake.sessionID;
+      var game_id = uid_to_gid[user_id];
+      var game = gp.findById(game_id);
+      if (DEBUG) { console.log('name:start ', user_id, game); }
+      try {
+        game.gameover(winner);
+        gp.save(game);
+        // handle user statistics here
+      } catch (error) {
+        socket.send(error);
+      }
+    });
+
 
     /**
      * startingSettlementPlacement
@@ -103,7 +117,6 @@ module.exports = function(sockets) {
       sockets.to(game.whoseTurn()).emit('startingRoadSelect',
         game.getValidStartingRoadEdges(game.whoseTurn()));
     });
-
 
     /**
      * startingRoadPlacement

@@ -722,6 +722,7 @@ window.onload = function() {
        var player_id = users.indexOf(player.user_id);
        // update Victory Points
        var victory_points = player.victory_points;
+       console.log(victory_points);
        if (player.has_longest_road) victory_points += 2;
        if (player.has_largest_army) victory_points += 2;
        // Update Resources
@@ -791,6 +792,19 @@ window.onload = function() {
        // Update Victory Points
 
      	updateCards(false);
+	if (victory_points >= 10) {
+          console.log("GAME OVER");
+          $('#startBackground').show();
+          if (player.user_id === me) {
+            $('#win').addClass("won");
+          }
+          else {
+            $('#win').addClass('loss');
+            $('#win').text("You've lost.");
+          }
+          $('#win').show();
+          socket.emit('gameover', player.user_id);
+        }
      }
    });
 

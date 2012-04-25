@@ -622,7 +622,12 @@ Game.prototype.start = function() {
   }
 
   this._next();
-}
+};
+
+Game.prototype.gameover = function() {
+  // might want to double check someone has 10 VP
+  this.current_phase = PHASE.END;
+};
 
 /**
   * endTurn
@@ -768,7 +773,7 @@ Game.prototype.buildSettlement = function(user_id, intersection_id) {
   if (!this.canBuildSettlement(user_id)) throw 'You are not able to build a settlement!';
 
   this.players[player_id].unbuilt_settlements--;
-  this.players[player_id].victory_points;
+  this.players[player_id].victory_points++;
   this._subtractResources(player_id, SETTLEMENT_COST);
   this.board.buildSettlement(player_id, intersection_id);
   this.updateLongestRoad();
