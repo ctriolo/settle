@@ -216,7 +216,7 @@ body {
   z-index: 4;
 }
 
-#start {
+#start, #win {
   position: fixed;
   width: 26%;
   height: 10%;
@@ -229,6 +229,24 @@ body {
   z-index: 5;
 }
 
+#win {
+  border-color: rgba(0, 0, 0, 0.1);
+  padding: 9px 14 px;
+  -webkit-border-radius: 5px;
+  mox-border-radius: 5px;
+  board-radius: 5px;
+  display: none;
+  text-align: center;
+  vertical-align: middle;
+  line-height: normal;
+  border: 1px solid #CCC;
+}
+#win.won{
+  background-color: #00CD00;
+}
+#win.loss {
+  background-color: #CD0000;
+}
 
 /**
  * Points
