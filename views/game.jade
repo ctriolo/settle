@@ -12,6 +12,31 @@ block board
   a#start.btn.btn-primary.btn-large.disabled Waiting...
   #startBackground
   include includes/board
+block remove
+  .remove-popup
+    .remove-cards
+     .cards
+        .remove-card
+          .wheat-card
+          .card-number.js-wheat-number 0
+        .remove-card
+          .wood-card
+          .card-number.js-wood-number 0
+        .remove-card
+          .sheep-card
+          .card-number.js-sheep-number 0
+        .remove-card
+          .brick-card
+          .card-number.js-brick-number 0
+        .remove-card
+          .stone-card
+          .card-number.js-stone-number 0
+  .trade-actions
+    .btn-toolbar
+      .btn-group
+        button.btn.resetRemove Reset
+      .btn-group
+        button.btn.bank.removebtn.disabled Remove x More Cards
 
 block trade
   .trade-popup
@@ -35,7 +60,7 @@ block trade
           .stone-card
           .card-number.js-stone-number 0
     .for-cards
-      .trade-text 
+      .trade-text
         p For:
       .cards.trade
         .trade-card
@@ -127,13 +152,30 @@ block actions
       .btn-group
         button.btn.roll Roll
       .btn-group
-        button.btn.development Development
+        button.btn.knight Knight
     .btn-toolbar.robber-phase
       .btn-group
         button.btn.big.disabled Move the Robber
     .btn-toolbar.steal-phase
       .btn-group
         button.btn.big.disabled Select Player to Steal From
+    .btn-toolbar.road-building-phase
+      .btn-group
+        button.btn.big.disabled Pick an edge to put a road
+    .btn-toolbar.monopoly-phase
+      .btn-group
+        button.btn.wheat Wheat
+        button.btn.stone Stone
+        button.btn.wood  Wood
+        button.btn.brick Brick
+        button.btn.sheep Sheep
+    .btn-toolbar.year-of-plenty-phase
+      .btn-group
+        button.btn.wheat Wheat
+        button.btn.stone Stone
+        button.btn.wood  Wood
+        button.btn.brick Brick
+        button.btn.sheep Sheep
     .btn-toolbar.main-phase
       .btn-group
         button.btn.dropdown-toggle(data-toggle="dropdown")

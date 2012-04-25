@@ -1,0 +1,16 @@
+extends layout
+
+block head
+    link(rel='stylesheet', href='/stylesheets/title.css')
+
+block content
+  .hex-container
+    .hex
+      .left
+      .middle
+        .inner
+          h1 Settle
+          a(href='http://localhost/auth/facebook').btn.btn-primary.btn-large
+            i.icon-user
+            |  Facebook Connect
+      .right

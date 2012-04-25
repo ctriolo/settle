@@ -9,6 +9,7 @@ var roll_frequency = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 var total_rolls = 0.0;
 var recent_offer = {};
 var ports = [];
+var toRemove = 0;
 function makeSVG(tag, attrs) {
   var el= document.createElementNS('http://www.w3.org/2000/svg', tag);
   for (var k in attrs)
@@ -66,14 +67,16 @@ function updateCards(offer) {
       if (number.text() === "0") {
         $(this).hide();
         $('.offer-cards .trade-card .' + class_name[1]).parent().hide();
+        $('.remove-card .' + class_name[1]).parent().hide();
       }
       else {
         $(this).show();
         $('.offer-cards .trade-card .' + class_name[1]).parent().show();
+        $('.remove-card .' + class_name[1]).parent().show();
       }
       if (number.hasClass("js-resource-number")) {
         var num = parseInt(number.text());
-        if (num >= 7) {
+        if (num > 7) {
           number.css({"color": "red"});
         }
         else
@@ -92,6 +95,7 @@ function tradeCleanup() {
     $(".trade-card .card-number").text("0");
 
     $(".showtrade-container").animate({"right": "5%"}, "slow");
+
     $(".showtrade-container").hide();
     $(".showtrade-card .card-number").text("0");
 
@@ -189,7 +193,7 @@ window.onload = function() {
     if ($(this).hasClass("popupShow")) {
       $(".trade-container").show();
       $(this).addClass("active");
-      $(".trade-container").animate({"right": "30%"}, "slow");
+      $(".trade-container").animate({"right": "40.5%"}, "slow");
       $(this).removeClass("popupShow");
     }
     else {
@@ -213,24 +217,35 @@ window.onload = function() {
     socket.emit('offerTrade', offer, me);
   });
 
+  socket.on('removeCards', function(number) {
+    // set button text
+    $('.removebtn').text('Remove ' + number + ' more cards');
+    $('.removebtn').attr('id', number);
+    toRemove = number;
+    $(".remove-container").show();
+    $(".remove-container").animate({"right": "40.5%"}, "slow");
+  });
+
   socket.on('showTrade', function(offer, offerer, type) {
     if (me !== offerer) {
       var player_num = users.indexOf(offerer);
       // get id name of player well
       var player_tag = '#player' + player_num;
+      var container = $(player_tag + ' .showtrade-container');
       var acceptable = true;
-
+      container.removeClass("accept");
+      container.removeClass("reject");
       // change color based on whether this trade was accepted/rejected/offered
-      $(".showtrade-container .trade-actions").show();
+      $(player_tag + " .showtrade-container .trade-actions").show();
       if (type === "accepted")
-        $(".showtrade-container").addClass("accepted");
+        container.addClass("accepted");
       else if (type === "rejected") {
-        $(".showtrade-container").addClass("rejected");
-        $(".showtrade-container .trade-actions").hide();
+        container.addClass("rejected");
+        $(player_tag + " .showtrade-container .trade-actions").hide();
       }
       else {
-        $(".showtrade-container").removeClass("accepted");
-        $(".showtrade-container").removeClass("rejected");
+        container.removeClass("accepted");
+        container.removeClass("rejected");
       }
 
       // show the given cards from the offer
@@ -273,6 +288,8 @@ window.onload = function() {
     var num1 = parseInt($(this).parents(".player").parent().attr('id').substring('player'.length));
     if (!$(this).hasClass("disabled")) {
       var container = $(this).parents(".showtrade-container");
+      container.addClass("accept");
+      container.removeClass("reject");
       // check if this is the second accept or not
       if (container.hasClass("accepted"))
         socket.emit('acceptTrade', recent_offer[num1], me, users[num1], "done");
@@ -283,6 +300,9 @@ window.onload = function() {
   $(".rejectTrade").click(function() {
     var num1 = parseInt($(this).parents(".player").parent().attr('id').substring('player'.length));
     if (!$(this).hasClass("disabled")) {
+      var container = $(this).parents(".showtrade-container");
+      container.removeClass("accept");
+      container.addClass("reject");
       socket.emit('rejectTrade', recent_offer[num1], me, users[num1]);
     }
   });
@@ -293,7 +313,7 @@ window.onload = function() {
     $(".offerbtn").removeClass("disabled");
     updateCards(false);
     $(".trade-container").show();
-    $(".trade-container").animate({"right": "30%"}, "slow");
+    $(".trade-container").animate({"right": "40.5%"}, "slow");
     $(this).removeClass("popupShow");
   });
 
@@ -319,7 +339,51 @@ window.onload = function() {
     socket.emit('bankTrade', offer, me);
   });
 
+  $(".remove-card").click(function(){
+    var num = parseInt($(this).children(".card-number").text());
+    var class_name = $(this).children(".card-number").attr("class").split(" ");
+    var has_num = parseInt($('.cards .card .' + class_name[1]).text());
+    if (has_num > num || $(this).parent().parent().hasClass('for-cards')) {
+      var left = parseInt($('.removebtn').attr('id'));
+      if (left === 0)
+        return;
+      $(this).children(".card-number").text(num+1);
 
+      left--;
+      if (left === 0) {
+        $('.removebtn').text("Accept");
+        $('.removebtn').removeClass('disabled');
+      }
+      else
+        $('.removebtn').text("Remove " + left + " more cards");
+      $('.removebtn').attr('id', left);
+    }
+  });
+
+  $(".removebtn").click(function() {
+    if ($(this).hasClass("disabled"))
+      return;
+    $(this).addClass("disabled");
+    var removeCards = [];
+    $('.remove-card .card-number').each(function() {
+      removeCards.push(parseInt($(this).text()));
+    });
+    $(".remove-container").animate({"right": "5%"}, "slow");
+    $(".remove-container").hide();
+    $(".remove-card .card-number").text("0");
+    socket.emit('removed', removeCards, me);
+  });
+
+  $(".resetRemove").click(function() {
+    $('.remove-card').each(function() {
+      $(this).children('.card-number').text("0");
+    });
+
+    $('.removebtn').text("Remove " + toRemove + " more cards");
+    $('.removebtn').attr('id', toRemove);
+    $('.removebtn').addClass("disabled");
+    updateCards(false);
+  });
   $(".trade-card").click(function(){
     if ($('.offer').hasClass('disabled'))
       return;
@@ -390,7 +454,7 @@ window.onload = function() {
     if (total_rolls > 0) {
       if ($(this).hasClass("chartShow")) {
         $(".frequency-container").show();
-        $(".frequency-container").animate({"right": "30%"}, "slow");
+        $(".frequency-container").animate({"right": "40.5%"}, "slow");
         $(this).removeClass("chartShow");
 
       }
@@ -632,8 +696,8 @@ window.onload = function() {
        var player_id = users.indexOf(player.user_id);
        // update Victory Points
        var victory_points = player.victory_points;
-       if (player.has_longest_road === true) victory_points += 2;
-       if (player.has_largest_army === true) victory_points += 2;
+       if (player.has_longest_road) victory_points += 2;
+       if (player.has_largest_army) victory_points += 2;
        // Update Resources
        var total = 0;
        for (var resource in player.resource_cards) {
@@ -652,6 +716,12 @@ window.onload = function() {
          ports = player.ports;
          // see your own victory cards
          victory_points += player.victory_cards;
+         // make your own cards red if over 7
+         if (total > 7) {
+           $('#player'+player_id+' .card-number').css({"color": "red"});
+         }
+         else
+           $('#player'+player_id+' .card-number').css({"color": "black"});
        }
 
        // update victory point total
@@ -899,9 +969,14 @@ window.onload = function() {
 
 
 
-    socket.on('showRobber', function() {
+    socket.on('showRobber', function(removeWaiting) {
       $('.roll-phase, .main-phase, .steal-phase').hide();
       $('.robber-phase').show();
+      if (removeWaiting) {
+        $('.robber-phase .btn').text("Waiting for Players to Remove Cards");
+      }
+      else
+        $('.robber-phase .btn').text("Move the Robber");
       $('.numberToken.robber').addClass('highlight');
     });
 
@@ -940,6 +1015,144 @@ window.onload = function() {
       $('.roll-phase, .robber-phase, .place-phase, .steal-phase').hide();
       $('.main-phase').show();
     });
+
+
+  /**
+   * Year of plenty
+   *
+   */
+  socket.on('yearOfPlentyFirst', function() {
+    $('.main-phase').hide();
+    $('.year-of-plenty-phase').show();
+    var RESOURCES = ['brick', 'stone', 'wheat', 'wood', 'sheep'];
+    for (var i = 0; i < RESOURCES.length; i++) {
+      $('.year-of-plenty-phase .'+RESOURCES[i]).click(function(){
+        var resource = '';
+        var RESOURCES = ['brick', 'stone', 'wheat', 'wood', 'sheep'];
+
+        // need to figure out which button was clicked
+        for (var i = 0; i < RESOURCES.length; i++) {
+          if ($(this).hasClass(RESOURCES[i])) resource = RESOURCES[i];
+        }
+
+        // DISABLE IMMEDIATELY TO STOP FROM BEING CLICKED TWICE
+        $('.year-of-plenty-phase button').off('click');
+
+        resource = resource.charAt(0).toUpperCase() + resource.slice(1);
+        socket.emit('playYearOfPlentyFirst', resource);
+      });
+    }
+  });
+
+  socket.on('yearOfPlentySecond', function() {
+    var RESOURCES = ['brick', 'stone', 'wheat', 'wood', 'sheep'];
+    for (var i = 0; i < RESOURCES.length; i++) {
+      $('.year-of-plenty-phase .'+RESOURCES[i]).click(function(){
+        var resource = '';
+        var RESOURCES = ['brick', 'stone', 'wheat', 'wood', 'sheep'];
+
+        // need to figure out which button was clicked
+        for (var i = 0; i < RESOURCES.length; i++) {
+          if ($(this).hasClass(RESOURCES[i])) resource = RESOURCES[i];
+        }
+
+        // DISABLE IMMEDIATELY TO STOP FROM BEING CLICKED TWICE
+        $('.year-of-plenty-phase button').off('click');
+
+        resource = resource.charAt(0).toUpperCase() + resource.slice(1);
+        socket.emit('playYearOfPlentySecond', resource);
+      });
+    }
+  });
+
+  socket.on('yearOfPlentyDone', function() {
+    $('.year-of-plenty-phase').hide();
+    $('.main-phase').show();
+  });
+
+
+  /**
+   * Monopoly
+   **/
+
+  socket.on('monopoly', function() {
+    $('.main-phase').hide();
+    $('.monopoly-phase').show();
+    var RESOURCES = ['brick', 'stone', 'wheat', 'wood', 'sheep'];
+    for (var i = 0; i < RESOURCES.length; i++) {
+      $('.monopoly-phase .'+RESOURCES[i]).click(function(){
+        var resource = '';
+        var RESOURCES = ['brick', 'stone', 'wheat', 'wood', 'sheep'];
+
+        // need to figure out which button was clicked
+        for (var i = 0; i < RESOURCES.length; i++) {
+          if ($(this).hasClass(RESOURCES[i])) resource = RESOURCES[i];
+        }
+
+        // DISABLE IMMEDIATELY TO STOP FROM BEING CLICKED TWICE
+        $('.monopoly-phase button').off('click');
+
+        resource = resource.charAt(0).toUpperCase() + resource.slice(1);
+        socket.emit('chooseMonopolyResource', resource);
+      });
+    }
+  });
+
+  socket.on('monopolyDone', function() {
+    $('.monopoly-phase').hide();
+    $('.main-phase').show();
+  });
+
+
+  /**
+   * Road Building
+   **/
+
+  socket.on('roadBuildingFirst', function(ids) {
+    $('.main-phase').hide();
+    $('.road-building-phase').show();
+    for (var i = 0; i < ids.length; i++) {
+      $("#edge"+ids[i]).addClass('selectable');
+      createPopup("#edge" + ids[i], "Road Placement", "Click this edge to place a new road");
+      $("#edge"+ids[i]).hover(function(){$(this).addClass('hover'); $(this).popover('show')},
+                              function(){$(this).removeClass('hover'); $(this).popover('hide')});
+      $("#edge"+ids[i]).click(function() {
+        $('.edge').off('click');
+        $('.edge').off('hover');
+        $(this).popover('hide');
+        $('.edge').removeClass('selectable');
+        var id = parseInt($(this).attr('id').substring('edge'.length));
+        socket.emit('playRoadBuildingFirst', id);
+      });
+    }
+  });
+
+
+  socket.on('roadBuildingSecond', function(ids) {
+    for (var i = 0; i < ids.length; i++) {
+      $("#edge"+ids[i]).addClass('selectable');
+      createPopup("#edge" + ids[i], "Road Placement", "Click this edge to place a new road");
+      $("#edge"+ids[i]).hover(
+        function(){$(this).addClass('hover'); $(this).popover('show')},
+        function(){$(this).removeClass('hover'); $(this).popover('hide')}
+      );
+      $("#edge"+ids[i]).click(function() {
+        $('.edge').off('click');
+        $('.edge').off('hover');
+        $(this).popover('hide');
+        $('.edge').removeClass('selectable');
+        var id = parseInt($(this).attr('id').substring('edge'.length));
+        socket.emit('playRoadBuildingSecond', id);
+      });
+    }
+  });
+
+
+  socket.on('roadBuildingDone', function() {
+    $('.main-phase').show();
+    $('.road-building-phase').hide();
+  });
+
 
   /**
     * newTurn

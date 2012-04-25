@@ -16,9 +16,15 @@ PHASE = {
   STARTING_ROAD: 'Starting Road',
   DICE: 'Dice',
   MAIN: 'Main',
+  REMOVE: 'Remove',
   ROBBER: 'Robber',
   STEAL: 'Steal',
   KNIGHT: 'Knight',
+  YEAR_OF_PLENTY_FIRST: 'Year Of Plenty First',
+  YEAR_OF_PLENTY_SECOND: 'Year Of Plenty Second',
+  MONOPOLY: 'Monopoly',
+  ROAD_BUILDING: 'Road Building First',
+  ROAD_BUILDING: 'Road Building Second',
   // TODO: fill these in as we go along
   END: 'End',
   NOT_IMPLEMENTED: 'Not Implemented' // placeholder
@@ -124,10 +130,10 @@ function Game() {
   this.development_cards = [];
   this.current_player = -1;
   this.current_phase = PHASE.START;
-
+  this.steal_players = 0; // number of players that need to lose cards
   // Add Knight Cards
   for (var i = 0; i < 14; i++) {
-    this.development_cards.push(DEVELOPMENT.KNIGHT);
+    //this.development_cards.push(DEVELOPMENT.KNIGHT);
   }
 
   // Add Progress Cards
@@ -262,9 +268,13 @@ Game.prototype._next = function(diceRoll) {
   case PHASE.DICE:
     this.has_dice_rolled = true;
     if (diceRoll === 7)
-      this.current_phase = PHASE.ROBBER
+      this.current_phase = PHASE.REMOVE
     else
       this.current_phase = PHASE.MAIN
+    break;
+  case PHASE.REMOVE:
+    if (this.steal_players === 0)
+      this.current_phase = PHASE.ROBBER
     break;
   case PHASE.ROBBER:
   case PHASE.KNIGHT:
@@ -660,6 +670,21 @@ Game.prototype.acceptTrade = function(offer, accepter, offerer) {
   }
 }
 
+Game.prototype.remove = function(removedCards, player) {
+  var player = this._translate(player);
+  this._validatePhase(PHASE.REMOVE);
+  for(var i = 0; i < removedCards.length; i++) {
+      this.players[player].resource_cards[RESOURCE_ARRAY[i]] -= removedCards[i];
+      console.log("Removing " + removedCards[i] + " of " + RESOURCE_ARRAY[i] + " player " + player);
+  }
+  this.steal_players--;
+  this._next();
+  if (this.steal_players === 0)
+    return true;
+  else
+    return false;
+}
+
 /*****
   * updatePorts
   *
@@ -840,6 +865,7 @@ Game.prototype.playKnight = function(user_id) {
   this.updateLargestArmy();
 };
 
+
 /**
  * playYearOfPlenty
  *
@@ -857,28 +883,43 @@ Game.prototype.playYearOfPlenty = function(user_id) {
 
   this.players[player_id].development_cards[DEVELOPMENT.YEAR_OF_PLENTY]--;
 
-  // YEAR_OF_PLENTY PHASE?
+  this.current_phase = PHASE.YEAR_OF_PLENTY_FIRST;
 };
 
 
 /**
- * playMonopoly
+ * playYearOfPlentyFirst
  *
- * Initiates a monopoly
+ * Initiates a year of plenty.
  * Throws an exception if the action is invalid.
  * @param   user_id           string   the user who wants to play the dev
  */
-Game.prototype.playMonopoly = function(user_id) {
+Game.prototype.playYearOfPlentyFirst = function(user_id, resource) {
   var player_id = this._translate(user_id);
   this._validatePlayer(player_id);
-  this._validatePhase(PHASE.MAIN);
-  if (!this.players[player_id].development_cards[DEVELOPMENT.MONOPOLY]) {
-    throw 'You are not able to play a monopoly!';
-  }
+  this._validatePhase(PHASE.YEAR_OF_PLENTY_FIRST);
 
-  this.players[player_id].development_cards[DEVELOPMENT.MONOPOLY]--;
+  this.players[player_id].resource_cards[resource]++;
 
-  // MONOPOLY PHASE?
+  this.current_phase = PHASE.YEAR_OF_PLENTY_SECOND;
+};
+
+
+/**
+ * playYearOfPlentySecond
+ *
+ * Initiates a year of plenty.
+ * Throws an exception if the action is invalid.
+ * @param   user_id           string   the user who wants to play the dev
+ */
+Game.prototype.playYearOfPlentySecond = function(user_id, resource) {
+  var player_id = this._translate(user_id);
+  this._validatePlayer(player_id);
+  this._validatePhase(PHASE.YEAR_OF_PLENTY_SECOND);
+
+  this.players[player_id].resource_cards[resource]++;
+
+  this.current_phase = PHASE.MAIN;
 };
 
 
@@ -899,9 +940,115 @@ Game.prototype.playRoadBuilding = function(user_id) {
 
   this.players[player_id].development_cards[DEVELOPMENT.ROAD_BUILDING]--;
 
-  // ROAD BUILDING PHASE?
+  this.current_phase = PHASE.ROAD_BUILDING_FIRST;
 };
 
+
+/**
+ * playRoadBuildingFirst
+ *
+ * Throws an exception if the action is invalid.
+ * @param   user_id           string   the user who wants to play the dev
+ */
+Game.prototype.playRoadBuildingFirst = function(user_id, edge_id) {
+  var player_id = this._translate(user_id);
+  this._validatePlayer(player_id);
+  this._validatePhase(PHASE.ROAD_BUILDING_FIRST);
+
+  this.players[player_id].unbuilt_roads--;
+  this.board.buildRoad(player_id, edge_id);
+  this.updateLongestRoad();
+
+  this.current_phase = PHASE.ROAD_BUILDING_SECOND;
+};
+
+
+/**
+ * playRoadBuildingSecond
+ *
+ * Throws an exception if the action is invalid.
+ * @param   user_id           string   the user who wants to play the dev
+ */
+Game.prototype.playRoadBuildingSecond = function(user_id, edge_id) {
+  var player_id = this._translate(user_id);
+  this._validatePlayer(player_id);
+  this._validatePhase(PHASE.ROAD_BUILDING_SECOND);
+
+  this.players[player_id].unbuilt_roads--;
+  this.board.buildRoad(player_id, edge_id);
+  this.updateLongestRoad();
+
+  this.current_phase = PHASE.MAIN;
+};
+
+
+/**
+ * playMonopoly
+ *
+ * Initiates a monopoly
+ * Throws an exception if the action is invalid.
+ * @param   user_id           string   the user who wants to play the dev
+ */
+Game.prototype.playMonopoly = function(user_id) {
+  var player_id = this._translate(user_id);
+  this._validatePlayer(player_id);
+  this._validatePhase(PHASE.MAIN);
+  if (!this.players[player_id].development_cards[DEVELOPMENT.MONOPOLY]) {
+    throw 'You are not able to play a monopoly!';
+  }
+
+  this.players[player_id].development_cards[DEVELOPMENT.MONOPOLY]--;
+
+  this.current_phase = PHASE.MONOPOLY;
+};
+
+
+/**
+ * chooseMonopolyResource
+ *
+ * Gives all the resources of the type chosen to the user
+ * Throws an exception if the action is invalid.
+ * @param   user_id   string   the user who wants to play the dev
+ * @param   resource  string   resource to hoard
+ */
+Game.prototype.chooseMonopolyResource = function(user_id, resource) {
+  var player_id = this._translate(user_id);
+  this._validatePlayer(player_id);
+  this._validatePhase(PHASE.MONOPOLY);
+
+  var sum = 0;
+  for (var i = 0; i < this.players.length; i++) {
+    sum += this.players[i].resource_cards[resource];
+    this.players[i].resource_cards[resource] = 0;
+  }
+  this.players[player_id].resource_cards[resource] = sum;
+
+  this.current_phase = PHASE.MAIN;
+};
+
+
+/**
+ * removeCards
+ *
+ * Returns the player ids that need to remove cards after 7 rolls
+ */
+Game.prototype.removeCards = function() {
+  this._validatePhase(PHASE.REMOVE);
+  var remove_players = {};
+  for (var i = 0; i < this.players.length; i++) {
+    var cards = 0;
+    for (var resource in this.players[i].resource_cards) {
+      cards += this.players[i].resource_cards[resource];
+    }
+    console.log(cards);
+    if (cards > 7) {
+      remove_players[this.players[i].user_id] = Math.floor(cards/2);
+      this.steal_players++;
+    }
+  }
+  this._next();
+  return remove_players;
+}
 
 /**
  * rollDice
@@ -947,8 +1094,10 @@ Game.prototype.getRobber = function() {
  */
 Game.prototype.updateRobber = function(user_id, move_id) {
   this._validatePhase(PHASE.ROBBER, PHASE.KNIGHT);
+
   var players = this.board.updateRobber(move_id);
   var me = this._translate(user_id);
+  this._validatePlayer(me);
 
   if (players.indexOf(me) >= 0)
     players.splice(players.indexOf(me), 1) // take out me

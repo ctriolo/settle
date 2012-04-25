@@ -1,4 +1,7 @@
-h1= title
-ul
-  for user in users
-    li= user.name
+extends layout
+
+block content
+  h1= title
+  ul
+    for user in users
+      li= user.name
