@@ -11,9 +11,8 @@ module.exports = function(app, io){
 
   // Require Authentication
   function requireAuth(req, res, next) {
-    next();
-//    if (req.session.auth && req.session.auth.loggedIn) next();
-//    else res.redirect('/');
+    if (req.session.auth && req.session.auth.loggedIn) next();
+    else res.redirect('/');
   };
 
   // Home
@@ -23,7 +22,6 @@ module.exports = function(app, io){
   // User
   app.get('/user/:id', requireAuth, user.view);
   app.get('/user', requireAuth, user.list);
-  app.get('/userfilltest', requireAuth, user.filltest);
 
   // Game
   app.get('/game/:id', requireAuth, game.view);
