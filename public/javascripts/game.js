@@ -118,6 +118,7 @@ window.onload = function() {
   };
 
 
+
   /**
    * Socket IO Connection
    */
@@ -126,6 +127,24 @@ window.onload = function() {
   socket.on('connect', function() {
     socket.emit('join', CONFIG.room);
   });
+  
+
+  /**
+   * OpenTok
+   */
+  
+  var apiKey = '14421202';
+  var sessionId = '1_MX4xMjMyMDgxfjcwLjQyLjQ3Ljc4fjIwMTItMDQtMjAgMDA6NDc6NDguODE2NjM2KzAwOjAwfjAuMzY3MzY1NjI2NTAxfg';
+  var token = 'devtoken';
+    
+  var session = TB.initSession(sessionId);
+  session.addEventListener("sessionConnected", sessionConnectedHandler);
+  session.connect(apiKey, token);
+  
+  /* var publisher; */
+  function sessionConnectedHandler(event) {
+    session.publish('MY_VIDEO', {height:150,width:200});
+  }
 
 
   /**
