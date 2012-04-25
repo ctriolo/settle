@@ -15,9 +15,17 @@ module.exports = function(app, express, io){
     , User = require('../models/User.js')
     , userProvider = new UserProvider('localhost', 27017);
 
+  app.configure('development', function(){
+    everyauth.facebook.appId(keys.development.facebook.id)
+    everyauth.facebook.appSecret(keys.development.facebook.secret)
+  });
+
+  app.configure('production', function(){
+    everyauth.facebook.appId(keys.production.facebook.id)
+    everyauth.facebook.appSecret(keys.production.facebook.secret)
+  });
+
   everyauth.facebook
-    .appId(keys.facebook.id)
-    .appSecret(keys.facebook.secret)
     .entryPath('/auth/facebook')
     .moduleTimeout(999999999)
     .findOrCreateUser(
@@ -45,14 +53,7 @@ module.exports = function(app, express, io){
     app.use(express.static(__dirname + '/../public'));
     app.use(everyauth.middleware());
     DEBUG = true;
-  });
-
-  app.configure('development', function(){
     app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
-  });
-
-  app.configure('production', function(){
-    app.use(express.errorHandler());
   });
 
 
