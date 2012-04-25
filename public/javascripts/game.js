@@ -122,6 +122,7 @@ window.onload = function() {
   };
 
 
+
   /**
    * Socket IO Connection
    */
@@ -130,6 +131,50 @@ window.onload = function() {
   socket.on('connect', function() {
     socket.emit('join', CONFIG.room);
   });
+  
+
+  /**
+   * OpenTok
+   */
+  
+  var apiKey = '14421202';
+  var sessionId = '1_MX4xMjMyMDgxfjcwLjQyLjQ3Ljc4fjIwMTItMDQtMjAgMDA6NDc6NDguODE2NjM2KzAwOjAwfjAuMzY3MzY1NjI2NTAxfg';
+  var token = 'devtoken';
+    
+  var session = TB.initSession(sessionId);
+  session.addEventListener("sessionConnected", sessionConnectedHandler);
+  session.addEventListener("streamCreated", streamCreatedHandler);
+  session.connect(apiKey, token);
+  
+  /* var publisher; */
+  function sessionConnectedHandler(event) {
+    h = $('#MY_VIDEO').height();
+    w = $('#MY_VIDEO').width();
+    session.publish('MY_VIDEO', {height:h, width:w});
+    subscribeToStreams(event.streams);
+  }
+  
+  function streamCreatedHandler(event) { // when each person joins (usually one)
+    subscribeToStreams(event.streams);
+  }
+  
+  function subscribeToStreams(streams) {
+    if (typeof subscribeToStreams.nextPlayer == 'undefined')
+      subscribeToStreams.nextPlayer = 1;
+    
+    for (i = 0; i < streams.length; i++) {
+      var stream = streams[i];
+      if (stream.connection.connectionId != session.connection.connectionId) {
+        replaceID = 'VIDEO' + subscribeToStreams.nextPlayer++;
+        h = $('#' + replaceID).height();
+        w = $('#' + replaceID).width();
+        session.subscribe(replaceID, {height:h, width:w})
+      }
+    }
+  }
+  
+  
+  
 
 
   /**
@@ -937,13 +982,13 @@ window.onload = function() {
     if (typeof breakdown != 'undefined') {
         $('#dice-image').show();
         url = 'http://www.princeton.edu/~rgromero/dice-gif/a' + breakdown[0]
-            + ',' + breakdown[1] + '-g50.gif';
+            + ',' + breakdown[1] + '_mod6.gif';
         $('#dice-image').attr('src', url);
-        handleDiceRoll(number, resources);
         setTimeout(function() {
+            handleDiceRoll(number, resources);
             $('#dice-image').attr('src','');
             $('#dice-image').hide();
-        }, 8 * 1000);
+        }, 4 * 1000);
     }
 
   });

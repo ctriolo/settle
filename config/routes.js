@@ -11,8 +11,9 @@ module.exports = function(app, io){
 
   // Require Authentication
   function requireAuth(req, res, next) {
-    if (req.session.auth && req.session.auth.loggedIn) next();
-    else res.redirect('/');
+    next();
+//    if (req.session.auth && req.session.auth.loggedIn) next();
+//    else res.redirect('/');
   };
 
   // Home

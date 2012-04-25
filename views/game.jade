@@ -106,7 +106,7 @@ block player
   #player0
     .player.well
       .left
-        img(src='http://i.imgur.com/TFOqB.jpg').pic
+        img(src='http://i.imgur.com/TFOqB.jpg').pic#MY_VIDEO
         h3.name Empty
       .right
         .cards
@@ -245,11 +245,17 @@ block actions
 block others
   .others
     #player1
-      include includes/opponent
+      .opponent.player.well
+        img(src='http://goo.gl/1YKzh').video#VIDEO1
+        include includes/opponent
     #player2
-      include includes/opponent
+      .opponent.player.well
+        img(src='http://goo.gl/1YKzh').video#VIDEO2
+        include includes/opponent
     #player3
-      include includes/opponent
+      .opponent.player.well
+        img(src='http://goo.gl/1YKzh').video#VIDEO3
+        include includes/opponent
 
 block messages
   .message.well
