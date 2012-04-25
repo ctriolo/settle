@@ -27,9 +27,10 @@ module.exports = function(sockets) {
 
   sockets.on('connection', function(socket) {
 
+    /*
     socket.on('disconnect', function() {
       alert("Goodbye");
-    });
+    }); */
 
     /**
      * join

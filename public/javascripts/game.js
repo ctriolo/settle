@@ -143,12 +143,38 @@ window.onload = function() {
     
   var session = TB.initSession(sessionId);
   session.addEventListener("sessionConnected", sessionConnectedHandler);
+  session.addEventListener("streamCreated", streamCreatedHandler);
   session.connect(apiKey, token);
   
   /* var publisher; */
   function sessionConnectedHandler(event) {
-    session.publish('MY_VIDEO', {height:150,width:200});
+    h = $('#MY_VIDEO').height();
+    w = $('#MY_VIDEO').width();
+    session.publish('MY_VIDEO', {height:h, width:w});
+    subscribeToStreams(event.streams);
   }
+  
+  function streamCreatedHandler(event) { // when each person joins (usually one)
+    subscribeToStreams(event.streams);
+  }
+  
+  function subscribeToStreams(streams) {
+    if (typeof subscribeToStreams.nextPlayer == 'undefined')
+      subscribeToStreams.nextPlayer = 1;
+    
+    for (i = 0; i < streams.length; i++) {
+      var stream = streams[i];
+      if (stream.connection.connectionId != session.connection.connectionId) {
+        replaceID = 'VIDEO' + subscribeToStreams.nextPlayer++;
+        h = $('#' + replaceID).height();
+        w = $('#' + replaceID).width();
+        session.subscribe(replaceID, {height:h, width:w})
+      }
+    }
+  }
+  
+  
+  
 
 
   /**
