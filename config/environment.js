@@ -19,6 +19,7 @@ module.exports = function(app, express, io){
     .appId(keys.facebook.id)
     .appSecret(keys.facebook.secret)
     .entryPath('/auth/facebook')
+    .moduleTimeout(999999999)
     .findOrCreateUser(
       function (session, accessToken, accessTokenExtra, fbUserMetadata) {
         userProvider.findById(parseInt(fbUserMetadata.id), function(error, user) {
