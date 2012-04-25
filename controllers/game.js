@@ -9,6 +9,22 @@ var Game = require('../models/Game')
   , GameProvider = require('../models/GameProvider')
   , UIBoard = require('../models/Board/UIBoard');
 
+var next_id = 0;
+
+/**
+ * create
+ *
+ * creates a game, and redirects to its url
+ */
+module.exports.create = function(req, res) {
+  var gp = GameProvider.getInstance();
+
+  var game = new Game();
+  game.id = next_id++;
+  gp.save(game);
+
+  res.redirect('/game/'+game.id);
+};
 
 /**
  * view
@@ -19,14 +35,14 @@ module.exports.view = function(req, res) {
   var id = req.params.id?req.params.id:'';
   var gp = GameProvider.getInstance();
   var game = gp.findById(id);
+  var user_id = parseInt(req.session.auth.userId);
 
-  if (!game) {
-    game = new Game();
-    game.id = id;
+  if (!game || game.isStarted()) {
+    return res.redirect('/dashboard');
   }
 
-  if (!game.isPlayer(req.sessionID) && !game.isStarted()) {
-    game.addPlayer(req.sessionID);
+  if (!game.isPlayer(user_id) && !game.isStarted()) {
+    game.addPlayer(user_id);
   }
 
   gp.save(game);
@@ -34,6 +50,8 @@ module.exports.view = function(req, res) {
   res.render('game', {
     'layout': false,
     'title': id,
+    'id': id,
+    'token': req.session.auth.facebook.accessToken,
     'board': (new UIBoard(game.board)).render()
   });
 };

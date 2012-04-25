@@ -31,7 +31,17 @@ module.exports = function(app, express, io){
     .findOrCreateUser(
       function (session, accessToken, accessTokenExtra, fbUserMetadata) {
         userProvider.findById(parseInt(fbUserMetadata.id), function(error, user) {
-          if (!user) userProvider.save(new User(fbUserMetadata), function(){});
+          fbUserMetadata.token = accessToken;
+
+          var aUser;
+          if (!user) aUser = new User(fbUserMetadata);
+          else {
+            aUser = new User(user);
+            aUser = aUser.update(fbUserMetadata);
+          };
+
+          console.log(aUser);
+          userProvider.save(aUser, function(){});
         });
         return {id: fbUserMetadata.id};
       }
@@ -62,6 +72,7 @@ module.exports = function(app, express, io){
   io.set('authorization', function (data, accept) {
     if (data.headers.cookie) {
       data.cookie = parseCookie(data.headers.cookie);
+      console.log(data.cookie);
       data.sessionID = data.cookie['express.sid'];
       accept(null, true);
     } else {

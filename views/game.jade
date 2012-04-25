@@ -6,6 +6,11 @@ block title
 block head
   link(rel='stylesheet', href='/stylesheets/board.css')
   link(rel='stylesheet', href='/stylesheets/game.css')
+  script
+    CONFIG = {
+      room: "#{id}",
+      token: "#{token}",
+    };
   script(src="/javascripts/game.js")
 
 block board

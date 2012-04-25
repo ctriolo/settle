@@ -19,6 +19,18 @@ var GameProvider = (function(){
       return this.games[id];
     };
 
+    this.getJoinable = function() {
+      var joinable = [];
+
+      for (var i in this.games) {
+        if (!this.games[i].isStarted()) {
+          joinable.push(this.games[i]);
+        }
+      }
+
+      return joinable;
+    };
+
     this.save = function(game){
       this.games[game.id] = game;
     };

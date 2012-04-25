@@ -1,5 +1,53 @@
 extends layout
 
+block head
+    link(rel='stylesheet', href='/stylesheets/dashboard.css')
+
+block header
+  .navbar.navbar-fixed-top
+    .navbar-inner
+      .container
+        .brand Settle
+        ul.nav.pull-right
+          li
+            a(href="\logout") Log Out
+
 block content
-  h1= title
-  p Welcome to #{title}, #{user.first_name}
+  .container
+    .row
+      .span4
+        .well.profile
+          img(src="http://graph.facebook.com/#{user.id}/picture?type=large")
+          h2= user.first_name
+          h1 #{user.wins} - #{user.loses}
+      .span8
+        .page-header
+          h1 Current Games
+            small
+              a.btn(href="/game", style="float:right;").btn-large Create Game
+        .row
+          .span8
+            ul.thumbnails
+              - for (var i = 0; i < games.length; i++)
+                li.span2
+                  a(href="/game/#{games[i].id}").thumbnail
+                    .row
+                      .span2
+                        if (games[i].players.length > 0)
+                          img(src="http://graph.facebook.com/#{games[i].players[0].user_id}/picture?type=square").small
+                        else
+                          img(src="http://i.imgur.com/TFOqB.jpg").small
+                        if (games[i].players.length > 1)
+                          img(src="http://graph.facebook.com/#{games[i].players[1].user_id}/picture?type=square").small
+                        else
+                          img(src="http://i.imgur.com/TFOqB.jpg").small
+                    .row
+                      .span2
+                        if (games[i].players.length > 2)
+                          img(src="http://graph.facebook.com/#{games[i].players[2].user_id}/picture?type=square").small
+                        else
+                          img(src="http://i.imgur.com/TFOqB.jpg").small
+                        if (games[i].players.length > 3)
+                          img(src="http://graph.facebook.com/#{games[i].players[3].user_id}/picture?type=square").small
+                        else
+                          img(src="http://i.imgur.com/TFOqB.jpg").small

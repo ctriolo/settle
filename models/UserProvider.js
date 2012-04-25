@@ -23,6 +23,23 @@ UserProvider.prototype.getCollection = function(callback) {
   });
 };
 
+UserProvider.prototype.find = function(query, callback) {
+  this.getCollection(function(error, user_collection) {
+    if (error) callback(error);
+    else {
+      user_collection.find(query).toArray(function(error, results) {
+        if (error) callback(error);
+	      else {
+	        for (var i = 0; i < results.length; i++) {
+	          results[i] = new User(results[i]);
+	        }
+	        callback(null, results);
+	      }
+      });
+    }
+  });
+};
+
 UserProvider.prototype.findAll = function(callback) {
   this.getCollection(function(error, user_collection) {
     if (error) callback(error);
@@ -53,14 +70,27 @@ UserProvider.prototype.findById = function(id, callback) {
   });
 };
 
+UserProvider.prototype.findByToken = function(token, callback) {
+  this.getCollection(function(error, user_collection) {
+    if (error) callback(error)
+    else {
+      user_collection.findOne({'token': token}, function(error, result) {
+        if (error) callback(error)
+        else if (result) callback(null, new User(result))
+	else callback();
+      });
+    }
+  });
+};
+
 UserProvider.prototype.save = function(users, callback) {
   this.getCollection(function(error, user_collection) {
     if (error) callback(error)
     else {
       if (typeof(users.length)=="undefined")
-        users = [users]; // single user
+      //  users = [users]; // single user
 
-      user_collection.insert(users, function() {
+      user_collection.update({id:users.id}, users, {upsert:true}, function() {
         callback(null, users);
       });
     }

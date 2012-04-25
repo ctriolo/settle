@@ -25,7 +25,7 @@ module.exports = function(app, io){
 
   // Game
   app.get('/game/:id', requireAuth, game.view);
-  app.get('/game', requireAuth, game.view);
+  app.get('/game', requireAuth, game.create);
   gameIO(io.of('/game'));
 
 };

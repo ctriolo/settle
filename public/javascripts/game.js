@@ -117,35 +117,29 @@ function showPlacePhase(phrase) {
 
 window.onload = function() {
 
-  var CONFIG = {
-    room: document.location.pathname.substring('game/'.length+1), // current room
-  };
-
-
-
   /**
    * Socket IO Connection
    */
 
   var socket = io.connect('/game');
   socket.on('connect', function() {
-    socket.emit('join', CONFIG.room);
+    socket.emit('join', CONFIG.room, CONFIG.token);
   });
-  
+
 
   /**
    * OpenTok
    */
-  
+
   var apiKey = '14421202';
   var sessionId = '1_MX4xMjMyMDgxfjcwLjQyLjQ3Ljc4fjIwMTItMDQtMjAgMDA6NDc6NDguODE2NjM2KzAwOjAwfjAuMzY3MzY1NjI2NTAxfg';
   var token = 'devtoken';
-    
+
   var session = TB.initSession(sessionId);
   session.addEventListener("sessionConnected", sessionConnectedHandler);
   session.addEventListener("streamCreated", streamCreatedHandler);
   session.connect(apiKey, token);
-  
+
   /* var publisher; */
   function sessionConnectedHandler(event) {
     h = $('#MY_VIDEO').height();
@@ -153,15 +147,15 @@ window.onload = function() {
     session.publish('MY_VIDEO', {height:h, width:w});
     subscribeToStreams(event.streams);
   }
-  
+
   function streamCreatedHandler(event) { // when each person joins (usually one)
     subscribeToStreams(event.streams);
   }
-  
+
   function subscribeToStreams(streams) {
     if (typeof subscribeToStreams.nextPlayer == 'undefined')
       subscribeToStreams.nextPlayer = 1;
-    
+
     for (i = 0; i < streams.length; i++) {
       var stream = streams[i];
       if (stream.connection.connectionId != session.connection.connectionId) {
@@ -172,9 +166,9 @@ window.onload = function() {
       }
     }
   }
-  
-  
-  
+
+
+
 
 
   /**
@@ -557,14 +551,27 @@ window.onload = function() {
    *
    * Lets us know that we can start the game.
    */
-  socket.on('start', function(players, you) {
+  socket.on('start', function(players, you, user_objects) {
     users = players.slice(0);
     me = you;
 
     if (users.indexOf(me) != -1) {
+      var my_user_object = user_objects[users.indexOf(me)];
+      user_objects.splice(users.indexOf(me), 1); // take out me
       users.splice(users.indexOf(me), 1); // take out me
+      user_objects.unshift(my_user_object); // put me first
       users.unshift(me); // put me first
     }
+
+    // reorder user objects
+    var objs = [];
+    for (var i = 0; i < users.length; i++) {
+      for (var j = 0; j < user_objects.length; j++) {
+        if (users[i] == user_objects[j].id) objs.push(user_objects[j]);
+      }
+    }
+
+    console.log(users, objs);
 
     for (var i = 0; i < players.length; i++) {
       $('#player' + i + " .player").css({"border-color":player_colors[players.indexOf(users[i])]});
@@ -572,7 +579,7 @@ window.onload = function() {
     }
 
     for (var i = 0; i < users.length; i++) {
-      $('#player'+i+' .name').text(users[i].substring(0,5));
+      $('#player'+i+' .name').text(objs[i].first_name);
     }
     $('#start').off('click');
     $('#start').remove();

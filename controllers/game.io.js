@@ -3,10 +3,12 @@
  */
 
 // Dependecies
-var GameProvider = require('../models/GameProvider');
+var GameProvider = require('../models/GameProvider')
+  , UserProvider = require('../models/UserProvider.js')
+  , User = require('../models/User.js');
 
+var sid_to_uid = {}; // session to user
 var uid_to_gid = {}; // user to game
-
 
 /**
  * updatePlayerInfo
@@ -24,6 +26,7 @@ function updatePlayerInfo(sockets, game) {
 
 module.exports = function(sockets) {
   var gp = GameProvider.getInstance();
+  var up = new UserProvider('localhost', 27017);
 
   sockets.on('connection', function(socket) {
 
@@ -39,20 +42,24 @@ module.exports = function(sockets) {
      * and the channel of their sessionID
      * @param  game_id  string  the game id of the game
      */
-    socket.on('join', function(game_id) {
-      var user_id = socket.handshake.sessionID;
-      var game = gp.findById(game_id);
-      if (DEBUG) { console.log('name:join ', user_id, game); }
-      if (!game) { return socket.emit('disconnect'); }
-      socket.join(game_id);
-      socket.join(user_id);
-      uid_to_gid[user_id] = game_id;
-      sockets.to(game_id).send('A client just connected.');
-      if (game.isStarted()) {
-        sockets.to(user_id).emit('canStart');
-        sockets.to(user_id).emit('start', game.getPlayers(), user_id);
-        if (!game.isPlayer(user_id)) sockets.to(user_id).send('You cannot join a game that\'s already started.');
-      } else if (game.canStart()) sockets.to(game_id).emit('canStart');
+    socket.on('join', function(game_id, token) {
+      up.findByToken(token, function(error, user){
+        var session_id = socket.handshake.sessionID;
+        var user_id = user.id;
+        var game = gp.findById(game_id);
+        if (DEBUG) { console.log('name:join ', user_id, game); }
+        if (!game) { return socket.emit('disconnect'); }
+        socket.join(game_id);
+        socket.join(user_id);
+        sid_to_uid[session_id] = user_id;
+        uid_to_gid[user_id] = game_id;
+        sockets.to(game_id).send('A client just connected.');
+        if (game.isStarted()) {
+          sockets.to(user_id).emit('canStart');
+          sockets.to(user_id).emit('start', game.getPlayers(), user_id);
+          if (!game.isPlayer(user_id)) sockets.to(user_id).send('You cannot join a game that\'s already started.');
+        } else if (game.canStart()) sockets.to(game_id).emit('canStart');
+      });
     });
 
 
@@ -62,7 +69,8 @@ module.exports = function(sockets) {
      * Kicks the game off and stops accepting new players
      */
     socket.on('start', function() {
-      var user_id = socket.handshake.sessionID;
+      var session_id = socket.handshake.sessionID;
+      var user_id = sid_to_uid[session_id];
       var game_id = uid_to_gid[user_id];
       var game = gp.findById(game_id);
       if (DEBUG) { console.log('name:start ', user_id, game); }
@@ -70,20 +78,32 @@ module.exports = function(sockets) {
         game.start();
         gp.save(game);
         var user_ids = game.getPlayers();
+
+        // Construct query to get names
+        var query = [];
         for (var i = 0; i < user_ids.length; i++) {
-          sockets.to(user_ids[i]).emit('start', user_ids, user_ids[i]);
+          query.push({id: user_ids[i]})
         }
-        sockets.to(game_id).send('The game has begun.');
-        sockets.to(game_id).emit('newTurn', game.whoseTurn(), true);
-        sockets.to(game.whoseTurn()).emit('startingSettlementSelect',
-          game.getValidStartingSettlementIntersections(game.whoseTurn()));
+        query = {'$or': query};
+
+        up.find(query, function(error, users) {
+          for (var i = 0; i < user_ids.length; i++) {
+            sockets.to(user_ids[i]).emit('start', user_ids, user_ids[i], users);
+          }
+          sockets.to(game_id).send('The game has begun.');
+          sockets.to(game_id).emit('newTurn', game.whoseTurn(), true);
+          sockets.to(game.whoseTurn()).emit('startingSettlementSelect',
+            game.getValidStartingSettlementIntersections(game.whoseTurn()));
+        });
+
       } catch (error) {
         socket.send(error);
       }
     });
 
     socket.on('gameover', function(winner) {
-      var user_id = socket.handshake.sessionID;
+      var session_id = socket.handshake.sessionID;
+      var user_id = sid_to_uid[session_id];
       var game_id = uid_to_gid[user_id];
       var game = gp.findById(game_id);
       if (DEBUG) { console.log('name:start ', user_id, game); }
@@ -105,7 +125,8 @@ module.exports = function(sockets) {
      *                                  place the settlement.
      */
     socket.on('startingSettlementPlacement', function(intersection_id) {
-      var user_id = socket.handshake.sessionID;
+      var session_id = socket.handshake.sessionID;
+      var user_id = sid_to_uid[session_id];
       var game_id = uid_to_gid[user_id];
       var game = gp.findById(game_id);
       if (DEBUG) { console.log('name:startingSettlementPlacement ', user_id, game); }
@@ -126,7 +147,8 @@ module.exports = function(sockets) {
      *                                  place the settlement.
      */
     socket.on('startingRoadPlacement', function(edge_id) {
-      var user_id = socket.handshake.sessionID;
+      var session_id = socket.handshake.sessionID;
+      var user_id = sid_to_uid[session_id];
       var game_id = uid_to_gid[user_id];
       var game = gp.findById(game_id);
       if (DEBUG) { console.log('name:startingRoadPlacement ', user_id, game); }
@@ -150,7 +172,8 @@ module.exports = function(sockets) {
      * Rolls the dice. Distributes Resources.
      */
     socket.on('rollDice', function() {
-      var user_id = socket.handshake.sessionID;
+      var session_id = socket.handshake.sessionID;
+      var user_id = sid_to_uid[session_id];
       var game_id = uid_to_gid[user_id];
       var game = gp.findById(game_id);
       try {
@@ -179,7 +202,8 @@ module.exports = function(sockets) {
     });
 
     socket.on('removed', function(removedCards, player) {
-      var user_id = socket.handshake.sessionID;
+      var session_id = socket.handshake.sessionID;
+      var user_id = sid_to_uid[session_id];
       var game_id = uid_to_gid[user_id];
       var game = gp.findById(game_id);
       try {
@@ -202,7 +226,8 @@ module.exports = function(sockets) {
       * @param		id	number	id number of the new robber tile
       */
     socket.on('updateRobber', function(id) {
-      var user_id = socket.handshake.sessionID;
+      var session_id = socket.handshake.sessionID;
+      var user_id = sid_to_uid[session_id];
       var game_id = uid_to_gid[user_id];
       var game = gp.findById(game_id);
       try {
@@ -229,7 +254,8 @@ module.exports = function(sockets) {
       * @param player_id  user being stolen from
       */
     socket.on('steal', function(player_id) {
-      var user_id = socket.handshake.sessionID;
+      var session_id = socket.handshake.sessionID;
+      var user_id = sid_to_uid[session_id];
       var game_id = uid_to_gid[user_id];
       var game = gp.findById(game_id);
       try {
@@ -252,7 +278,8 @@ module.exports = function(sockets) {
      * Ends the turn for the user calling the function.
      */
     socket.on('endTurn', function() {
-      var user_id = socket.handshake.sessionID;
+      var session_id = socket.handshake.sessionID;
+      var user_id = sid_to_uid[session_id];
       var game_id = uid_to_gid[user_id];
       var game = gp.findById(game_id);
       try {
@@ -269,7 +296,8 @@ module.exports = function(sockets) {
       * send offer
       **/
       socket.on('offerTrade', function(offer, offerer) {
-        var user_id = socket.handshake.sessionID;
+        var session_id = socket.handshake.sessionID;
+        var user_id = sid_to_uid[session_id];
         var game_id = uid_to_gid[user_id];
         var game = gp.findById(game_id);
         try {
@@ -280,7 +308,8 @@ module.exports = function(sockets) {
       });
 
       socket.on('rejectTrade', function(offer, rejecter, offerer) {
-        var user_id = socket.handshake.sessionID;
+        var session_id = socket.handshake.sessionID;
+        var user_id = sid_to_uid[session_id];
         var game_id = uid_to_gid[user_id];
         var game = gp.findById(game_id);
         try {
@@ -294,7 +323,8 @@ module.exports = function(sockets) {
       * allow bank trades
       **/
       socket.on('bankTrade', function(offer, offerer) {
-        var user_id = socket.handshake.sessionID;
+        var session_id = socket.handshake.sessionID;
+        var user_id = sid_to_uid[session_id];
         var game_id = uid_to_gid[user_id];
         var game = gp.findById(game_id);
         try {
@@ -311,7 +341,8 @@ module.exports = function(sockets) {
       * accept trade from accepter
       **/
       socket.on('acceptTrade', function(offer, accepter, offerer, type) {
-        var user_id = socket.handshake.sessionID;
+        var session_id = socket.handshake.sessionID;
+        var user_id = sid_to_uid[session_id];
         var game_id = uid_to_gid[user_id];
         var game = gp.findById(game_id);
 
@@ -355,7 +386,8 @@ module.exports = function(sockets) {
      * Sends the user back valid build settlement intersections.
      */
     socket.on('selectSettlement', function() {
-      var user_id = socket.handshake.sessionID;
+      var session_id = socket.handshake.sessionID;
+      var user_id = sid_to_uid[session_id];
       var game_id = uid_to_gid[user_id];
       var game = gp.findById(game_id);
       socket.emit('selectSettlement',
@@ -369,7 +401,8 @@ module.exports = function(sockets) {
      * Sends the user back valid build city intersections.
      */
     socket.on('selectCity', function() {
-      var user_id = socket.handshake.sessionID;
+      var session_id = socket.handshake.sessionID;
+      var user_id = sid_to_uid[session_id];
       var game_id = uid_to_gid[user_id];
       var game = gp.findById(game_id);
       socket.emit('selectCity',
@@ -383,7 +416,8 @@ module.exports = function(sockets) {
      * Sends the user back valid build road edges.
      */
     socket.on('selectRoad', function() {
-      var user_id = socket.handshake.sessionID;
+      var session_id = socket.handshake.sessionID;
+      var user_id = sid_to_uid[session_id];
       var game_id = uid_to_gid[user_id];
       var game = gp.findById(game_id);
       socket.emit('selectRoad', game.getValidRoadEdges(user_id));
@@ -403,7 +437,8 @@ module.exports = function(sockets) {
      *                                  place the settlement.
      */
     socket.on('buildSettlement', function(intersection_id) {
-      var user_id = socket.handshake.sessionID;
+      var session_id = socket.handshake.sessionID;
+      var user_id = sid_to_uid[session_id];
       var game_id = uid_to_gid[user_id];
       var game = gp.findById(game_id);
       try {
@@ -426,7 +461,8 @@ module.exports = function(sockets) {
      *                                  place the city.
      */
     socket.on('buildCity', function(intersection_id) {
-      var user_id = socket.handshake.sessionID;
+      var session_id = socket.handshake.sessionID;
+      var user_id = sid_to_uid[session_id];
       var game_id = uid_to_gid[user_id];
       var game = gp.findById(game_id);
       try {
@@ -449,7 +485,8 @@ module.exports = function(sockets) {
      *                                  place the road.
      */
     socket.on('buildRoad', function(edge_id) {
-      var user_id = socket.handshake.sessionID;
+      var session_id = socket.handshake.sessionID;
+      var user_id = sid_to_uid[session_id];
       var game_id = uid_to_gid[user_id];
       var game = gp.findById(game_id);
       try {
@@ -470,7 +507,8 @@ module.exports = function(sockets) {
      * Gives a random dev card to the user who called the socket type
      */
     socket.on('buildDevelopment', function(edge_id) {
-      var user_id = socket.handshake.sessionID;
+      var session_id = socket.handshake.sessionID;
+      var user_id = sid_to_uid[session_id];
       var game_id = uid_to_gid[user_id];
       var game = gp.findById(game_id);
       try {
@@ -490,7 +528,8 @@ module.exports = function(sockets) {
      * Initiates Knight
      */
     socket.on('playKnight', function(edge_id) {
-      var user_id = socket.handshake.sessionID;
+      var session_id = socket.handshake.sessionID;
+      var user_id = sid_to_uid[session_id];
       var game_id = uid_to_gid[user_id];
       var game = gp.findById(game_id);
       try {
@@ -510,7 +549,8 @@ module.exports = function(sockets) {
      * Initiates Year Of Plenty
      */
     socket.on('playYearOfPlenty', function() {
-      var user_id = socket.handshake.sessionID;
+      var session_id = socket.handshake.sessionID;
+      var user_id = sid_to_uid[session_id];
       var game_id = uid_to_gid[user_id];
       var game = gp.findById(game_id);
       try {
@@ -530,7 +570,8 @@ module.exports = function(sockets) {
      * Initiates Year Of Plenty
      */
     socket.on('playYearOfPlentyFirst', function(resource) {
-      var user_id = socket.handshake.sessionID;
+      var session_id = socket.handshake.sessionID;
+      var user_id = sid_to_uid[session_id];
       var game_id = uid_to_gid[user_id];
       var game = gp.findById(game_id);
       try {
@@ -550,7 +591,8 @@ module.exports = function(sockets) {
      * Initiates Year Of Plenty
      */
     socket.on('playYearOfPlentySecond', function(resource) {
-      var user_id = socket.handshake.sessionID;
+      var session_id = socket.handshake.sessionID;
+      var user_id = sid_to_uid[session_id];
       var game_id = uid_to_gid[user_id];
       var game = gp.findById(game_id);
       try {
@@ -571,7 +613,8 @@ module.exports = function(sockets) {
      * Initiates Monopoly
      */
     socket.on('playMonopoly', function() {
-      var user_id = socket.handshake.sessionID;
+      var session_id = socket.handshake.sessionID;
+      var user_id = sid_to_uid[session_id];
       var game_id = uid_to_gid[user_id];
       var game = gp.findById(game_id);
       try {
@@ -591,7 +634,8 @@ module.exports = function(sockets) {
      * Initiates Monopoly
      */
     socket.on('chooseMonopolyResource', function(resource) {
-      var user_id = socket.handshake.sessionID;
+      var session_id = socket.handshake.sessionID;
+      var user_id = sid_to_uid[session_id];
       var game_id = uid_to_gid[user_id];
       var game = gp.findById(game_id);
       try {
@@ -612,7 +656,8 @@ module.exports = function(sockets) {
      * Initiates Road Building
      */
     socket.on('playRoadBuilding', function() {
-      var user_id = socket.handshake.sessionID;
+      var session_id = socket.handshake.sessionID;
+      var user_id = sid_to_uid[session_id];
       var game_id = uid_to_gid[user_id];
       var game = gp.findById(game_id);
       try {
@@ -632,7 +677,8 @@ module.exports = function(sockets) {
      * Initiates Road Building
      */
     socket.on('playRoadBuildingFirst', function(edge_id) {
-      var user_id = socket.handshake.sessionID;
+      var session_id = socket.handshake.sessionID;
+      var user_id = sid_to_uid[session_id];
       var game_id = uid_to_gid[user_id];
       var game = gp.findById(game_id);
       try {
@@ -653,7 +699,8 @@ module.exports = function(sockets) {
      * Initiates Road Building
      */
     socket.on('playRoadBuildingSecond', function(edge_id) {
-      var user_id = socket.handshake.sessionID;
+      var session_id = socket.handshake.sessionID;
+      var user_id = sid_to_uid[session_id];
       var game_id = uid_to_gid[user_id];
       var game = gp.findById(game_id);
       try {
@@ -676,7 +723,8 @@ module.exports = function(sockets) {
      * @param   message   string   the chate message.
      */
     socket.on('message', function(message) {
-      var user_id = socket.handshake.sessionID;
+      var session_id = socket.handshake.sessionID;
+      var user_id = sid_to_uid[session_id];
       var game_id = uid_to_gid[user_id];
       sockets.to(game_id).emit('message', user_id + ': ' + message);
     });
