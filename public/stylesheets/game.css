@@ -40,19 +40,22 @@ body {
 }
 
 #player0 {
-  height:22%;
+  height:31%;
+  width: 50%;
   position:static;
+  float: left;
 }
 
 .others, .message {
   position:static;
-  height:34%;
+  height:69%;
+  width: 100%;
 }
 
 #player1, #player2, #player3 {
   position:static;
-  height:100%;
-  width:33.333333333%;
+  width:100%;
+  height:33.333333333%;
   float:left;
 }
 
@@ -110,16 +113,11 @@ body {
   border-radius:0px;
 }
 
-.opponent {
-    padding:5%;
-}
-
 .video {
-  max-height: 50%;
-  max-width: 100%;
-  margin-left: auto;
-  margin-right: auto;
+  max-width: 50%;
+  max-height: 100%;
   display: block;
+  float: left;
 }
 
 /**
@@ -152,13 +150,13 @@ body {
 }
 .actions {
   position: static;
-  height:10%;
-  
+  height:31%;
+  width: 50%;
   /*border: 3px solid black;*/
   /*moz-border-radius: 3px;
       border-radius: 3px;*/
   padding: 0px;
-  min-width: 275px;
+  float: left;
   background: whiteSmoke;
   text-align: center;
   /*margin-bottom: 20px;*/
@@ -268,7 +266,7 @@ body {
 }
 
 .cards .card {
-  display: none;
+  display:none;
   float: left;
   margin-right: 7px;
 }
@@ -295,12 +293,12 @@ body {
   text-align: center;
 }
 
-.cards .wood-card        { background: forestgreen; }
-.cards .wheat-card       { background: khaki; }
-.cards .sheep-card       { background: lime; }
-.cards .brick-card       { background: orangered; }
-.cards .stone-card       { background: grey; }
-.cards .resource-card    { background: blue; }
+.cards .wood-card        { background: url('http://www.cs.princeton.edu/~dcapra/forest.jpg') bottom left; }
+.cards .wheat-card       { background: url('http://www.cs.princeton.edu/~dcapra/hay.jpg'); }
+.cards .sheep-card       { background: url('http://www.cs.princeton.edu/~dcapra/pasture.jpg') top right; }
+.cards .brick-card       { background: url('http://www.cs.princeton.edu/~dcapra/clay.jpg'); }
+.cards .stone-card       { background: url('http://i.imgur.com/llQvw.jpg'); }
+.cards .resource-card    { background: url('../images/favicon.ico') no-repeat; background-size:100%; }
 .cards .development-card { background: gold; }
 
 .clearBoth {clear:both;}
@@ -420,6 +418,7 @@ body {
   left: 5%;
   height: 70%;
   width: 90%;
+  background-color: rgba(0, 0, 0, .6);
 }
 .label-container {
   position:relative;
