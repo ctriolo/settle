@@ -9,24 +9,29 @@ block header
       .container
         .brand Settle
         ul.nav.pull-right
-          li
-            a(href="\logout") Log Out
-
+          li.dropdown
+            a(href="#", data-toggle="dropdown").dropdown-toggle.me
+              img(src="http://graph.facebook.com/#{user.id}/picture?type=square")
+              | #{user.first_name}
+              = ' ( '
+              span.wins #{user.wins}
+              = ' - '
+              span.loses #{user.loses}
+              = ' ) '
+              b.caret
+            ul.dropdown-menu
+              li
+                a(href="\logout") Log Out
 block content
   .container
     .row
-      .span4
-        .well.profile
-          img(src="http://graph.facebook.com/#{user.id}/picture?type=large")
-          h2= user.first_name
-          h1 #{user.wins} - #{user.loses}
-      .span8
+      .span12
         .page-header
           h1 Current Games
             small
               a.btn(href="/game", style="float:right;").btn-large Create Game
         .row
-          .span8
+          .span12
             ul.thumbnails
               - for (var i = 0; i < games.length; i++)
                 li.span2
