@@ -390,8 +390,12 @@ module.exports = function(sockets) {
       var user_id = sid_to_uid[session_id];
       var game_id = uid_to_gid[user_id];
       var game = gp.findById(game_id);
-      socket.emit('selectSettlement',
+      try {
+        socket.emit('selectSettlement',
                   game.getValidSettlementIntersections(user_id));
+      } catch (error) {
+        socket.send(error);
+      }
     });
 
 
@@ -405,8 +409,12 @@ module.exports = function(sockets) {
       var user_id = sid_to_uid[session_id];
       var game_id = uid_to_gid[user_id];
       var game = gp.findById(game_id);
-      socket.emit('selectCity',
+      try {
+        socket.emit('selectCity',
                   game.getValidCityIntersections(user_id));
+      } catch (error) {
+        socket.send(error);
+      }
     });
 
 
@@ -420,7 +428,11 @@ module.exports = function(sockets) {
       var user_id = sid_to_uid[session_id];
       var game_id = uid_to_gid[user_id];
       var game = gp.findById(game_id);
-      socket.emit('selectRoad', game.getValidRoadEdges(user_id));
+      try {
+        socket.emit('selectRoad', game.getValidRoadEdges(user_id));
+      } catch (error) {
+        socket.send(error);
+      }
     });
 
 
@@ -447,6 +459,7 @@ module.exports = function(sockets) {
         updatePlayerInfo(sockets, game);
         socket.emit('canBuild', game.canBuild(user_id));
         sockets.to(game_id).emit('buildSettlement', intersection_id, game._translate(user_id));
+         sockets.to(game.whoseTurn()).emit('showMain');
       } catch (error) {
         socket.send(error);
       }
@@ -471,6 +484,7 @@ module.exports = function(sockets) {
         updatePlayerInfo(sockets, game);
         socket.emit('canBuild', game.canBuild(user_id));
         sockets.to(game_id).emit('buildCity', intersection_id, game._translate(user_id));
+        sockets.to(game.whoseTurn()).emit('showMain');
       } catch (error) {
         socket.send(error);
       }
@@ -495,6 +509,7 @@ module.exports = function(sockets) {
         updatePlayerInfo(sockets, game);
         socket.emit('canBuild', game.canBuild(user_id));
         sockets.to(game_id).emit('buildRoad', edge_id, game._translate(user_id));
+        sockets.to(game.whoseTurn()).emit('showMain');
       } catch (error) {
         socket.send(error);
       }
@@ -521,6 +536,20 @@ module.exports = function(sockets) {
       }
     });
 
+
+    socket.on('cancelBuild', function() {
+      var session_id = socket.handshake.sessionID;
+      var user_id = sid_to_uid[session_id];
+      var game_id = uid_to_gid[user_id];
+      var game = gp.findById(game_id);
+      try {
+        game.cancelBuild();
+        gp.save(game);
+        socket.emit('canBuild', game.canBuild(user_id));
+      } catch (error) {
+        socket.send(error);
+      }
+    });      
 
     /**
      * playKnight

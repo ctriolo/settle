@@ -166,12 +166,12 @@ body {
 .actions .roll-phase,
 .actions .main-phase {
   text-align: center;
-  width: inherit;
+  width: 100%;
   display: inline-block;
 }
 
 .actions .btn-toolbar {
-  margin: 0px;
+  margin: 5px;
   display: none;
 }
 

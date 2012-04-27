@@ -110,7 +110,7 @@ function showMainPhase() {
 
 /* show place button with specified text */
 function showPlacePhase(phrase) {
-    $(".place-phase button").text(phrase);
+    $(".place-phase button.disabled").text(phrase);
     $(".place-phase").show();
     $('.roll-phase, .main-phase, .steal-phase, .waiting-phase, .robber-phase').hide();
 }
@@ -698,6 +698,7 @@ window.onload = function() {
        if (can_build[key]) {
          $('#'+building).removeClass('disabled');
          $('#'+building).click(function(){
+           console.log(building + " clicked!");
            var id = $(this).attr('id');
 
            // DISABLE IMMEDIATELY TO STOP FROM BEING CLICKED TWICE
@@ -900,6 +901,13 @@ window.onload = function() {
     }
   });
 
+  $('#cancel').click(function() {
+    $(".edge").removeClass('selectable');
+    $('.settlement').removeClass('selectable');
+    $('.intersection').removeClass('selectable');
+    socket.emit('cancelBuild');
+    showMainPhase();
+  });  
 
   /**
    * buildSettlement
@@ -908,7 +916,6 @@ window.onload = function() {
    * @param   id   num   the intersection id to show the settlement at
    */
   socket.on('buildSettlement', function(id, playerid) {
-    showMainPhase();
     $('#intersection' + id).hide();
     $('#settlement' + id).show();
     $('#settlement' + id).addClass('player'+playerid);
@@ -922,11 +929,11 @@ window.onload = function() {
    * @param   id   num   the intersection id to show the city at
    */
   socket.on('buildCity', function(id, playerid) {
-    showMainPhase();
     $('#settlement' + id).hide();
     $('#city' + id).show();
     $('#city' + id).addClass('player'+playerid);
   });
+
 
 
   /**
@@ -936,7 +943,6 @@ window.onload = function() {
    * @param   id   num   the edge id to show the road at
    */
   socket.on('buildRoad', function(id, playerid) {
-    showMainPhase();
     $('#edge' + id).hide();
     $('#road' + id).show();
     $('#road' + id).addClass('player'+playerid);

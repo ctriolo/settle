@@ -14,6 +14,7 @@ PHASE = {
   START: 'Start',
   STARTING_SETTLEMENT: 'Starting Settlement',
   STARTING_ROAD: 'Starting Road',
+  BUILD: 'Build',
   DICE: 'Dice',
   MAIN: 'Main',
   REMOVE: 'Remove',
@@ -477,6 +478,8 @@ Game.prototype.getValidStartingRoadEdges = function(user_id) {
  */
 Game.prototype.getValidSettlementIntersections = function(user_id) {
   var player_id = this._translate(user_id);
+  this._validatePhase(PHASE.MAIN);
+  this.current_phase = PHASE.BUILD;
   return this.board.getValidSettlementIntersections(player_id);
 };
 
@@ -490,6 +493,8 @@ Game.prototype.getValidSettlementIntersections = function(user_id) {
  */
 Game.prototype.getValidCityIntersections = function(user_id) {
   var player_id = this._translate(user_id);
+  this._validatePhase(PHASE.MAIN);
+  this.current_phase = PHASE.BUILD;
   return this.board.getValidCityIntersections(player_id);
 };
 
@@ -503,6 +508,8 @@ Game.prototype.getValidCityIntersections = function(user_id) {
  */
 Game.prototype.getValidRoadEdges = function(user_id) {
   var player_id = this._translate(user_id);
+  this._validatePhase(PHASE.MAIN);
+  this.current_phase = PHASE.BUILD;
   return this.board.getValidRoadEdges(player_id);
 };
 
@@ -769,7 +776,7 @@ Game.prototype.placeStartingRoad = function(user_id, edge_id) {
 Game.prototype.buildSettlement = function(user_id, intersection_id) {
   var player_id = this._translate(user_id);
   this._validatePlayer(player_id);
-  this._validatePhase(PHASE.MAIN);
+  this._validatePhase(PHASE.BUILD);
   if (!this.canBuildSettlement(user_id)) throw 'You are not able to build a settlement!';
 
   this.players[player_id].unbuilt_settlements--;
@@ -778,6 +785,7 @@ Game.prototype.buildSettlement = function(user_id, intersection_id) {
   this.board.buildSettlement(player_id, intersection_id);
   this.updateLongestRoad();
   this.updatePorts(user_id, intersection_id);
+  this.current_phase = PHASE.MAIN;
 };
 
 
@@ -792,7 +800,7 @@ Game.prototype.buildSettlement = function(user_id, intersection_id) {
 Game.prototype.buildCity = function(user_id, intersection_id) {
   var player_id = this._translate(user_id);
   this._validatePlayer(player_id);
-  this._validatePhase(PHASE.MAIN);
+  this._validatePhase(PHASE.BUILD);
   if (!this.canBuildCity(user_id)) throw 'You are not able to build a city!';
 
   this.players[player_id].unbuilt_settlements++;
@@ -800,6 +808,7 @@ Game.prototype.buildCity = function(user_id, intersection_id) {
   this.players[player_id].victory_points++;
   this._subtractResources(player_id, CITY_COST);
   this.board.buildCity(player_id, intersection_id);
+  this.current_phase = PHASE.MAIN;
 };
 
 
@@ -814,13 +823,14 @@ Game.prototype.buildCity = function(user_id, intersection_id) {
 Game.prototype.buildRoad = function(user_id, edge_id) {
   var player_id = this._translate(user_id);
   this._validatePlayer(player_id);
-  this._validatePhase(PHASE.MAIN);
+  this._validatePhase(PHASE.BUILD);
   if (!this.canBuildRoad(user_id)) throw 'You are not able to build a road!';
 
   this.players[player_id].unbuilt_roads--;
   this._subtractResources(player_id, ROAD_COST);
   this.board.buildRoad(player_id, edge_id);
   this.updateLongestRoad();
+  this.current_phase = PHASE.MAIN;
 }
 
 
@@ -845,6 +855,11 @@ console.log('DEFINIATELY', this, this.development_cards);
   }
 
   return card;
+}
+
+Game.prototype.cancelBuild = function() {
+  this._validatePhase(PHASE.BUILD);
+  this.current_phase = PHASE.MAIN;
 }
 
 /**
