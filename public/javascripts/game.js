@@ -162,7 +162,7 @@ window.onload = function() {
         replaceID = 'VIDEO' + subscribeToStreams.nextPlayer++;
         h = $('#' + replaceID).height();
         w = $('#' + replaceID).width();
-        session.subscribe(replaceID, {height:h, width:w})
+        session.subscribe(stream, replaceID, {height:h, width:w})
       }
     }
   }
