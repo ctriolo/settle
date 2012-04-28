@@ -40,7 +40,7 @@ body {
 }
 
 #player0 {
-  height:31%;
+  height:34%;
   width: 50%;
   position:static;
   float: left;
@@ -48,10 +48,12 @@ body {
 
 .others, .message {
   position:static;
-  height:69%;
+  height:66%;
   width: 100%;
 }
-
+.opponentvideo {
+  float: left;
+}
 #player1, #player2, #player3 {
   position:static;
   width:100%;
@@ -114,7 +116,7 @@ body {
 }
 
 .video {
-  max-width: 50%;
+  max-width: 100%;
   max-height: 100%;
   display: block;
   float: left;
@@ -150,7 +152,7 @@ body {
 }
 .actions {
   position: static;
-  height:31%;
+  height:34%;
   width: 50%;
   /*border: 3px solid black;*/
   /*moz-border-radius: 3px;

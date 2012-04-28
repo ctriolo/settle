@@ -252,15 +252,18 @@ block others
   .others
     #player1
       .opponent.player.well
-        img(src='http://goo.gl/1YKzh').video#VIDEO1
+        .opponentvideo
+          img(src='http://goo.gl/1YKzh').video#VIDEO1
         include includes/opponent
     #player2
       .opponent.player.well
-        img(src='http://goo.gl/1YKzh').video#VIDEO2
+        .opponentvideo
+          img(src='http://goo.gl/1YKzh').video#VIDEO2
         include includes/opponent
     #player3
       .opponent.player.well
-        img(src='http://goo.gl/1YKzh').video#VIDEO3
+        .opponentvideo
+          img(src='http://goo.gl/1YKzh').video#VIDEO3
         include includes/opponent
 
 block messages

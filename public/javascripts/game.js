@@ -109,9 +109,13 @@ function showMainPhase() {
 }
 
 /* show place button with specified text */
-function showPlacePhase(phrase) {
+function showPlacePhase(phrase, showCancel) {
     $(".place-phase button.disabled").text(phrase);
     $(".place-phase").show();
+    if (showCancel)
+      $('#cancel').show();
+    else
+      $('#cancel').hide();
     $('.roll-phase, .main-phase, .steal-phase, .waiting-phase, .robber-phase').hide();
 }
 
@@ -617,7 +621,7 @@ window.onload = function() {
     }
 
 
-    showPlacePhase("Click Intersection to Place Settlement");
+    showPlacePhase("Click Intersection to Place Settlement", false);
   });
 
 
@@ -663,7 +667,7 @@ window.onload = function() {
         socket.emit('startingRoadPlacement', id);
       });
     }
-    showPlacePhase("Click Edge to Place Road");
+    showPlacePhase("Click Edge to Place Road", false);
   });
 
 
@@ -843,7 +847,7 @@ window.onload = function() {
         socket.emit('buildSettlement', id);
       });
     }
-    showPlacePhase("Click Intersection to Place Settlement");
+    showPlacePhase("Click Intersection to Place Settlement", true);
   });
 
 
@@ -857,7 +861,7 @@ window.onload = function() {
    * @param   ids   array   the ids of the valid intersections
    */
   socket.on('selectCity', function(ids) {
-    showPlacePhase("Click a Settlement to Place City");
+    showPlacePhase("Click a Settlement to Place City", true);
     for (var i = 0; i < ids.length; i++) {
       $("#settlement"+ids[i]).addClass('selectable');
       $("#settlement"+ids[i]).hover(function(){$(this).addClass('hover')},
@@ -884,7 +888,7 @@ window.onload = function() {
    * @param   ids   array   the ids of the valid edges
    */
   socket.on('selectRoad', function(ids) {
-    showPlacePhase("Click Edge to Place Road");
+    showPlacePhase("Click Edge to Place Road", true);
     for (var i = 0; i < ids.length; i++) {
       $("#edge"+ids[i]).addClass('selectable');
       createPopup("#edge" + ids[i], "Road Placement", "Click this edge to place a new road");
