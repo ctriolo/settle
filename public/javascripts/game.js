@@ -51,6 +51,14 @@ function createPopup(tag, title, content) {
       $(tag).popover({"animation":false, "placement":"top", "trigger":"manual", "title": title, "selector":true, "content": content, "delay":{"show": 0, "hide":1000}});
 }
 
+function createTooltip(tag, content, delay) {
+  $(tag).attr('rel', 'tooltip');
+  if (!delay)
+    $(tag).tooltip({"animation":true, "placement":"top", "trigger":"hover", "title": content, "selector":true, "delay":{"show": 0, "hide":1000}});
+  else
+     $(tag).tooltip({"animation":true, "placement":"top", "trigger":"hover", "title": content, "selector":true});   
+}
+
 function updateCards(offer) {
   if (offer) {
     $('.trade-card').each(function() {
@@ -558,7 +566,8 @@ window.onload = function() {
   socket.on('start', function(players, you, user_objects) {
     users = players.slice(0);
     me = you;
-
+    $('.numberDiv').animate({'left': '-=100px'}, 'slow');
+    console.log("MOVING");
     if (users.indexOf(me) != -1) {
       var my_user_object = user_objects[users.indexOf(me)];
       user_objects.splice(users.indexOf(me), 1); // take out me
@@ -587,6 +596,22 @@ window.onload = function() {
     }
     $('#start').off('click');
     $('#start').remove();
+
+    // add tooltips
+    createTooltip('.circleAny31', '3 to 1 port');
+    createTooltip('.circleWood21', 'Wood port');
+    createTooltip('.circleSheep21', 'Sheep port');
+    createTooltip('.circleStone21', 'Stone port');
+    createTooltip('.circleBrick21', 'Brick  port');
+    createTooltip('.circleWheat21', 'Wheat port');
+
+    createTooltip('.stone-card', 'Stone', true);
+    createTooltip('.sheep-card', 'Sheep', true);
+    createTooltip('.wood-card', 'Wood', true);
+    createTooltip('.brick-card', 'Brick', true);
+    createTooltip('.wheat-card', 'Wheat', true);
+    createTooltip('.developmentcard', 'Development Card', true);
+
 
   });
 
