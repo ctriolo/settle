@@ -112,7 +112,7 @@ module.exports = function(sockets) {
         gp.save(game);
         // handle user statistics here
       } catch (error) {
-        socket.send(error);
+        console.log('ERROR: ' + error);
       }
     });
 
@@ -197,7 +197,7 @@ module.exports = function(sockets) {
         socket.emit('canBuild', game.canBuild(user_id));
         updatePlayerInfo(sockets, game);
       } catch (error) {
-        socket.send(error);
+        console.log('ERROR: ' + error);
       }
     });
 
@@ -215,7 +215,7 @@ module.exports = function(sockets) {
             sockets.to(game.whoseTurn()).emit('showRobber', false);
         }
       } catch (error) {
-        socket.send(error);
+        console.log('ERROR: ' + error);
       }
     });
 
@@ -243,7 +243,7 @@ module.exports = function(sockets) {
           sockets.to(game.whoseTurn()).emit('showMain');
         }
       } catch (error) {
-        socket.send(error);
+        console.log('ERROR: ' + error);
       }
     });
 
@@ -266,7 +266,7 @@ module.exports = function(sockets) {
         sockets.to(game.whoseTurn()).emit('showMain');
         updatePlayerInfo(sockets, game);
       } catch (error) {
-        socket.send(error);
+        console.log('ERROR: ' + error);
       }
     });
 
@@ -288,7 +288,7 @@ module.exports = function(sockets) {
         sockets.to(game_id).emit('tradeCleanup');
         sockets.to(game_id).emit('newTurn', game.whoseTurn(), false);
       } catch (error) {
-        socket.send(error);
+        console.log('ERROR: ' + error);
       }
     });
 
@@ -303,7 +303,7 @@ module.exports = function(sockets) {
         try {
           sockets.to(game_id).emit('showTrade', offer, offerer, "");
         } catch (error) {
-          socket.send(error);
+          console.log('ERROR: ' + error);
         }
       });
 
@@ -315,7 +315,7 @@ module.exports = function(sockets) {
         try {
           sockets.to(game_id).emit('showTrade', offer, rejecter, "rejected");
         } catch (error) {
-          socket.send(error);
+          console.log('ERROR: ' + error);
         }
       });
 
@@ -334,7 +334,7 @@ module.exports = function(sockets) {
           sockets.to(game_id).emit('tradeCleanup');
           socket.emit('canBuild', game.canBuild(user_id));
         } catch (error) {
-          socket.send(error);
+          console.log('ERROR: ' + error);
         }
       });
     /**
@@ -356,7 +356,7 @@ module.exports = function(sockets) {
             sockets.to(game_id).emit('tradeCleanup');
             socket.emit('canBuild', game.canBuild(user_id));
           } catch (error) {
-            socket.send(error);
+            console.log('ERROR: ' + error);
           }
         }
 
@@ -369,7 +369,7 @@ module.exports = function(sockets) {
           try {
             sockets.to(game_id).emit('showTrade', offer, accepter, "accepted");
           } catch (error) {
-            socket.send(error);
+            console.log('ERROR: ' + error);
           }
         }
 
@@ -394,7 +394,7 @@ module.exports = function(sockets) {
         socket.emit('selectSettlement',
                   game.getValidSettlementIntersections(user_id));
       } catch (error) {
-        socket.send(error);
+        console.log('ERROR: ' + error);
       }
     });
 
@@ -413,7 +413,7 @@ module.exports = function(sockets) {
         socket.emit('selectCity',
                   game.getValidCityIntersections(user_id));
       } catch (error) {
-        socket.send(error);
+        console.log('ERROR: ' + error);
       }
     });
 
@@ -431,7 +431,7 @@ module.exports = function(sockets) {
       try {
         socket.emit('selectRoad', game.getValidRoadEdges(user_id));
       } catch (error) {
-        socket.send(error);
+        console.log('ERROR: ' + error);
       }
     });
 
@@ -461,7 +461,7 @@ module.exports = function(sockets) {
         sockets.to(game_id).emit('buildSettlement', intersection_id, game._translate(user_id));
          sockets.to(game.whoseTurn()).emit('showMain');
       } catch (error) {
-        socket.send(error);
+        console.log('ERROR: ' + error);
       }
     });
 
@@ -486,7 +486,7 @@ module.exports = function(sockets) {
         sockets.to(game_id).emit('buildCity', intersection_id, game._translate(user_id));
         sockets.to(game.whoseTurn()).emit('showMain');
       } catch (error) {
-        socket.send(error);
+        console.log('ERROR: ' + error);
       }
     });
 
@@ -511,7 +511,7 @@ module.exports = function(sockets) {
         sockets.to(game_id).emit('buildRoad', edge_id, game._translate(user_id));
         sockets.to(game.whoseTurn()).emit('showMain');
       } catch (error) {
-        socket.send(error);
+        console.log('ERROR: ' + error);
       }
     });
 
@@ -532,7 +532,7 @@ module.exports = function(sockets) {
         updatePlayerInfo(sockets, game);
         socket.emit('canBuild', game.canBuild(user_id));
       } catch (error) {
-        socket.send(error);
+        console.log('ERROR: ' + error);
       }
     });
 
@@ -547,9 +547,9 @@ module.exports = function(sockets) {
         gp.save(game);
         socket.emit('canBuild', game.canBuild(user_id));
       } catch (error) {
-        socket.send(error);
+        console.log('ERROR: ' + error);
       }
-    });      
+    });
 
     /**
      * playKnight
@@ -567,7 +567,7 @@ module.exports = function(sockets) {
         sockets.to(game.whoseTurn()).emit('showRobber', false);
         updatePlayerInfo(sockets, game);
       } catch (error) {
-        socket.send(error);
+        console.log('ERROR: ' + error);
       }
     });
 
@@ -588,7 +588,7 @@ module.exports = function(sockets) {
         updatePlayerInfo(sockets, game);
         socket.emit('yearOfPlentyFirst');
       } catch (error) {
-        socket.send(error);
+        console.log('ERROR: ' + error);
       }
     });
 
@@ -609,7 +609,7 @@ module.exports = function(sockets) {
         updatePlayerInfo(sockets, game);
         socket.emit('yearOfPlentySecond');
       } catch (error) {
-        socket.send(error);
+        console.log('ERROR: ' + error);
       }
     });
 
@@ -631,7 +631,7 @@ module.exports = function(sockets) {
         socket.emit('canBuild', game.canBuild(user_id));
         socket.emit('yearOfPlentyDone');
       } catch (error) {
-        socket.send(error);
+        console.log('ERROR: ' + error);
       }
     });
 
@@ -652,7 +652,7 @@ module.exports = function(sockets) {
         updatePlayerInfo(sockets, game);
         socket.emit('monopoly');
       } catch (error) {
-        socket.send(error);
+        console.log('ERROR: ' + error);
       }
     });
 
@@ -674,7 +674,7 @@ module.exports = function(sockets) {
         socket.emit('canBuild', game.canBuild(user_id));
         socket.emit('monopolyDone');
       } catch (error) {
-        socket.send(error);
+        console.log('ERROR: ' + error);
       }
     });
 
@@ -695,7 +695,7 @@ module.exports = function(sockets) {
         updatePlayerInfo(sockets, game);
         socket.emit('roadBuildingFirst', game.getValidRoadEdges(user_id));
       } catch (error) {
-        socket.send(error);
+        console.log('ERROR: ' + error);
       }
     });
 
@@ -717,7 +717,7 @@ module.exports = function(sockets) {
         sockets.to(game_id).emit('buildRoad', edge_id, game._translate(user_id));
         socket.emit('roadBuildingSecond', game.getValidRoadEdges(user_id));
       } catch (error) {
-        socket.send(error);
+        console.log('ERROR: ' + error);
       }
     });
 
@@ -740,7 +740,7 @@ module.exports = function(sockets) {
         socket.emit('canBuild', game.canBuild(user_id));
         socket.emit('roadBuildingDone');
       } catch (error) {
-        socket.send(error);
+        console.log('ERROR: ' + error);
       }
     });
 

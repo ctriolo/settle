@@ -770,7 +770,9 @@ window.onload = function() {
        if (player.user_id == me) {
          for (var key in player.development_cards) {
            var id = key.charAt(0).toLowerCase() + key.slice(1);
-           if (!player.played_development && player.development_cards[key] > 0) {
+           if (!player.played_development &&
+               player.development_cards[key] -
+               player.pending_development_cards[key] > 0) {
              $('#'+id).removeClass('disabled');
              $('#'+id).click(function(){
                var id = $(this).attr('id');
