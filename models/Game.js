@@ -104,10 +104,13 @@ function Player(index, user_id) {
   // Developments
   this.development_cards = {};
   for (var i in DEVELOPMENT) this.development_cards[DEVELOPMENT[i]] = 0;
+  this.played_development = false;
   this.victory_points = 0;
   this.victory_cards = 0;
+
   // unique list of ports
   this.ports = [];
+
   // Unbuilts
   this.unbuilt_roads = 15;
   this.unbuilt_settlements = 5;
@@ -237,6 +240,9 @@ Game.prototype._nextPlayer = function() {
   } else {
     // Normal progression
     this.current_player = (this.current_player + 1) % this.players.length;
+
+    // Reset things
+    this.players[this.current_player].played_development = false;
   }
 };
 
@@ -873,9 +879,12 @@ Game.prototype.playKnight = function(user_id) {
   var player_id = this._translate(user_id);
   this._validatePlayer(player_id);
   //this._validatePhase(PHASE.MAIN);
-  if (!this.players[player_id].development_cards[DEVELOPMENT.KNIGHT]) {
+  if (!this.players[player_id].development_cards[DEVELOPMENT.KNIGHT] ||
+       this.players[player_id].played_development) {
     throw 'You are not able to play a knight!';
   }
+
+  this.players[player_id].played_development = true;
 
   this.players[player_id].development_cards[DEVELOPMENT.KNIGHT]--;
   this.players[player_id].army_size++;
@@ -897,9 +906,12 @@ Game.prototype.playYearOfPlenty = function(user_id) {
   var player_id = this._translate(user_id);
   this._validatePlayer(player_id);
   this._validatePhase(PHASE.MAIN);
-  if (!this.players[player_id].development_cards[DEVELOPMENT.YEAR_OF_PLENTY]) {
+  if (!this.players[player_id].development_cards[DEVELOPMENT.YEAR_OF_PLENTY] ||
+       this.players[player_id].played_development) {
     throw 'You are not able to play a year of plenty!';
   }
+
+  this.players[player_id].played_development = true;
 
   this.players[player_id].development_cards[DEVELOPMENT.YEAR_OF_PLENTY]--;
 
@@ -954,9 +966,12 @@ Game.prototype.playRoadBuilding = function(user_id) {
   var player_id = this._translate(user_id);
   this._validatePlayer(player_id);
   this._validatePhase(PHASE.MAIN);
-  if (!this.players[player_id].development_cards[DEVELOPMENT.ROAD_BUILDING]) {
+  if (!this.players[player_id].development_cards[DEVELOPMENT.ROAD_BUILDING] ||
+       this.players[player_id].played_development) {
     throw 'You are not able to play a road building!';
   }
+
+  this.players[player_id].played_development = true;
 
   this.players[player_id].development_cards[DEVELOPMENT.ROAD_BUILDING]--;
 
@@ -1013,9 +1028,12 @@ Game.prototype.playMonopoly = function(user_id) {
   var player_id = this._translate(user_id);
   this._validatePlayer(player_id);
   this._validatePhase(PHASE.MAIN);
-  if (!this.players[player_id].development_cards[DEVELOPMENT.MONOPOLY]) {
+  if (!this.players[player_id].development_cards[DEVELOPMENT.MONOPOLY] ||
+       this.players[player_id].played_development) {
     throw 'You are not able to play a monopoly!';
   }
+
+  this.players[player_id].played_development = true;
 
   this.players[player_id].development_cards[DEVELOPMENT.MONOPOLY]--;
 
