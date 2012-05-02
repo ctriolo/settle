@@ -1122,8 +1122,8 @@ Game.prototype.rollDice = function(user_id) {
   var new_resources = {}
   for (var i = 0; i < this.players.length; i++) {
     if (i in resources) { 
-      new_resources[this.players[i].user_id] = {'received_resources':'', 'lost_resources':''};
-      new_resources[this.players[i].user_id].received_resources = resources[i];
+      new_resources[this.players[i].user_id] = {'resources':'', 'received':true};
+      new_resources[this.players[i].user_id].resources = resources[i];
     }
   }
   this._next(total);

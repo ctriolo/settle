@@ -51,28 +51,29 @@ function updatePopup(playerCards) {
     for (var i in playerCards) {
       var found = false;
       var index = users.indexOf(parseInt(i));
-      var received = playerCards[i].received_resources;
+      var received = playerCards[i].resources;
       if (index !== 0) {
         var tag = '#player' + index;
       }
       else
         var tag = '#update' + index;
+      if (playerCards[i].received) {
+        $(tag + " .update-cards").addClass("received");
+        $(tag + " .update-cards").removeClass("lost");
+      }
+      else {
+        $(tag + " .update-cards").removeClass("received");
+        $(tag + " .update-cards").addClass("lost");
+      }
+
       for (var resource in received) {
         var r = resource.toLowerCase();
         console.log("received: " + r);
         if (received[resource] !== 0) {
-          $(tag + " .received-cards .js-"+r+'-number').parent().show();
-          $(tag +' .received-cards .js-'+r+'-number').text(received[resource]);
+          $(tag + " .update-cards .js-"+r+'-number').parent().show();
+          $(tag +' .update-cards .js-'+r+'-number').text(received[resource]);
           found = true;
          }
-      }
-      var lost = playerCards[i].lost_resources;
-      for (var resource in lost) {
-        if (lost[resource] === 0) {
-          $(tag + " .lost-cards .js-"+r+'-number').parent().show();
-          $(tag +' .lost-cards .js-'+r+'-number').text(lost[resource]);
-          found = true;
-        }
       }
       if (found) {
         console.log('show ' + tag + ' ' + index);
@@ -305,7 +306,6 @@ window.onload = function() {
     if ($(this).hasClass("enabled")) {
         var id = parseInt($(this).parent().attr('id').substring('player'.length));
         socket.emit('steal', users[id]);
-
    }
   });
 
