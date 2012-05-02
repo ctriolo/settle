@@ -748,10 +748,15 @@ Game.prototype.placeStartingSettlement = function(user_id, intersection_id) {
 
   var is_second = 2 == this.board.getNumberOfSettlements(player_id);
   var resources = (is_second) ? this.board.getStartingResources(intersection_id) : {};
+  var new_resources = {};
+  var id = user_id;
+  new_resources[id] = {'resources':resources, 'received':true};
+
   this._addResources(player_id, resources);
   this.updatePorts(user_id, intersection_id);
   this._next();
-  return resources;
+
+  return new_resources;
 };
 
 

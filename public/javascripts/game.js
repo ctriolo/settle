@@ -757,10 +757,13 @@ window.onload = function() {
    * TODO: add and remove classes to change things like fill and stroke
    * @param   id   num   the interesection id to draw an element
    */
-  socket.on('startingSettlementPlacement', function(id, playerid) {
+  socket.on('startingSettlementPlacement', function(id, playerid, resources) {
+    console.log('SETTLEMENTPLACE');
+    console.log(resources);
     $('#intersection' + id).hide();
     $('#settlement' + id).show();
     $('#settlement' + id).addClass('player'+playerid);
+    updatePopup(resources);
   });
 
 

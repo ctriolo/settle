@@ -131,9 +131,10 @@ module.exports = function(sockets) {
       var game = gp.findById(game_id);
       if (DEBUG) { console.log('name:startingSettlementPlacement ', user_id, game); }
       console.log(intersection_id);
-      game.placeStartingSettlement(user_id, intersection_id);
+      var resources = game.placeStartingSettlement(user_id, intersection_id);
+      console.log(resources);
       gp.save(game);
-      sockets.to(game_id).emit('startingSettlementPlacement', intersection_id, game._translate(user_id));
+      sockets.to(game_id).emit('startingSettlementPlacement', intersection_id, game._translate(user_id), resources);
       updatePlayerInfo(sockets, game);
       sockets.to(game.whoseTurn()).emit('startingRoadSelect',
         game.getValidStartingRoadEdges(game.whoseTurn()));
