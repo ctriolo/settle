@@ -23,6 +23,7 @@ body {
   bottom:0;
   width:40%;
   box-shadow: -5px 0px 25px 0px #000;
+  z-index:5;
 }
 
 #messages {
@@ -53,6 +54,7 @@ body {
 }
 .opponentvideo {
   float: left;
+  height:100%;
 }
 #player1, #player2, #player3 {
   position:static;

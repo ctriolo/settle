@@ -128,7 +128,7 @@ function showPlacePhase(phrase, showCancel) {
 }
 
 window.onload = function() {
-
+  
   /**
    * Socket IO Connection
    */
@@ -156,7 +156,7 @@ window.onload = function() {
   function sessionConnectedHandler(event) {
     h = $('#MY_VIDEO').height();
     w = $('#MY_VIDEO').width();
-    session.publish('MY_VIDEO', {height:h, width:w});
+    session.publish('MY_VIDEO', {height:h, width:w, class:'MY_VIDEO'});
     subscribeToStreams(event.streams);
   }
 
@@ -179,9 +179,44 @@ window.onload = function() {
     }
   }
 
-
-
-
+  /**
+   * Dynamic Resizing
+   */
+  
+  //dynamicResize();
+  
+  window.onresize = dynamicResize;
+  function dynamicResize() {
+    console.log('Wheeeee');
+    
+    // player 0 video
+    p0 = document.getElementById('player0')
+    p0well = p0.firstChild;
+    p0left = p0well.firstChild;
+    p0vidObj = p0left.firstChild;
+    
+    w1 = p0well.clientWidth
+    w2 = p0well.clientHeight*.8 *4/3.0
+    w = Math.min(w1, w2);
+    h = w*3/4.0;
+    p0vidObj.setAttribute('width', w);
+    p0vidObj.setAttribute('height', h);
+    
+    // player 1 video
+    for (var i = 1; i <= 3; i++) {
+      pI = document.getElementById('player' + i)
+      pIwell = pI.firstChild;
+      pIleft = pIwell.firstChild;
+      pIvidObj = pIleft.firstChild;
+      
+      h = pIwell.clientHeight;
+      w = h*4/3.0;
+      pIvidObj.setAttribute('width', w);
+      pIvidObj.setAttribute('height', h);
+    }
+  }
+  
+  window.onresize();
 
   /**
    * Keystrokes
