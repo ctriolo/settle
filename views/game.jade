@@ -15,7 +15,10 @@ block head
 
 block board
   a#start.btn.btn-primary.btn-large.disabled Waiting...
-  a#win You won!
+  #win 
+    .txt You won!
+    a(href="../dashboard").btn.btn-primary.btn-large#lobby
+      | Back to lobby
   #startBackground
   include includes/board
 block remove
