@@ -583,7 +583,13 @@ window.onload = function() {
         if (users[i] == user_objects[j].id) objs.push(user_objects[j]);
       }
     }
-
+    for (var i = users.length; i < 4; i++) {
+      console.log("not here: " + i);
+      console.log('.player' + i + ' .opponentvideo');
+      $('#player' + i + ' .opponentvideo').hide();
+      $('#player' + i + ' .right').hide();
+      $('#player' + i + ' .well').css({"border-color":"whiteSmoke"});
+    }
     console.log(users, objs);
 
     for (var i = 0; i < players.length; i++) {
@@ -774,6 +780,9 @@ window.onload = function() {
        }
        if (player.user_id !== me) {
          $('#player'+player_id+' .js-resource-number').text(total);
+         // update victory point total
+         $('#player'+player_id+' .js-victory-value').text(victory_points);
+         victory_points += player.victory_cards;
        }
        // update ports array
        else {
@@ -786,10 +795,9 @@ window.onload = function() {
          }
          else
            $('#player'+player_id+' .card-number').css({"color": "black"});
+         // update victory point total
+         $('#player'+player_id+' .js-victory-value').text(victory_points);
        }
-
-       // update victory point total
-       $('#player'+player_id+' .js-victory-value').text(victory_points);
 
        // Update Developments
        if (player.user_id == me) {
@@ -839,13 +847,14 @@ window.onload = function() {
           }
           else {
             $('#win').addClass('loss');
-            $('#win').text("You've lost.");
+            $('#win .txt').text("You've lost.");
           }
           $('#win').show();
+          $('#lobby').show();
           socket.emit('gameover', player.user_id);
         }
-     }
-   });
+      }
+    });
 
 
   /**
@@ -1067,6 +1076,7 @@ window.onload = function() {
     socket.on('showSteal', function(players) {
       $('.roll-phase, .main-phase, .place-phase, .robber-phase').hide();
       $('.steal-phase').show();
+      $('.actions').addClass("disabled");
       $('.player.well').addClass("disabled");
       for (var i = 0; i < players.length; i++) {
         $('#player' + users.indexOf(players[i]) + " .player.well").removeClass("disabled");
@@ -1075,6 +1085,7 @@ window.onload = function() {
     });
     socket.on('showMain', function() {
       showMainPhase();
+      $('.actions').removeClass("disabled");
       $('.player.well').removeClass("disabled");
       $('.player.well').removeClass("enabled");
     });

@@ -75,8 +75,7 @@ body {
 .message {
     height:28%;
 }
-
-.player.well.disabled {
+.actions.disabled, .player.well.disabled {
   opacity: .6;
 }
 .name {
@@ -228,10 +227,16 @@ body {
   color:#FFFFFF;
   z-index: 5;
 }
-
+#lobby {
+  display:none;
+  position: absolute;
+  z-index: 5;
+  padding: 10px;
+}
 #win {
   border-color: rgba(0, 0, 0, 0.1);
   padding: 9px 14 px;
+  height: 15%;
   -webkit-border-radius: 5px;
   mox-border-radius: 5px;
   board-radius: 5px;
