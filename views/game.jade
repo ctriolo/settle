@@ -46,6 +46,42 @@ block remove
         button.btn.resetRemove Reset
       .btn-group
         button.btn.bank.removebtn.disabled Remove x More Cards
+block updateCards
+  .update-popup
+   .received-cards
+      .cards.received
+        .update-card
+          .wheat-card
+          .card-number.js-wheat-number 0
+        .update-card
+          .wood-card
+          .card-number.js-wood-number 0
+        .update-card
+          .sheep-card
+          .card-number.js-sheep-number 0
+        .update-card
+          .brick-card
+          .card-number.js-brick-number 0
+        .update-card
+          .stone-card
+          .card-number.js-stone-number 0
+    .lost-cards
+      .cards.lost
+        .update-card
+          .wheat-card
+          .card-number.js-wheat-number 0
+        .update-card
+          .wood-card
+          .card-number.js-wood-number 0
+        .update-card
+          .sheep-card
+          .card-number.js-sheep-number 0
+        .update-card
+          .brick-card
+          .card-number.js-brick-number 0
+        .update-card
+          .stone-card
+          .card-number.js-stone-number 0
 
 block trade
   .trade-popup
@@ -115,8 +151,8 @@ block player
     .player.well
       .left
         img(src='http://i.imgur.com/TFOqB.jpg').pic#MY_VIDEO
-        h3.name Empty
       .right
+        h3.name Empty
         .cards
           .card
             .wheat-card
@@ -139,18 +175,19 @@ block player
         br.clearBoth
         .points
           .victory-points
-            span.descriptor= 'V: '
+            span.descriptor= 'Victory: '
             span.value.js-victory-value 0
           .road-points
-            span.descriptor= 'R: '
+            span.descriptor= 'Road: '
             span.value.js-road-value 0
           .army-points
-            span.descriptor= 'A: '
+            span.descriptor= 'Army: '
             span.value.js-army-value 0
         br.clearBoth
 
 block actions
   .actions
+    img(src='http://www.cs.princeton.edu/~dcapra/frequencyChart.png')#frequencyChart
     .btn-toolbar.waiting-phase
       .btn-group
         button.btn.big.disabled Waiting...
@@ -248,6 +285,11 @@ block actions
               span.amount
               i.icon-road
               | Road Building
+           li
+             a#victoryCards.disabled
+               span.amount
+               i.icon-star-empty
+               | Victory Cards
       .btn-group
         button.btn.end End
 

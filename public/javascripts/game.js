@@ -8,6 +8,7 @@ var me;
 var roll_frequency = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 var total_rolls = 0.0;
 var recent_offer = {};
+var done = false;
 var ports = [];
 var toRemove = 0;
 function makeSVG(tag, attrs) {
@@ -43,6 +44,52 @@ function updateFrequencies() {
   for (var i = 2; i <= 12; i++) {
     $('#bar' + i).height(100*roll_frequency[i-2]/total_rolls/max/1.05 + "%");
   }
+}
+
+function updatePopup(playerCards) {
+    $('.update-card').hide();
+    for (var i in playerCards) {
+      var found = false;
+      var index = users.indexOf(parseInt(i));
+      var received = playerCards[i].received_resources;
+      if (index !== 0) {
+        var tag = '#player' + index;
+      }
+      else
+        var tag = '#update' + index;
+      for (var resource in received) {
+        var r = resource.toLowerCase();
+        console.log("received: " + r);
+        if (received[resource] !== 0) {
+          $(tag + " .received-cards .js-"+r+'-number').parent().show();
+          $(tag +' .received-cards .js-'+r+'-number').text(received[resource]);
+          found = true;
+         }
+      }
+      var lost = playerCards[i].lost_resources;
+      for (var resource in lost) {
+        if (lost[resource] === 0) {
+          $(tag + " .lost-cards .js-"+r+'-number').parent().show();
+          $(tag +' .lost-cards .js-'+r+'-number').text(lost[resource]);
+          found = true;
+        }
+      }
+      if (found) {
+        console.log('show ' + tag + ' ' + index);
+        if (index !== 0) {
+          $(tag + " .update-container").show();
+          $(tag + " .update-container").animate({"right": "100%"}, "slow");
+        }
+        else {
+          $(tag).show();
+          $(tag).animate({"right": "40.5%"}, "slow");
+        }
+      }
+    }
+    setTimeout(function() {
+       $(".update-container").animate({"right": "5%"}, "slow");
+       $('.update-container').hide();
+       }, 3000);
 }
 
 function createPopup(tag, title, content) {
@@ -152,6 +199,7 @@ window.onload = function() {
   session.addEventListener("streamCreated", streamCreatedHandler);
   session.connect(apiKey, token);
 
+
   /* var publisher; */
   function sessionConnectedHandler(event) {
     h = $('#MY_VIDEO').height();
@@ -183,6 +231,11 @@ window.onload = function() {
    * Dynamic Resizing
    */
   
+  window.onbeforeunload = function(){
+    if (!done)
+      return "You're about to leave a game in progess!";
+  };
+
   //dynamicResize();
   
   window.onresize = dynamicResize;
@@ -282,6 +335,10 @@ window.onload = function() {
       offer["offer"].push(parseInt($(this).text()));
     });
     socket.emit('offerTrade', offer, me);
+  });
+
+  socket.on('updatePopup', function(playerCards) {
+    updatePopup(playerCards);
   });
 
   socket.on('removeCards', function(number) {
@@ -584,7 +641,6 @@ window.onload = function() {
     $('#start').text("Start");
     $('#start').css("background-color", "#05C");
     $("#startBackground").fadeOut("slow");
-    $(".player").css({"z-index":"1"});
     $('#start').click(function(){
       $('#start').off('click');
       $('#start').remove();
@@ -623,7 +679,8 @@ window.onload = function() {
       console.log('.player' + i + ' .opponentvideo');
       $('#player' + i + ' .opponentvideo').hide();
       $('#player' + i + ' .right').hide();
-      $('#player' + i + ' .well').css({"border-color":"whiteSmoke"});
+      $('#player' + i + ' .well').css({"background-color":"black"});
+      $('#player' + i + ' .well').css({"opacity":".6"});
     }
     console.log(users, objs);
 
@@ -818,6 +875,7 @@ window.onload = function() {
          // update victory point total
          $('#player'+player_id+' .js-victory-value').text(victory_points);
          victory_points += player.victory_cards;
+         $('#victoryCards .amount').text(player.victory_cards);
        }
        // update ports array
        else {
@@ -837,6 +895,7 @@ window.onload = function() {
        // Update Developments
        if (player.user_id == me) {
          for (var key in player.development_cards) {
+           var victory_cards = ['Market', 'University', 'Library', 'Palace', 'Chapel'];              
            var id = key.charAt(0).toLowerCase() + key.slice(1);
            if (!player.played_development &&
                player.development_cards[key] -
@@ -882,11 +941,13 @@ window.onload = function() {
           }
           else {
             $('#win').addClass('loss');
-            $('#win .txt').text("You've lost.");
+            var name = $('#player' + player_id + ' .name').text();
+            $('#win .txt').text(name + " has won.");
           }
           $('#win').show();
           $('#lobby').show();
           socket.emit('gameover', player.user_id);
+          done = true;
         }
       }
     });
@@ -1037,7 +1098,10 @@ window.onload = function() {
    *                               values: resource assoc array
    */
   handleDiceRoll = function(number, resources) {
-
+    console.log("Handle Dice Roll");
+    console.log(resources);
+    updatePopup(resources);
+    updateCards(false);
     // Highlight Tokens
     $('.numberToken.number'+number).addClass('highlight');
     setTimeout(function() {
@@ -1050,7 +1114,7 @@ window.onload = function() {
       roll_frequency[number-2] += 1;
       updateFrequencies();
     }
-    updateCards(false);
+
     if (total_rolls == 1) {
       $("#frequencyChart").css({"opacity":"1.0"});
     }

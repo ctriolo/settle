@@ -279,7 +279,7 @@ body {
   float: left;
   margin-right: 7px;
 }
-.cards .trade-card, .cards .showtrade-card, .cards .remove-card {
+.cards .trade-card, .cards .showtrade-card, .cards .remove-card, .cards .update-card {
   float: left;
   margin-right: 7px;
 }
@@ -298,7 +298,7 @@ body {
       border-radius: 3px;
 }
 
-.cards .card .card-number, .cards .trade-card .card-number, .cards .showtrade-card .card-number, .cards .remove-card .card-number {
+.cards .card .card-number, .cards .trade-card .card-number, .cards .showtrade-card .card-number, .cards .remove-card .card-number, .cards .update-card .card-number {
   text-align: center;
 }
 
@@ -336,11 +336,15 @@ body {
 /*****
   * trade popup
   *****/
-
-.trade-container, .showtrade-container, .remove-container {
+.update-well {
+  height: 100%;
+  padding: 0%;
+  position: relative;
+}
+.update-container, .trade-container, .showtrade-container, .remove-container {
   display: none;
   position: absolute;
-  top: 3%;
+  top: 0%;
   right: 2%;
   width: 300px;
   height: 170px;
@@ -354,16 +358,20 @@ body {
   border-radius: 3px;
   z-index: 5;
 }
+.update-container {
+  width: 230px;
+  z-index: -1;
+}
 
-.showtrade-container.rejected, .showtrade-container.reject {
+.showtrade-container.rejected, .showtrade-container.reject, .lost-cards {
   background-color: rgb(175, 0, 0);
   background-color: rgba(175, 0, 0,.7);
 }
-.showtrade-container.accepted,  .showtrade-container.accept{
+.showtrade-container.accepted,  .showtrade-container.accept, .received-cards {
   background-color: rgb(0, 175, 0);
   background-color: rgba(0, 175, 0,.7);
 }
-.trade-popup, .showtrade-popup, .remove-popup {
+.update-popup, .trade-popup, .showtrade-popup, .remove-popup {
   position:relative;
   border: 2px solid black;
   background-color: whiteSmoke;
@@ -371,6 +379,9 @@ body {
   left: 5%;
   height: 70%;
   width: 90%;
+}
+.update-popup {
+  height: 90%;
 }
 .trade-text {
   width: 30%;
@@ -381,7 +392,8 @@ body {
   vertical-align: middle;
   font-size: 17px;
 }
-.offer-cards, .for-cards {
+
+.received-cards, .lost-cards, .offer-cards, .for-cards {
   position: absolute;
   top: 5%;
   left: 5%;
@@ -395,13 +407,18 @@ body {
   width: 90%;
   height: 90%;
 }
-.for-cards {
+.for-cards, .lost-cards {
   top: 55%;
 }
 .cards.trade {
   position: absolute;
   top: 0%;
   left: 30%;
+}
+.cards.received, .cards.lost {
+  position: absolute;
+  top: 5%;
+  left: 5%;
 }
 
 /*****
@@ -419,6 +436,7 @@ body {
   moz-border-radius: 3px;
   border-radius: 3px;
   z-index: 0;
+  background-color: rgba(0, 0, 0, .6);
 }
 .bar-container {
   position:relative;
@@ -427,7 +445,7 @@ body {
   left: 5%;
   height: 70%;
   width: 90%;
-  background-color: rgba(0, 0, 0, .6);
+  background-color: white;
 }
 .label-container {
   position:relative;
@@ -436,6 +454,7 @@ body {
   left: 5%;
   height: 10%;
   width: 90%;
+  background-color: white;
 }
 .bar-padding, .label-padding {
   float: left;
@@ -464,10 +483,9 @@ body {
 }
 #frequencyChart {
   position: absolute;
-  top: 15%;
+  top: 25%;
   right: 5%;
-  width: 20%;
-  height: 50%;
+  height: 8%;
   opacity: .2;
 }
 #frequencyChart img {

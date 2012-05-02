@@ -1113,7 +1113,6 @@ Game.prototype.rollDice = function(user_id) {
   var dice = [Math.floor((Math.random()*6)+1), Math.floor((Math.random()*6)+1)];
   var total = dice[0] + dice[1];
   var resources = this.board.getResources(total);
-
   // Add resources to player hand
   for (var player in resources) {
     this._addResources(player, resources[player]);
@@ -1122,9 +1121,11 @@ Game.prototype.rollDice = function(user_id) {
   // Construct return object
   var new_resources = {}
   for (var i = 0; i < this.players.length; i++) {
-    if (i in resources) new_resources[this.players[i].user_id] = resources[i];
+    if (i in resources) { 
+      new_resources[this.players[i].user_id] = {'received_resources':'', 'lost_resources':''};
+      new_resources[this.players[i].user_id].received_resources = resources[i];
+    }
   }
-
   this._next(total);
   return {'number': total, 'resources': new_resources, 'breakdown': dice};
 };

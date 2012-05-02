@@ -181,8 +181,6 @@ module.exports = function(sockets) {
 
         if (ret.number == 7) {
           var remove = game.removeCards();
-          console.log(remove);
-          console.log("LENGTH: " + remove.length);
           if (Object.keys(remove).length > 0) {
             sockets.to(game.whoseTurn()).emit('showRobber', true);
             for (var player in remove) {
@@ -195,7 +193,7 @@ module.exports = function(sockets) {
         gp.save(game);
         sockets.to(game_id).emit('rollDiceResults', ret.number, ret.resources, ret.breakdown);
         socket.emit('canBuild', game.canBuild(user_id));
-        updatePlayerInfo(sockets, game);
+        setTimeout(function() {updatePlayerInfo(sockets, game)}, 4*1000);
       } catch (error) {
         console.log('ERROR: ' + error);
       }
