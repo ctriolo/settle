@@ -231,7 +231,6 @@ body {
 }
 #lobby {
   display:none;
-  position: absolute;
   z-index: 5;
   padding: 10px;
 }

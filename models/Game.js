@@ -643,6 +643,8 @@ Game.prototype.start = function() {
 };
 
 Game.prototype.gameover = function() {
+  if (this.current_phase == PHASE.END)
+    throw 'The game has already been ended!';
   // might want to double check someone has 10 VP
   this.current_phase = PHASE.END;
 };
@@ -1119,7 +1121,6 @@ Game.prototype.rollDice = function(user_id) {
 
   var dice = [Math.floor((Math.random()*6)+1), Math.floor((Math.random()*6)+1)];
   var total = dice[0] + dice[1];
-  var total = 7;
   var resources = this.board.getResources(total);
   // Add resources to player hand
   for (var player in resources) {

@@ -133,11 +133,25 @@ module.exports = function(sockets) {
       var user_id = sid_to_uid[session_id];
       var game_id = uid_to_gid[user_id];
       var game = gp.findById(game_id);
-      if (DEBUG) { console.log('name:start ', user_id, game); }
       try {
         game.gameover(winner);
         gp.save(game);
         // handle user statistics here
+        var user_ids = game.getPlayers();
+        for (var i = 0; i < user_ids.length; i++) {
+          var win = parseInt(winner);
+          up.findById(user_ids[i], function(error, user){
+            if (user.id === win) {
+              console.log("WINNER: " + user.id);
+              user = user.win();
+            }
+            else {
+              console.log("LOSER: " + user.id);
+              user = user.lose();
+            }
+            up.save(user, function(){});
+          });
+        }
       } catch (error) {
         console.log('ERROR: ' + error);
       }
