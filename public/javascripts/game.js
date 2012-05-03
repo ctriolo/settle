@@ -10,6 +10,7 @@ var total_rolls = 0.0;
 var recent_offer = {};
 var done = false;
 var ports = [];
+var old_title = document.title;
 var toRemove = 0;
 function makeSVG(tag, attrs) {
   var el= document.createElementNS('http://www.w3.org/2000/svg', tag);
@@ -46,10 +47,9 @@ function updateFrequencies() {
   }
 }
 
-function updatePopup(playerCards) {
+function updatePopup(playerCards, secret) {
     $('.update-card').hide();
     for (var i in playerCards) {
-      var found = false;
       var index = users.indexOf(parseInt(i));
       var received = playerCards[i].resources;
       if (index !== 0) {
@@ -65,18 +65,20 @@ function updatePopup(playerCards) {
         $(tag + " .update-cards").removeClass("received");
         $(tag + " .update-cards").addClass("lost");
       }
-
+      var tot = 0;
       for (var resource in received) {
         var r = resource.toLowerCase();
-        console.log("received: " + r);
-        if (received[resource] !== 0) {
+        tot += received[resource];
+        if (received[resource] !== 0 && !secret) {
           $(tag + " .update-cards .js-"+r+'-number').parent().show();
           $(tag +' .update-cards .js-'+r+'-number').text(received[resource]);
-          found = true;
-         }
+        }
       }
-      if (found) {
-        console.log('show ' + tag + ' ' + index);
+      if (secret && tot > 0) {
+         $(tag + " .update-cards .js-resource-number").parent().show();
+         $(tag + ' .update-cards .js-resource-number').text(tot);
+      }
+      if (tot > 0) {
         if (index !== 0) {
           $(tag + " .update-container").show();
           $(tag + " .update-container").animate({"right": "100%"}, "slow");
@@ -235,12 +237,12 @@ window.onload = function() {
   /**
    * Dynamic Resizing
    */
-
+  /*
   window.onbeforeunload = function(){
     if (!done)
       return "You're about to leave a game in progess!";
   };
-
+  */
   //dynamicResize();
 
   window.onresize = dynamicResize;
@@ -464,6 +466,9 @@ window.onload = function() {
     $('.trade-container .offer-cards .cards .card-number').each(function() {
       offer["offer"].push(parseInt($(this).text()));
     });
+    console.log("BANK TRADE**********");
+    console.log(offer);
+    console.log(me);
     socket.emit('bankTrade', offer, me);
   });
 
@@ -493,13 +498,24 @@ window.onload = function() {
       return;
     $(this).addClass("disabled");
     var removeCards = [];
+    var tot = 0;
     $('.remove-card .card-number').each(function() {
       removeCards.push(parseInt($(this).text()));
+      tot += parseInt($(this).text());
     });
     $(".remove-container").animate({"right": "5%"}, "slow");
     $(".remove-container").hide();
     $(".remove-card .card-number").text("0");
-    socket.emit('removed', removeCards, me);
+    socket.emit('removed', removeCards, me, tot);
+  });
+
+  socket.on('removeUpdate', function(player, total) {
+    var update_object = {};
+    var i = total;
+    var resource_object = {'Wood':''};
+    resource_object['Wood'] = i;
+    update_object[player] = {'resources': resource_object, 'received':false}
+    updatePopup(update_object, true);
   });
 
   $(".resetRemove").click(function() {
@@ -762,12 +778,10 @@ window.onload = function() {
    * @param   id   num   the interesection id to draw an element
    */
   socket.on('startingSettlementPlacement', function(id, playerid, resources) {
-    console.log('SETTLEMENTPLACE');
-    console.log(resources);
     $('#intersection' + id).hide();
     $('#settlement' + id).show();
     $('#settlement' + id).addClass('player'+playerid);
-    updatePopup(resources);
+    updatePopup(resources, false);
   });
 
 
@@ -818,7 +832,12 @@ window.onload = function() {
     $('.roll-phase, .main-phase, .steal-phase, .place-phase, .robber-phase').hide();
   });
 
-
+  socket.on('developmentUpdate', function(player) {
+    var update_object = {};
+    var resource_object = {'Stone':1, 'Wheat':1, 'Sheep':1};
+    update_object[player] = {'resources': resource_object, 'received':false}
+    updatePopup(update_object, false);
+  });
   /**
    * canBuild
    *
@@ -840,7 +859,9 @@ window.onload = function() {
            $('#'+id).addClass('disabled');
 
            id = id.charAt(0).toUpperCase() + id.slice(1);
-           if (id === "Development") socket.emit('buildDevelopment');
+           if (id === "Development") {
+             socket.emit('buildDevelopment');
+           }
            else socket.emit('select'+id);
          });
        } else {
@@ -942,6 +963,7 @@ window.onload = function() {
      	updateCards(false);
 	if (victory_points >= 10) {
           console.log("GAME OVER");
+          $('#startBackground').css("background", '#000000');
           $('#startBackground').show();
           if (player.user_id === me) {
             $('#win').addClass("won");
@@ -1071,10 +1093,16 @@ window.onload = function() {
    * Show the svg element that represents a city at the intersection id
    * @param   id   num   the intersection id to show the city at
    */
-  socket.on('buildCity', function(id, playerid) {
+  socket.on('buildCity', function(id, playerid, player) {
     $('#settlement' + id).hide();
     $('#city' + id).show();
     $('#city' + id).addClass('player'+playerid);
+    if (player) {
+      var update_object = {};
+      var resource_object = {'Stone':3, 'Wheat':2};
+      update_object[player] = {'resources': resource_object, 'received':false}
+      updatePopup(update_object, false);
+    }
   });
 
 
@@ -1085,10 +1113,16 @@ window.onload = function() {
    * Show the svg element that represents a road at the edge id
    * @param   id   num   the edge id to show the road at
    */
-  socket.on('buildRoad', function(id, playerid) {
+  socket.on('buildRoad', function(id, playerid, player) {
     $('#edge' + id).hide();
     $('#road' + id).show();
     $('#road' + id).addClass('player'+playerid);
+    if (player) {
+      var update_object = {};
+      var resource_object = {'Wood':1, 'Brick':1};
+      update_object[player] = {'resources': resource_object, 'received':false}
+      updatePopup(update_object, false);
+    }
   });
 
 
@@ -1105,9 +1139,7 @@ window.onload = function() {
    *                               values: resource assoc array
    */
   handleDiceRoll = function(number, resources) {
-    console.log("Handle Dice Roll");
-    console.log(resources);
-    updatePopup(resources);
+    updatePopup(resources, false);
     updateCards(false);
     // Highlight Tokens
     $('.numberToken.number'+number).addClass('highlight');
@@ -1215,6 +1247,13 @@ window.onload = function() {
     socket.on('stealCard', function(thief, player_id, resource) {
       $('.roll-phase, .robber-phase, .place-phase, .steal-phase').hide();
       $('.main-phase').show();
+      var update_object = {};
+      var resource_object = {};
+      var r = resource;
+      resource_object[r] = 1;
+      update_object[thief] = {'resources': resource_object, 'received':true}
+      update_object[player_id] = {'resources': resource_object, 'received':false}
+      updatePopup(update_object, true);
     });
 
 
@@ -1369,9 +1408,16 @@ window.onload = function() {
       if (turn_user == me) {
         $('.roll-phase').show();
         $('.waiting-phase').hide();
+        document.title = "Your turn!";
+        $('#startBackground').css("background", 'lime');
+        $('#startBackground').show();
+        $('#startBackground').fadeOut('slow');
+
+
       } else {
         $('.roll-phase').hide();
         $('.waiting-phase').show();
+        document.title = old_title;
       }
       $('.main-phase, .robber-phase, .steal-phase').hide();
     }

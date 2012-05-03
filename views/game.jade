@@ -65,6 +65,9 @@ block updateCards
         .update-card
           .stone-card
           .card-number.js-stone-number 0
+        .update-card
+          .resource-card
+          .card-number.js-resource-number 0
 
 block trade
   .trade-popup
@@ -170,7 +173,7 @@ block player
 
 block actions
   .actions
-    img(src='http://www.cs.princeton.edu/~dcapra/frequencyChart.png')#frequencyChart
+    img(src='http://www.cs.princeton.edu/~dcapra/frequencyChart.png')#frequencyChart.chartShow
     .btn-toolbar.waiting-phase
       .btn-group
         button.btn.big.disabled Waiting...

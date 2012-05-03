@@ -666,7 +666,9 @@ Game.prototype.endTurn = function(user_id) {
   */
 
 Game.prototype.bankTrade = function(offer, offerer) {
+  this._validatePhase(PHASE.MAIN);
   var offerer = this._translate(offerer);
+  this._validatePlayer(offerer);
   for(var i = 0; i < offer['for'].length; i++) {
       this.players[offerer].resource_cards[RESOURCE_ARRAY[i]] += offer['for'][i];
   }
@@ -1117,6 +1119,7 @@ Game.prototype.rollDice = function(user_id) {
 
   var dice = [Math.floor((Math.random()*6)+1), Math.floor((Math.random()*6)+1)];
   var total = dice[0] + dice[1];
+  var total = 7;
   var resources = this.board.getResources(total);
   // Add resources to player hand
   for (var player in resources) {

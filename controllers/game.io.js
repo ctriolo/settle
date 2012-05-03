@@ -227,7 +227,7 @@ module.exports = function(sockets) {
       }
     });
 
-    socket.on('removed', function(removedCards, player) {
+    socket.on('removed', function(removedCards, player,total) {
       var session_id = socket.handshake.sessionID;
       var user_id = sid_to_uid[session_id];
       var game_id = uid_to_gid[user_id];
@@ -240,6 +240,7 @@ module.exports = function(sockets) {
         if (done) {
             sockets.to(game.whoseTurn()).emit('showRobber', false);
         }
+        sockets.to(game_id).emit('removeUpdate', player, total);
       } catch (error) {
         console.log('ERROR: ' + error);
       }
@@ -349,6 +350,7 @@ module.exports = function(sockets) {
       * allow bank trades
       **/
       socket.on('bankTrade', function(offer, offerer) {
+        console.log("BANK TRADING*************");
         var session_id = socket.handshake.sessionID;
         var user_id = sid_to_uid[session_id];
         var game_id = uid_to_gid[user_id];
@@ -509,7 +511,7 @@ module.exports = function(sockets) {
         gp.save(game);
         updatePlayerInfo(sockets, game);
         socket.emit('canBuild', game.canBuild(user_id));
-        sockets.to(game_id).emit('buildCity', intersection_id, game._translate(user_id));
+        sockets.to(game_id).emit('buildCity', intersection_id, game._translate(user_id), user_id);
         sockets.to(game.whoseTurn()).emit('showMain');
       } catch (error) {
         console.log('ERROR: ' + error);
@@ -534,7 +536,7 @@ module.exports = function(sockets) {
         gp.save(game);
         updatePlayerInfo(sockets, game);
         socket.emit('canBuild', game.canBuild(user_id));
-        sockets.to(game_id).emit('buildRoad', edge_id, game._translate(user_id));
+        sockets.to(game_id).emit('buildRoad', edge_id, game._translate(user_id), user_id);
         sockets.to(game.whoseTurn()).emit('showMain');
       } catch (error) {
         console.log('ERROR: ' + error);
@@ -557,6 +559,7 @@ module.exports = function(sockets) {
         gp.save(game);
         updatePlayerInfo(sockets, game);
         socket.emit('canBuild', game.canBuild(user_id));
+        sockets.to(game_id).emit('developmentUpdate', user_id);
       } catch (error) {
         console.log('ERROR: ' + error);
       }

@@ -307,7 +307,7 @@ body {
 .cards .sheep-card       { background: url('http://www.cs.princeton.edu/~dcapra/pasture.jpg') top right; }
 .cards .brick-card       { background: url('http://www.cs.princeton.edu/~dcapra/clay.jpg'); }
 .cards .stone-card       { background: url('http://i.imgur.com/llQvw.jpg'); }
-.cards .resource-card    { background: url('../images/favicon.ico') no-repeat; background-size:100%; }
+.cards .resource-card    { background: url('../images/favicon.ico') no-repeat; background-size:100%; background-color: white;}
 .cards .development-card { background: gold; }
 
 .clearBoth {clear:both;}
