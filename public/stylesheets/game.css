@@ -167,7 +167,7 @@ body {
 }
 
 .actions .roll-phase,
-.actions .main-phase {
+.actions .main-phase, .frequency-toolbar {
   text-align: center;
   width: 100%;
   display: inline-block;
@@ -443,14 +443,20 @@ body {
   z-index: 0;
   background-color: rgba(0, 0, 0, .6);
 }
-.bar-container {
+.bar-container, #list-container {
   position:relative;
   border: 2px solid black;
   top:5%;
   left: 5%;
-  height: 70%;
+  height: 60%;
   width: 90%;
   background-color: white;
+}
+#list-container {
+  height: 70%;
+  overflow: scroll;
+  overflow-x: hidden;
+  display:none;
 }
 .label-container {
   position:relative;
@@ -460,6 +466,16 @@ body {
   height: 10%;
   width: 90%;
   background-color: white;
+}
+.rollElement {
+  background-color: whiteSmoke;
+  text-align: center;
+  width: 98%;
+  position: relative;
+  left: 1%;
+  border: 2px solid black;
+  height: 25%;
+  line-height: 3em;
 }
 .bar-padding, .label-padding {
   float: left;

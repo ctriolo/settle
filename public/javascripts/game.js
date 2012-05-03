@@ -1152,6 +1152,11 @@ window.onload = function() {
       total_rolls += 1;
       roll_frequency[number-2] += 1;
       updateFrequencies();
+      var parent = document.getElementById('list-container');
+      var rollElement = document.createElement('div');
+      rollElement.setAttribute('class', 'rollElement');
+      rollElement.innerHTML = number;
+      parent.insertBefore(rollElement, parent.firstChild);
     }
 
     if (total_rolls == 1) {
@@ -1198,7 +1203,26 @@ window.onload = function() {
       }
     );
 
-
+    $('.list').click(
+      function() {
+        if (!$(this).hasClass('active')) {
+          $('#list-container').show();
+          $('.bar-container').hide();
+          $('.label-container').hide();
+          $(this).addClass('active');
+          $('.chart').removeClass('active');
+        }
+      });
+    $('.chart').click(
+      function() {
+        if (!$(this).hasClass('active')) {
+          $('#list-container').hide();
+          $('.bar-container').show();
+          $('.label-container').show();
+          $(this).addClass('active');
+          $('.list').removeClass('active');
+        }
+      });
 
     socket.on('showRobber', function(removeWaiting) {
       $('.roll-phase, .main-phase, .steal-phase').hide();

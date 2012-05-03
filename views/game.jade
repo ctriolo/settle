@@ -125,12 +125,18 @@ block bars
     for roll in diceRolls
       .bars
         | <div class="bar" id="bar#{roll}"></div>
+  #list-container
 
 block labels
   .label-container
     .label-padding
     for roll in diceRolls
       .frequency-label #{roll}
+  .btn-toolbar.frequency-toolbar
+    .btn-group
+      .button.btn.list List
+    .btn-group
+      .button.btn.chart.active Chart
 
 block player
   #player0
