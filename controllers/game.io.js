@@ -10,7 +10,9 @@ var OPENTOK_API_SECRET = '0263b77a74734ba0fdf356047286ee2af88cfab1';
 // Dependecies
 var GameProvider = require('../models/GameProvider')
   , UserProvider = require('../models/UserProvider.js')
-  , User = require('../models/User.js');
+  , User = require('../models/User.js')
+  , OpenTok = require('opentok')
+  , ot = new OpenTok.OpenTokSDK(OPENTOK_API_KEY, OPENTOK_API_SECRET);
 
 var sid_to_uid = {}; // session to user
 var uid_to_gid = {}; // user to game

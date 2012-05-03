@@ -190,43 +190,47 @@ window.onload = function() {
   /**
    * OpenTok
    */
+  socket.on('joined', function(apiKey, sessionId, token) 
+  {
+            
+    //var apiKey = '14421202';
+    //var sessionId = '1_MX4xMjMyMDgxfjcwLjQyLjQ3Ljc4fjIwMTItMDQtMjAgMDA6NDc6NDguODE2NjM2KzAwOjAwfjAuMzY3MzY1NjI2NTAxfg';
+    //var token = 'devtoken';
 
-  var apiKey = '14421202';
-  var sessionId = '1_MX4xMjMyMDgxfjcwLjQyLjQ3Ljc4fjIwMTItMDQtMjAgMDA6NDc6NDguODE2NjM2KzAwOjAwfjAuMzY3MzY1NjI2NTAxfg';
-  var token = 'devtoken';
-
-  var session = TB.initSession(sessionId);
-  session.addEventListener("sessionConnected", sessionConnectedHandler);
-  session.addEventListener("streamCreated", streamCreatedHandler);
-  session.connect(apiKey, token);
+    var session = TB.initSession(sessionId);
+    session.addEventListener("sessionConnected", sessionConnectedHandler);
+    session.addEventListener("streamCreated", streamCreatedHandler);
+    session.connect(apiKey, token);
 
 
-  /* var publisher; */
-  function sessionConnectedHandler(event) {
-    h = $('#MY_VIDEO').height();
-    w = $('#MY_VIDEO').width();
-    session.publish('MY_VIDEO', {height:h, width:w, class:'MY_VIDEO'});
-    subscribeToStreams(event.streams);
-  }
+    /* var publisher; */
+    function sessionConnectedHandler(event) {
+      h = $('#MY_VIDEO').height();
+      w = $('#MY_VIDEO').width();
+      session.publish('MY_VIDEO', {height:h, width:w, class:'MY_VIDEO'});
+      subscribeToStreams(event.streams);
+    }
 
-  function streamCreatedHandler(event) { // when each person joins (usually one)
-    subscribeToStreams(event.streams);
-  }
+    function streamCreatedHandler(event) { // when each person joins (usually one)
+      subscribeToStreams(event.streams);
+    }
 
-  function subscribeToStreams(streams) {
-    if (typeof subscribeToStreams.nextPlayer == 'undefined')
-      subscribeToStreams.nextPlayer = 1;
+    function subscribeToStreams(streams) {
+      if (typeof subscribeToStreams.nextPlayer == 'undefined')
+        subscribeToStreams.nextPlayer = 1;
 
-    for (i = 0; i < streams.length; i++) {
-      var stream = streams[i];
-      if (stream.connection.connectionId != session.connection.connectionId) {
-        replaceID = 'VIDEO' + subscribeToStreams.nextPlayer++;
-        h = $('#' + replaceID).height();
-        w = $('#' + replaceID).width();
-        session.subscribe(stream, replaceID, {height:h, width:w})
+      for (i = 0; i < streams.length; i++) {
+        var stream = streams[i];
+        if (stream.connection.connectionId != session.connection.connectionId) {
+          replaceID = 'VIDEO' + subscribeToStreams.nextPlayer++;
+          h = $('#' + replaceID).height();
+          w = $('#' + replaceID).width();
+          session.subscribe(stream, replaceID, {height:h, width:w})
+        }
       }
     }
-  }
+            
+  });
 
   /**
    * Dynamic Resizing
@@ -713,10 +717,6 @@ window.onload = function() {
 
   });
 
-
-  socket.on('joined', function(apiKey, sessionId, token) {
-    console.log(apiKey, sessionId, token);
-  });
 
   // Starting Placements
 
