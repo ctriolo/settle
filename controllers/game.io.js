@@ -2,6 +2,11 @@
  * Game Server Side Socket IO
  */
 
+// Constants
+
+var OPENTOK_API_KEY = '13250542';
+var OPENTOK_API_SECRET = '0263b77a74734ba0fdf356047286ee2af88cfab1';
+
 // Dependecies
 var GameProvider = require('../models/GameProvider')
   , UserProvider = require('../models/UserProvider.js')
@@ -59,6 +64,26 @@ module.exports = function(sockets) {
           sockets.to(user_id).emit('start', game.getPlayers(), user_id);
           if (!game.isPlayer(user_id)) sockets.to(user_id).send('You cannot join a game that\'s already started.');
         } else if (game.canStart()) sockets.to(game_id).emit('canStart');
+
+        if (!('sessionId' in game) && game.isPlayer(user_id)) {
+          ot.createSession('localhost', {}, function(session) {
+            game.sessionId = session.sessionId;
+            var token = ot.generateToken({
+              sessionId: game.sessionId,
+              role: OpenTok.Roles.SUBSCRIBER
+            });
+            game.players[game._translate(user_id)].token = token;
+            socket.emit('joined', OPENTOK_API_KEY, game.sessionId, token);
+          });
+        } else if (game.isPlayer(user_id)) {
+          var token = ot.generateToken({
+            sessionId: game.sessionId,
+            role: OpenTok.Roles.SUBSCRIBER
+          });
+          game.players[game._translate(user_id)].token = token;
+          socket.emit('joined', OPENTOK_API_KEY, game.sessionId, token);
+        }
+
       });
     });
 

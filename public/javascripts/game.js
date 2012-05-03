@@ -104,7 +104,7 @@ function createTooltip(tag, content, delay) {
   if (!delay)
     $(tag).tooltip({"animation":true, "placement":"top", "trigger":"hover", "title": content, "selector":true, "delay":{"show": 0, "hide":1000}});
   else
-     $(tag).tooltip({"animation":true, "placement":"top", "trigger":"hover", "title": content, "selector":true});   
+     $(tag).tooltip({"animation":true, "placement":"top", "trigger":"hover", "title": content, "selector":true});
 }
 
 function updateCards(offer) {
@@ -176,7 +176,7 @@ function showPlacePhase(phrase, showCancel) {
 }
 
 window.onload = function() {
-  
+
   /**
    * Socket IO Connection
    */
@@ -231,45 +231,45 @@ window.onload = function() {
   /**
    * Dynamic Resizing
    */
-  
+
   window.onbeforeunload = function(){
     if (!done)
       return "You're about to leave a game in progess!";
   };
 
   //dynamicResize();
-  
+
   window.onresize = dynamicResize;
   function dynamicResize() {
     console.log('Wheeeee');
-    
+
     // player 0 video
     p0 = document.getElementById('player0')
     p0well = p0.firstChild;
     p0left = p0well.firstChild;
     p0vidObj = p0left.firstChild;
-    
+
     w1 = p0well.clientWidth
     w2 = p0well.clientHeight*.8 *4/3.0
     w = Math.min(w1, w2);
     h = w*3/4.0;
     p0vidObj.setAttribute('width', w);
     p0vidObj.setAttribute('height', h);
-    
+
     // player 1 video
     for (var i = 1; i <= 3; i++) {
       pI = document.getElementById('player' + i)
       pIwell = pI.firstChild;
       pIleft = pIwell.firstChild;
       pIvidObj = pIleft.firstChild;
-      
+
       h = pIwell.clientHeight;
       w = h*4/3.0;
       pIvidObj.setAttribute('width', w);
       pIvidObj.setAttribute('height', h);
     }
   }
-  
+
   window.onresize();
 
   /**
@@ -714,6 +714,10 @@ window.onload = function() {
   });
 
 
+  socket.on('joined', function(apiKey, sessionId, token) {
+    console.log(apiKey, sessionId, token);
+  });
+
   // Starting Placements
 
   /**
@@ -898,7 +902,7 @@ window.onload = function() {
        // Update Developments
        if (player.user_id == me) {
          for (var key in player.development_cards) {
-           var victory_cards = ['Market', 'University', 'Library', 'Palace', 'Chapel'];              
+           var victory_cards = ['Market', 'University', 'Library', 'Palace', 'Chapel'];
            var id = key.charAt(0).toLowerCase() + key.slice(1);
            if (!player.played_development &&
                player.development_cards[key] -

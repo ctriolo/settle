@@ -10,5 +10,6 @@
     , "connect": ">= 0.0.1"
     , "everyauth": ">= 0.0.1"
     , "underscore": ">= 0.0.1"
+    , "opentok": ">= 0.0.1"
   }
 }
