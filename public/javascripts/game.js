@@ -230,7 +230,6 @@ console.log('I am about to publish with index ' + myIndex + ' and connectionId '
           socket.emit('sendConnIDtoGetPlayerIndex', CONFIG.room, CONFIG.token, connId); // ot5. ask for index from game[connID]
           socket.on('sendPlayerIndexFromConnID', function(index) // ot7. receive index and use to replace correct img
           {
-console.log('I am about to subscribe to index ' + index + ' and connectionId ' + connId);
             var playerNo = index;
             if (playerNo < myIndex) playerNo++;
             
@@ -239,6 +238,7 @@ console.log('I am about to subscribe to index ' + index + ' and connectionId ' +
             h = $('#' + replaceID).height();
             w = $('#' + replaceID).width();
             session.subscribe(stream, replaceID, {height:h, width:w});
+            socket.$events['sendPlayerIndexFromConnID'] = null; // GIANT HACKKKKKK
           });
           
           
