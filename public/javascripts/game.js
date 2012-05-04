@@ -941,6 +941,12 @@ window.onload = function() {
            if (!player.played_development &&
                player.development_cards[key] -
                player.pending_development_cards[key] > 0) {
+             if (key == 'Knight') {
+               $('.roll-phase .knight').removeClass('disabled');
+               $('.roll-phase .knight').click(function(){
+                 socket.emit('playKnight');
+               });
+             }
              $('#'+id).removeClass('disabled');
              $('#'+id).click(function(){
                var id = $(this).attr('id');
@@ -948,6 +954,10 @@ window.onload = function() {
                socket.emit('play'+id);
              });
            } else {
+             if (key == 'Knight') {
+               $('.roll-phase .knight').addClass('disabled');
+               $('.roll-phase .knight').off('click');
+             }
              $('#'+id).addClass('disabled');
              $('#'+id).off('click');
            }
@@ -1279,6 +1289,15 @@ window.onload = function() {
       $('.actions').removeClass("disabled");
       $('.player.well').removeClass("disabled");
       $('.player.well').removeClass("enabled");
+    });
+
+    socket.on('showDice', function() {
+      showMainPhase();
+      $('.actions').removeClass("disabled");
+      $('.player.well').removeClass("disabled");
+      $('.player.well').removeClass("enabled");
+      $('.main-phase').hide();
+      $('.roll-phase').show();
     });
 
    /**
