@@ -227,7 +227,7 @@ console.log('I am about to publish with index ' + myIndex + ' and connectionId '
         if (connId != session.connection.connectionId) 
         {
           // EMIT CONNECTION ID TO SERVER, GET PLAYER #
-          socket.emit('sendConnIDtoGetPlayerIndex', CONFIG.room, connId); // ot5. ask for index from game[connID]
+          socket.emit('sendConnIDtoGetPlayerIndex', CONFIG.room, CONFIG.token, connId); // ot5. ask for index from game[connID]
           socket.on('sendPlayerIndexFromConnID', function(index) // ot7. receive index and use to replace correct img
           {
 console.log('I am about to subscribe to index ' + index + ' and connectionId ' + connId);

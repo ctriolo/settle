@@ -104,14 +104,17 @@ console.log(game.players)
           game.players[p].connectionId = connID; // ot4. receive game[index=connID]
     });
 
-    socket.on('sendConnIDtoGetPlayerIndex', function(game_id, connID) 
-    {
-      var game = gp.findById(game_id);
+    socket.on('sendConnIDtoGetPlayerIndex', function(game_id, token, connID) {
+      up.findByToken(token, function(error, user)
+      {
+        var user_id = user.id;
+        var game = gp.findById(game_id);
 console.log('\n OT6 \n')
 console.log(game.players)
-      for (var p = 0; p < game.players.length; p++)
-        if (game.players[p].connectionId == connID)
-          socket.emit('sendPlayerIndexFromConnID', game.players[p].index) // ot6. send index for game[connID]
+        for (var p = 0; p < game.players.length; p++)
+          if (game.players[p].connectionId == connID)
+            sockets.to(user_id).emit('sendPlayerIndexFromConnID', game.players[p].index) // ot6. send index for game[connID]
+      });
     });
 
     /**
