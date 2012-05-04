@@ -942,6 +942,15 @@ window.onload = function() {
          }
        }
 
+       // Show dev cards in the list
+       var total_dev = 0;
+       for (var key in player.development_cards) {
+         total_dev += player.development_cards[key];
+       }
+       $('#player'+player_id+' .js-development-number').text(total_dev);
+       if (total_dev == 0) $('#player'+player_id+' .js-development-number').hide();
+       else $('#player'+player_id+' .js-development-number').show();
+
        if (player.user_id == me) {
          $('#settlement .amount').text(player.unbuilt_settlements);
          $('#city .amount').text(player.unbuilt_cities);
