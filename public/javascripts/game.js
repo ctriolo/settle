@@ -207,7 +207,6 @@ window.onload = function() {
       session.publish('MY_VIDEO', {height:h, width:w, class:'MY_VIDEO'});
       
       socket.emit('associateMyConnIDwithMyIndex', CONFIG.room, myIndex, session.connection.connectionId); // ot3. send game[index=connID]
-console.log('I am about to publish with index ' + myIndex + ' and connectionId ' + session.connection.connectionId);
       subscribeToStreams(event.streams);
     }
 
