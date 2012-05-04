@@ -85,6 +85,8 @@ module.exports = function(sockets) {
               role: OpenTok.Roles.SUBSCRIBER
             });
             game.players[game._translate(user_id)].token = token;
+console.log('\n OT2 \n')
+console.log(game.players)
             sockets.to(user_id).emit('joined', OPENTOK_API_KEY, game.sessionId, token, game.players[game._translate(user_id)].index); // ot2. send index
           });
         } else if (game.isPlayer(user_id)) {
@@ -93,6 +95,8 @@ module.exports = function(sockets) {
             role: OpenTok.Roles.SUBSCRIBER
           });
           game.players[game._translate(user_id)].token = token;
+console.log('\n OT2 \n')
+console.log(game.players)
           sockets.to(user_id).emit('joined', OPENTOK_API_KEY, game.sessionId, token, game.players[game._translate(user_id)].index); // ot2. send index
         }
 
@@ -104,6 +108,8 @@ module.exports = function(sockets) {
     socket.on('associateMyConnIDwithMyIndex', function(game_id, index, connID)
     {
       var game = gp.findById(game_id);
+console.log('\n OT4 \n')
+console.log(game.players)      
       for (var p = 0; p < game.players.length; p++)
         if (game.players[p].index == index)
           game.players[p].connectionId = connID; // ot4. receive game[index=connID]
@@ -112,6 +118,8 @@ module.exports = function(sockets) {
     socket.on('sendConnIDtoGetPlayerIndex', function(game_id, connID)
     {
       var game = gp.findById(game_id);
+console.log('\n OT6 \n')
+console.log(game.players)
       for (var p = 0; p < game.players.length; p++)
         if (game.players[p].connectionId == connID)
           socket.emit('sendPlayerIndexFromConnID', game.players[p].index) // ot6. send index for game[connID]
