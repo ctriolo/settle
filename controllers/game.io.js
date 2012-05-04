@@ -32,6 +32,10 @@ function updatePlayerInfo(sockets, game) {
   }
 }
 
+function updateDashboard(sockets, gp) {
+  sockets.to('dashboard').emit('updateDashboard', gp.getJoinable());
+}
+
 module.exports = function(sockets) {
   var gp = GameProvider.getInstance();
   var up = new UserProvider('localhost', 27017);
@@ -42,6 +46,11 @@ module.exports = function(sockets) {
     socket.on('disconnect', function() {
       alert("Goodbye");
     }); */
+
+
+    socket.on('joinDashboard', function() {
+      socket.join('dashboard');
+    });
 
     /**
      * join
@@ -91,10 +100,12 @@ console.log(game.players)
           sockets.to(user_id).emit('joined', OPENTOK_API_KEY, game.sessionId, token, game.players[game._translate(user_id)].index); // ot2. send index
         }
 
+        updateDashboard(sockets, gp);
+
       });
     });
 
-    socket.on('associateMyConnIDwithMyIndex', function(game_id, index, connID) 
+    socket.on('associateMyConnIDwithMyIndex', function(game_id, index, connID)
     {
       var game = gp.findById(game_id);
 console.log('\n OT4 \n')
@@ -153,6 +164,8 @@ console.log(game.players)
       } catch (error) {
         socket.send(error);
       }
+
+      updateDashboard(sockets, gp);
     });
 
     socket.on('gameover', function(winner) {
