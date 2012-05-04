@@ -741,7 +741,8 @@ window.onload = function() {
     createTooltip('.wood-card', 'Wood', true);
     createTooltip('.brick-card', 'Brick', true);
     createTooltip('.wheat-card', 'Wheat', true);
-    createTooltip('.developmentcard', 'Development Card', true);
+    createTooltip('.resource-card', 'Resource', true);
+    createTooltip('.development-card', 'Dev Card', true);
 
 
   });
