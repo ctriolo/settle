@@ -15,7 +15,7 @@ block head
 
 block board
   a#start.btn.btn-primary.btn-large.disabled Waiting...
-  #win 
+  #win
     .txt You won!
     a(href="../dashboard").btn.btn-primary.btn-large#lobby
       | Back to lobby
@@ -222,6 +222,7 @@ block actions
         ul.dropdown-menu
           li
             a#settlement
+              span.amount 0
               i.icon-home
               | Settlement
               span.brick &bull;
@@ -230,6 +231,7 @@ block actions
               span.wood  &bull;
           li
             a#city
+              span.amount 0
               i.icon-home
               | City
               span.stone &bull;
@@ -239,12 +241,14 @@ block actions
               span.wheat &bull;
           li
             a#road
+              span.amount 0
               i.icon-road
               | Road
               span.brick &bull;
               span.wood  &bull;
           li
             a#development
+              span.amount 0
               i.icon-book
               | Development
               span.stone &bull;

@@ -28,7 +28,7 @@ function updatePlayerInfo(sockets, game) {
   var user_ids = game.getPlayers();
   for (var i = 0; i < user_ids.length; i++) {
     sockets.to(user_ids[i]).emit('canBuild', game.canBuild(user_ids[i]));
-    sockets.to(user_ids[i]).emit('updatePlayerInfo', game.players);
+    sockets.to(user_ids[i]).emit('updatePlayerInfo', game.players, game.development_cards.length);
   }
 }
 

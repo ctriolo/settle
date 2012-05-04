@@ -192,9 +192,9 @@ window.onload = function() {
   /**
    * OpenTok
    */
-  socket.on('joined', function(apiKey, sessionId, token) 
+  socket.on('joined', function(apiKey, sessionId, token)
   {
-            
+
     //var apiKey = '14421202';
     //var sessionId = '1_MX4xMjMyMDgxfjcwLjQyLjQ3Ljc4fjIwMTItMDQtMjAgMDA6NDc6NDguODE2NjM2KzAwOjAwfjAuMzY3MzY1NjI2NTAxfg';
     //var token = 'devtoken';
@@ -231,7 +231,7 @@ window.onload = function() {
         }
       }
     }
-            
+
   });
 
   /**
@@ -878,7 +878,7 @@ window.onload = function() {
    * Update player info.
    * @param   players   array
    */
-   socket.on('updatePlayerInfo', function(players) {
+   socket.on('updatePlayerInfo', function(players, unbuilt_developments) {
      console.log(players);
      for (var i = 0; i < players.length; i++) {
        var player = players[i];
@@ -940,6 +940,13 @@ window.onload = function() {
            }
            $('#'+id+' .amount').text(player.development_cards[key]);
          }
+       }
+
+       if (player.user_id == me) {
+         $('#settlement .amount').text(player.unbuilt_settlements);
+         $('#city .amount').text(player.unbuilt_cities);
+         $('#road .amount').text(player.unbuilt_roads);
+         $('#development .amount').text(unbuilt_developments);
        }
 
        // Update Roads
