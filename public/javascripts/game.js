@@ -903,10 +903,10 @@ window.onload = function() {
          // update victory point total
          $('#player'+player_id+' .js-victory-value').text(victory_points);
          victory_points += player.victory_cards;
-         $('#victoryCards .amount').text(player.victory_cards);
        }
        // update ports array
        else {
+         $('#victoryCards .amount').text(player.victory_cards);
          ports = player.ports;
          // see your own victory cards
          victory_points += player.victory_cards;
