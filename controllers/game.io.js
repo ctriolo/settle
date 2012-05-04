@@ -16,7 +16,7 @@ var GameProvider = require('../models/GameProvider')
 
 var sid_to_uid = {}; // session to user
 var uid_to_gid = {}; // user to game
-
+var stop_build = false;
 /**
  * updatePlayerInfo
  *
@@ -149,6 +149,7 @@ module.exports = function(sockets) {
             sockets.to(user_ids[i]).emit('start', user_ids, user_ids[i], users);
           }
           sockets.to(game_id).send('The game has begun.');
+          updatePlayerInfo(sockets, game);
           sockets.to(game_id).emit('newTurn', game.whoseTurn(), true);
           sockets.to(game.whoseTurn()).emit('startingSettlementSelect',
             game.getValidStartingSettlementIntersections(game.whoseTurn()));
@@ -368,6 +369,7 @@ module.exports = function(sockets) {
         var ret = game.endTurn(user_id);
         gp.save(game);
         sockets.to(game_id).emit('tradeCleanup');
+        updatePlayerInfo(sockets, game);
         sockets.to(game_id).emit('newTurn', game.whoseTurn(), false);
       } catch (error) {
         console.log('ERROR: ' + error);
@@ -604,17 +606,21 @@ module.exports = function(sockets) {
      *
      * Gives a random dev card to the user who called the socket type
      */
-    socket.on('buildDevelopment', function(edge_id) {
+    socket.on('buildDevelopment', function() {
       var session_id = socket.handshake.sessionID;
       var user_id = sid_to_uid[session_id];
       var game_id = uid_to_gid[user_id];
       var game = gp.findById(game_id);
       try {
+        if (stop_build)
+          throw "Can't build right now";
         game.buildDevelopment(user_id);
         gp.save(game);
+        stop_build = true;
         updatePlayerInfo(sockets, game);
         socket.emit('canBuild', game.canBuild(user_id));
         sockets.to(game_id).emit('developmentUpdate', user_id);
+        setTimeout(function() { stop_build = false;}, 500);
       } catch (error) {
         console.log('ERROR: ' + error);
       }
