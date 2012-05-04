@@ -121,10 +121,19 @@ console.log(game.players)
         var user_id = user.id;
         var game = gp.findById(game_id);
 console.log('\n OT6 \n')
-console.log(game.players)
+console.log(game_id)
+console.log(user_id)
+console.log(connID)
+console.log()
         for (var p = 0; p < game.players.length; p++)
-          if (game.players[p].connectionId == connID)
+          if (game.players[p].connectionId == connID) {
+console.log('\n EMISSION \n')
+console.log(user_id);
+console.log(game.players[p]);            
+console.log(connID);
+console.log()
             sockets.to(user_id).emit('sendPlayerIndexFromConnID', game.players[p].index) // ot6. send index for game[connID]
+          }
       });
     });
 
