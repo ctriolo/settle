@@ -259,23 +259,11 @@ window.onload = function() {
   //dynamicResize();
 
   window.onresize = dynamicResize;
-  function dynamicResize() {
-    console.log('Wheeeee');
+  function dynamicResize() 
+  {
+    var theirWidth = -1;
 
-    // player 0 video
-    p0 = document.getElementById('player0')
-    p0well = p0.firstChild;
-    p0left = p0well.firstChild;
-    p0vidObj = p0left.firstChild;
-
-    w1 = p0well.clientWidth
-    w2 = p0well.clientHeight*.8 *4/3.0
-    w = Math.min(w1, w2);
-    h = w*3/4.0;
-    p0vidObj.setAttribute('width', w);
-    p0vidObj.setAttribute('height', h);
-
-    // player 1 video
+    // player 123 video
     for (var i = 1; i <= 3; i++) {
       pI = document.getElementById('player' + i)
       pIwell = pI.firstChild;
@@ -286,7 +274,29 @@ window.onload = function() {
       w = h*4/3.0;
       pIvidObj.setAttribute('width', w);
       pIvidObj.setAttribute('height', h);
+      
+      theirWidth = w;
     }
+
+    // player 0 video
+    p0 = document.getElementById('player0')
+    p0well = p0.firstChild;
+    p0left = p0well.firstChild;
+    p0vidObj = p0left.firstChild;
+    
+    var myWidth = theirWidth
+    var wholeWidth = $('.others').width();
+    $('#player0').width(myWidth);
+    $('.actions').width( wholeWidth - myWidth )
+    //p0.setAttribute('width',theirWidth);
+
+    w1 = p0well.clientWidth
+    w2 = p0well.clientHeight*0.6 *4/3.0
+    w = Math.min(w1, w2);
+    h = w*3/4.0;
+    p0vidObj.setAttribute('width', w);
+    p0vidObj.setAttribute('height', h);
+
   }
 
   window.onresize();

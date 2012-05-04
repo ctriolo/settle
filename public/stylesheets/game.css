@@ -9,6 +9,9 @@ body {
   background: url('http://farm6.staticflickr.com/5065/5552558449_e918f39364_o.jpg');
   background-size: 150px 150px;
   background-repeat: repeat;
+
+  //min-width: 800px;
+  //min-height: 600px;
 }
 
 .container-fluid {
@@ -101,8 +104,8 @@ body {
 }
 
 .player .pic {
-  height: 150px;
-  width: 200px;
+  //height: 150px;
+  //width: 200px;
 }
 
 .player {
