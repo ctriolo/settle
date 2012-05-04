@@ -21,7 +21,14 @@ function User(obj) {
   // If an object was passed then initialize properties from that object
   //for (var prop in obj) this[prop] = obj[prop];
 };
-
+User.prototype.win = function() {
+  this.wins += 1;
+  return this;
+}
+User.prototype.lose = function() {
+  this.loses += 1;
+  return this;
+}
 User.prototype.update = function(obj) {
   this.token = obj.token || "";
   this.name = obj.name || "";

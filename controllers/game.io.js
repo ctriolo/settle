@@ -27,7 +27,8 @@ var uid_to_gid = {}; // user to game
 function updatePlayerInfo(sockets, game) {
   var user_ids = game.getPlayers();
   for (var i = 0; i < user_ids.length; i++) {
-    sockets.to(user_ids[i]).emit('updatePlayerInfo', game.players);
+    sockets.to(user_ids[i]).emit('canBuild', game.canBuild(user_ids[i]));
+    sockets.to(user_ids[i]).emit('updatePlayerInfo', game.players, game.development_cards.length);
   }
 }
 
@@ -148,11 +149,25 @@ module.exports = function(sockets) {
       var user_id = sid_to_uid[session_id];
       var game_id = uid_to_gid[user_id];
       var game = gp.findById(game_id);
-      if (DEBUG) { console.log('name:start ', user_id, game); }
       try {
         game.gameover(winner);
         gp.save(game);
         // handle user statistics here
+        var user_ids = game.getPlayers();
+        for (var i = 0; i < user_ids.length; i++) {
+          var win = parseInt(winner);
+          up.findById(user_ids[i], function(error, user){
+            if (user.id === win) {
+              console.log("WINNER: " + user.id);
+              user = user.win();
+            }
+            else {
+              console.log("LOSER: " + user.id);
+              user = user.lose();
+            }
+            up.save(user, function(){});
+          });
+        }
       } catch (error) {
         console.log('ERROR: ' + error);
       }
@@ -242,7 +257,7 @@ module.exports = function(sockets) {
       }
     });
 
-    socket.on('removed', function(removedCards, player) {
+    socket.on('removed', function(removedCards, player,total) {
       var session_id = socket.handshake.sessionID;
       var user_id = sid_to_uid[session_id];
       var game_id = uid_to_gid[user_id];
@@ -255,6 +270,7 @@ module.exports = function(sockets) {
         if (done) {
             sockets.to(game.whoseTurn()).emit('showRobber', false);
         }
+        sockets.to(game_id).emit('removeUpdate', player, total);
       } catch (error) {
         console.log('ERROR: ' + error);
       }
@@ -364,6 +380,7 @@ module.exports = function(sockets) {
       * allow bank trades
       **/
       socket.on('bankTrade', function(offer, offerer) {
+        console.log("BANK TRADING*************");
         var session_id = socket.handshake.sessionID;
         var user_id = sid_to_uid[session_id];
         var game_id = uid_to_gid[user_id];
@@ -524,7 +541,7 @@ module.exports = function(sockets) {
         gp.save(game);
         updatePlayerInfo(sockets, game);
         socket.emit('canBuild', game.canBuild(user_id));
-        sockets.to(game_id).emit('buildCity', intersection_id, game._translate(user_id));
+        sockets.to(game_id).emit('buildCity', intersection_id, game._translate(user_id), user_id);
         sockets.to(game.whoseTurn()).emit('showMain');
       } catch (error) {
         console.log('ERROR: ' + error);
@@ -549,7 +566,7 @@ module.exports = function(sockets) {
         gp.save(game);
         updatePlayerInfo(sockets, game);
         socket.emit('canBuild', game.canBuild(user_id));
-        sockets.to(game_id).emit('buildRoad', edge_id, game._translate(user_id));
+        sockets.to(game_id).emit('buildRoad', edge_id, game._translate(user_id), user_id);
         sockets.to(game.whoseTurn()).emit('showMain');
       } catch (error) {
         console.log('ERROR: ' + error);
@@ -572,6 +589,7 @@ module.exports = function(sockets) {
         gp.save(game);
         updatePlayerInfo(sockets, game);
         socket.emit('canBuild', game.canBuild(user_id));
+        sockets.to(game_id).emit('developmentUpdate', user_id);
       } catch (error) {
         console.log('ERROR: ' + error);
       }

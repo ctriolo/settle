@@ -15,7 +15,7 @@ block head
 
 block board
   a#start.btn.btn-primary.btn-large.disabled Waiting...
-  #win 
+  #win
     .txt You won!
     a(href="../dashboard").btn.btn-primary.btn-large#lobby
       | Back to lobby
@@ -65,6 +65,9 @@ block updateCards
         .update-card
           .stone-card
           .card-number.js-stone-number 0
+        .update-card
+          .resource-card
+          .card-number.js-resource-number 0
 
 block trade
   .trade-popup
@@ -122,12 +125,18 @@ block bars
     for roll in diceRolls
       .bars
         | <div class="bar" id="bar#{roll}"></div>
+  #list-container
 
 block labels
   .label-container
     .label-padding
     for roll in diceRolls
       .frequency-label #{roll}
+  .btn-toolbar.frequency-toolbar
+    .btn-group
+      .button.btn.list List
+    .btn-group
+      .button.btn.chart.active Chart
 
 block player
   #player0
@@ -170,7 +179,7 @@ block player
 
 block actions
   .actions
-    img(src='http://www.cs.princeton.edu/~dcapra/frequencyChart.png')#frequencyChart
+    img(src='http://www.cs.princeton.edu/~dcapra/frequencyChart.png')#frequencyChart.chartShow
     .btn-toolbar.waiting-phase
       .btn-group
         button.btn.big.disabled Waiting...
@@ -213,6 +222,7 @@ block actions
         ul.dropdown-menu
           li
             a#settlement
+              span.amount 0
               i.icon-home
               | Settlement
               span.brick &bull;
@@ -221,6 +231,7 @@ block actions
               span.wood  &bull;
           li
             a#city
+              span.amount 0
               i.icon-home
               | City
               span.stone &bull;
@@ -230,12 +241,14 @@ block actions
               span.wheat &bull;
           li
             a#road
+              span.amount 0
               i.icon-road
               | Road
               span.brick &bull;
               span.wood  &bull;
           li
             a#development
+              span.amount 0
               i.icon-book
               | Development
               span.stone &bull;

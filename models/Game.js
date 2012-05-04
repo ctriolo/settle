@@ -24,8 +24,8 @@ PHASE = {
   YEAR_OF_PLENTY_FIRST: 'Year Of Plenty First',
   YEAR_OF_PLENTY_SECOND: 'Year Of Plenty Second',
   MONOPOLY: 'Monopoly',
-  ROAD_BUILDING: 'Road Building First',
-  ROAD_BUILDING: 'Road Building Second',
+  ROAD_BUILDING_FIRST: 'Road Building First',
+  ROAD_BUILDING_SECOND: 'Road Building Second',
   // TODO: fill these in as we go along
   END: 'End',
   NOT_IMPLEMENTED: 'Not Implemented' // placeholder
@@ -519,8 +519,11 @@ Game.prototype.getValidCityIntersections = function(user_id) {
  */
 Game.prototype.getValidRoadEdges = function(user_id) {
   var player_id = this._translate(user_id);
-  this._validatePhase(PHASE.MAIN);
-  this.current_phase = PHASE.BUILD;
+  if (this.current_phase != PHASE.ROAD_BUILDING_FIRST &&
+      this.current_phase != PHASE.ROAD_BUILDING_SECOND) {
+    this._validatePhase(PHASE.MAIN);
+    this.current_phase = PHASE.BUILD;
+  }
   return this.board.getValidRoadEdges(player_id);
 };
 
@@ -643,6 +646,8 @@ Game.prototype.start = function() {
 };
 
 Game.prototype.gameover = function() {
+  if (this.current_phase == PHASE.END)
+    throw 'The game has already been ended!';
   // might want to double check someone has 10 VP
   this.current_phase = PHASE.END;
 };
@@ -666,7 +671,9 @@ Game.prototype.endTurn = function(user_id) {
   */
 
 Game.prototype.bankTrade = function(offer, offerer) {
+  this._validatePhase(PHASE.MAIN);
   var offerer = this._translate(offerer);
+  this._validatePlayer(offerer);
   for(var i = 0; i < offer['for'].length; i++) {
       this.players[offerer].resource_cards[RESOURCE_ARRAY[i]] += offer['for'][i];
   }
@@ -1126,7 +1133,7 @@ Game.prototype.rollDice = function(user_id) {
   // Construct return object
   var new_resources = {}
   for (var i = 0; i < this.players.length; i++) {
-    if (i in resources) { 
+    if (i in resources) {
       new_resources[this.players[i].user_id] = {'resources':'', 'received':true};
       new_resources[this.players[i].user_id].resources = resources[i];
     }

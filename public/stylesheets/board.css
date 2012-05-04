@@ -76,6 +76,11 @@
 #board .numberToken.robber.highlight circle {
   fill: lime;
 }
+#rob {
+  background-color: black;
+  position: fixed;
+  opacity: .9;
+}
 
 /**
  * Intersections
