@@ -190,13 +190,8 @@ window.onload = function() {
   /**
    * OpenTok
    */
-  socket.on('joined', function(apiKey, sessionId, token) 
+  socket.on('joined', function(apiKey, sessionId, token, myIndex) 
   {
-            
-    //var apiKey = '14421202';
-    //var sessionId = '1_MX4xMjMyMDgxfjcwLjQyLjQ3Ljc4fjIwMTItMDQtMjAgMDA6NDc6NDguODE2NjM2KzAwOjAwfjAuMzY3MzY1NjI2NTAxfg';
-    //var token = 'devtoken';
-
     var session = TB.initSession(sessionId);
     session.addEventListener("sessionConnected", sessionConnectedHandler);
     session.addEventListener("streamCreated", streamCreatedHandler);
@@ -208,6 +203,8 @@ window.onload = function() {
       h = $('#MY_VIDEO').height();
       w = $('#MY_VIDEO').width();
       session.publish('MY_VIDEO', {height:h, width:w, class:'MY_VIDEO'});
+      
+      socket.emit('associateMyConnIDwithMyIndex', CONFIG.room, myIndex, session.connection.connectionId); // ot3. send game[index=connID]
       subscribeToStreams(event.streams);
     }
 
@@ -215,17 +212,33 @@ window.onload = function() {
       subscribeToStreams(event.streams);
     }
 
-    function subscribeToStreams(streams) {
+    function subscribeToStreams(streams) 
+    {
       if (typeof subscribeToStreams.nextPlayer == 'undefined')
         subscribeToStreams.nextPlayer = 1;
 
       for (i = 0; i < streams.length; i++) {
         var stream = streams[i];
-        if (stream.connection.connectionId != session.connection.connectionId) {
-          replaceID = 'VIDEO' + subscribeToStreams.nextPlayer++;
-          h = $('#' + replaceID).height();
-          w = $('#' + replaceID).width();
-          session.subscribe(stream, replaceID, {height:h, width:w})
+        var connId = stream.connection.connectionId;
+        
+        if (connId != session.connection.connectionId) 
+        {
+          // EMIT CONNECTION ID TO SERVER, GET PLAYER #
+          socket.emit('sendConnIDtoGetPlayerIndex', CONFIG.room, connId); // ot5. ask for index from game[connID]
+          socket.on('sendPlayerIndexFromConnID', function(index) // ot7. receive index and use to replace correct img
+          {
+            var playerNo = index;
+            if (playerNo < myIndex) playerNo++;
+            console.log('GOING TO SUBSTITUTE ' + playerNo)
+            
+            replaceID = 'VIDEO' + playerNo;
+            
+            h = $('#' + replaceID).height();
+            w = $('#' + replaceID).width();
+            session.subscribe(stream, replaceID, {height:h, width:w});
+          });
+          
+          
         }
       }
     }
