@@ -137,6 +137,7 @@ function Game() {
   this.current_player = -1;
   this.current_phase = PHASE.START;
   this.steal_players = 0; // number of players that need to lose cards
+
   // Add Knight Cards
   for (var i = 0; i < 14; i++) {
     this.development_cards.push(DEVELOPMENT.KNIGHT);

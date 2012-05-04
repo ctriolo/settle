@@ -297,7 +297,11 @@ module.exports = function(sockets) {
           sockets.to(game.whoseTurn()).emit('showSteal', players);
         else {
           sockets.send("No one to steal from");
-          sockets.to(game.whoseTurn()).emit('showMain');
+          if (game.whichPhase() == PHASE.MAIN) {
+            sockets.to(game.whoseTurn()).emit('showMain');
+          } else {
+            sockets.to(game.whoseTurn()).emit('showDice');
+          }
         }
       } catch (error) {
         console.log('ERROR: ' + error);
@@ -320,7 +324,11 @@ module.exports = function(sockets) {
         gp.save(game);
         sockets.to(game.whoseTurn()).emit('stealCard', game.whoseTurn(), player_id,  resource);
         socket.emit('canBuild', game.canBuild(user_id));
-        sockets.to(game.whoseTurn()).emit('showMain');
+        if (game.whichPhase() == PHASE.MAIN) {
+          sockets.to(game.whoseTurn()).emit('showMain');
+        } else {
+          sockets.to(game.whoseTurn()).emit('showDice');
+        }
         updatePlayerInfo(sockets, game);
       } catch (error) {
         console.log('ERROR: ' + error);
@@ -517,7 +525,7 @@ module.exports = function(sockets) {
         updatePlayerInfo(sockets, game);
         socket.emit('canBuild', game.canBuild(user_id));
         sockets.to(game_id).emit('buildSettlement', intersection_id, game._translate(user_id));
-         sockets.to(game.whoseTurn()).emit('showMain');
+        sockets.to(game.whoseTurn()).emit('showMain');
       } catch (error) {
         console.log('ERROR: ' + error);
       }
