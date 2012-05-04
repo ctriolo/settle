@@ -207,6 +207,7 @@ window.onload = function() {
       session.publish('MY_VIDEO', {height:h, width:w, class:'MY_VIDEO'});
       
       socket.emit('associateMyConnIDwithMyIndex', CONFIG.room, myIndex, session.connection.connectionId); // ot3. send game[index=connID]
+console.log('I am about to publish with index ' + myIndex + ' and connectionId ' + session.connection.connectionId);
       subscribeToStreams(event.streams);
     }
 
@@ -229,9 +230,9 @@ window.onload = function() {
           socket.emit('sendConnIDtoGetPlayerIndex', CONFIG.room, connId); // ot5. ask for index from game[connID]
           socket.on('sendPlayerIndexFromConnID', function(index) // ot7. receive index and use to replace correct img
           {
+console.log('I am about to subscribe to index ' + index + ' and connectionId ' + connId);
             var playerNo = index;
             if (playerNo < myIndex) playerNo++;
-            console.log('GOING TO SUBSTITUTE ' + playerNo)
             
             replaceID = 'VIDEO' + playerNo;
             
