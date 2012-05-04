@@ -76,7 +76,7 @@ module.exports = function(sockets) {
               role: OpenTok.Roles.SUBSCRIBER
             });
             game.players[game._translate(user_id)].token = token;
-            socket.emit('joined', OPENTOK_API_KEY, game.sessionId, token, game.players[game._translate(user_id)].index); // ot2. send index
+            sockets.to(user_id).emit('joined', OPENTOK_API_KEY, game.sessionId, token, game.players[game._translate(user_id)].index); // ot2. send index
           });
         } else if (game.isPlayer(user_id)) {
           var token = ot.generateToken({
@@ -84,7 +84,7 @@ module.exports = function(sockets) {
             role: OpenTok.Roles.SUBSCRIBER
           });
           game.players[game._translate(user_id)].token = token;
-          socket.emit('joined', OPENTOK_API_KEY, game.sessionId, token, game.players[game._translate(user_id)].index); // ot2. send index
+          sockets.to(user_id).emit('joined', OPENTOK_API_KEY, game.sessionId, token, game.players[game._translate(user_id)].index); // ot2. send index
         }
 
       });
