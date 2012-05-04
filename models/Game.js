@@ -857,7 +857,6 @@ Game.prototype.buildRoad = function(user_id, edge_id) {
   this.current_phase = PHASE.MAIN;
 }
 
-
 /**
  * buildDevelopment
  *
@@ -868,6 +867,7 @@ Game.prototype.buildRoad = function(user_id, edge_id) {
 Game.prototype.buildDevelopment = function(user_id) {
   var player_id = this._translate(user_id);
   this._validatePlayer(player_id);
+  console.log('validating finishdevelopment');
   this._validatePhase(PHASE.MAIN);
   if (!this.canBuildDevelopment(user_id)) throw 'You are not able to build a development!';
 console.log('DEFINIATELY', this, this.development_cards);
