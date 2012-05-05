@@ -150,6 +150,7 @@ module.exports = function(sockets) {
             sockets.to(user_ids[i]).emit('start', user_ids, user_ids[i], users);
           }
           sockets.to(game_id).send('The game has begun.');
+          updatePlayerInfo(sockets, game);
           sockets.to(game_id).emit('newTurn', game.whoseTurn(), true);
           sockets.to(game.whoseTurn()).emit('startingSettlementSelect',
             game.getValidStartingSettlementIntersections(game.whoseTurn()));
@@ -369,6 +370,7 @@ module.exports = function(sockets) {
         var ret = game.endTurn(user_id);
         gp.save(game);
         sockets.to(game_id).emit('tradeCleanup');
+        updatePlayerInfo(sockets, game);
         sockets.to(game_id).emit('newTurn', game.whoseTurn(), false);
       } catch (error) {
         console.log('ERROR: ' + error);
