@@ -16,7 +16,7 @@ var GameProvider = require('../models/GameProvider')
 
 var sid_to_uid = {}; // session to user
 var uid_to_gid = {}; // user to game
-var stop_build = false;
+
 /**
  * updatePlayerInfo
  *
@@ -617,11 +617,9 @@ module.exports = function(sockets) {
           throw "Can't build right now";
         game.buildDevelopment(user_id);
         gp.save(game);
-        stop_build = true;
         updatePlayerInfo(sockets, game);
         socket.emit('canBuild', game.canBuild(user_id));
         sockets.to(game_id).emit('developmentUpdate', user_id);
-        setTimeout(function() { stop_build = false;}, 500);
       } catch (error) {
         console.log('ERROR: ' + error);
       }

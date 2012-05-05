@@ -383,12 +383,14 @@ window.onload = function() {
   });
 
   socket.on('removeCards', function(number) {
-    // set button text
-    $('.removebtn').text('Remove ' + number + ' more cards');
-    $('.removebtn').attr('id', number);
-    toRemove = number;
-    $(".remove-container").show();
-    $(".remove-container").animate({"right": "40.5%"}, "slow");
+    setTimeout(function() {
+      // set button text
+      $('.removebtn').text('Remove ' + number + ' more cards');
+      $('.removebtn').attr('id', number);
+      toRemove = number;
+      $(".remove-container").show();
+      $(".remove-container").animate({"right": "40.5%"}, "slow");
+     }, 4 * 1000);
   });
 
   socket.on('showTrade', function(offer, offerer, type) {
@@ -1280,14 +1282,16 @@ window.onload = function() {
       });
 
     socket.on('showRobber', function(removeWaiting) {
-      $('.roll-phase, .main-phase, .steal-phase').hide();
-      $('.robber-phase').show();
-      if (removeWaiting) {
-        $('.robber-phase .btn').text("Waiting for Players to Remove Cards");
-      }
-      else
-        $('.robber-phase .btn').text("Move the Robber");
-      $('.numberToken.robber').addClass('highlight');
+      setTimeout(function() {
+        $('.roll-phase, .main-phase, .steal-phase').hide();
+        $('.robber-phase').show();
+        if (removeWaiting) {
+          $('.robber-phase .btn').text("Waiting for Players to Remove Cards");
+        }
+        else
+          $('.robber-phase .btn').text("Move the Robber");
+        $('.numberToken.robber').addClass('highlight');
+      }, 4 * 1000);
     });
 
     socket.on('showSteal', function(players) {
