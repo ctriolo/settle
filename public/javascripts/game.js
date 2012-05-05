@@ -65,6 +65,11 @@ function updatePopup(playerCards, secret) {
         $(tag + " .update-cards").removeClass("received");
         $(tag + " .update-cards").addClass("lost");
       }
+
+      // if you're involved can't be secret.
+      if (i == me) {
+        secret = false;
+      }
       var tot = 0;
       for (var resource in received) {
         var r = resource.toLowerCase();
@@ -916,13 +921,13 @@ window.onload = function() {
        for (var resource in player.resource_cards) {
          var r = resource.toLowerCase();
          if (player.user_id === me) {
-           $('#player'+player_id+' .js-'+r+'-number')
+           $('#player'+player_id+' .card .js-'+r+'-number')
              .text(player.resource_cards[resource])
          }
          total += player.resource_cards[resource];
        }
        if (player.user_id !== me) {
-         $('#player'+player_id+' .js-resource-number').text(total);
+         $('#player'+player_id+' .card .js-resource-number').text(total);
          // update victory point total
          $('#player'+player_id+' .js-victory-value').text(victory_points);
          victory_points += player.victory_cards;
@@ -1327,14 +1332,12 @@ window.onload = function() {
      * handles card stealing css
      */
     socket.on('stealCard', function(thief, player_id, resource) {
-      $('.roll-phase, .robber-phase, .place-phase, .steal-phase').hide();
-      $('.main-phase').show();
       var update_object = {};
       var resource_object = {};
       var r = resource;
       resource_object[r] = 1;
-      update_object[thief] = {'resources': resource_object, 'received':true}
-      update_object[player_id] = {'resources': resource_object, 'received':false}
+      update_object[thief] = {'resources': resource_object, 'received':true};
+      update_object[player_id] = {'resources': resource_object, 'received':false};
       updatePopup(update_object, true);
     });
 

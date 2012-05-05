@@ -341,7 +341,7 @@ module.exports = function(sockets) {
       try {
         var resource = game.steal(player_id);
         gp.save(game);
-        sockets.to(game.whoseTurn()).emit('stealCard', game.whoseTurn(), player_id,  resource);
+        sockets.to(game_id).emit('stealCard', game.whoseTurn(), player_id,  resource);
         socket.emit('canBuild', game.canBuild(user_id));
         if (game.whichPhase() == PHASE.MAIN) {
           sockets.to(game.whoseTurn()).emit('showMain');
