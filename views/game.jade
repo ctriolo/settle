@@ -17,8 +17,11 @@ block board
   a#start.btn.btn-primary.btn-large.disabled Waiting...
   #win
     .txt You won!
-    a(href="../dashboard").btn.btn-primary.btn-large#lobby
-      | Back to lobby
+    #winSpace
+    .btn-toolbar
+      .btn-group
+        a(href="../dashboard").btn.btn-primary.btn-large#lobby
+           | Back to lobby
   #startBackground
   include includes/board
 block remove
@@ -73,7 +76,7 @@ block trade
   .trade-popup
     .offer-cards
       .trade-text
-        p Offer:
+        p I get:
       .cards.trade
         .trade-card
           .wheat-card
@@ -92,7 +95,7 @@ block trade
           .card-number.js-stone-number 0
     .for-cards
       .trade-text
-        p For:
+        p I give:
       .cards.trade
         .trade-card
           .wheat-card

@@ -1028,6 +1028,7 @@ window.onload = function() {
             $('#win .txt').text(name + " has won.");
           }
           $('#win').show();
+          $('#winSpace').show();
           $('#lobby').show();
           socket.emit('gameover', player.user_id);
           done = true;

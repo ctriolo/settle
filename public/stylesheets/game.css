@@ -241,6 +241,11 @@ body {
   color:#FFFFFF;
   z-index: 5;
 }
+#winSpace {
+  display:none;
+  width: 100%;
+  height: 20px;
+}
 #lobby {
   display:none;
   z-index: 5;
@@ -487,7 +492,7 @@ body {
   left: 1%;
   border: 2px solid black;
   height: 25%;
-  line-height: 3em;
+  line-height: 2;
 }
 .bar-padding, .label-padding {
   float: left;
