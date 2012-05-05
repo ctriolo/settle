@@ -55,6 +55,7 @@ body {
 .opponentvideo {
   float: left;
   height:100%;
+  display:none;
 }
 #player1, #player2, #player3 {
   position:static;
@@ -80,6 +81,11 @@ body {
 .actions.disabled, .player.well.disabled {
   opacity: .6;
 }
+.opponent.well {
+  background-color: black;
+  opacity: .6;
+}
+
 .name {
   color: #333;
 }
@@ -98,6 +104,9 @@ body {
   margin-right: 10px;
   min-width: 200px;
   padding: 10px;
+}
+.opponent .right {
+  display:none;
 }
 
 .player .pic {

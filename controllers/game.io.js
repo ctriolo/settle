@@ -71,6 +71,7 @@ module.exports = function(sockets) {
         sid_to_uid[session_id] = user_id;
         uid_to_gid[user_id] = game_id;
         sockets.to(game_id).send('A client just connected.');
+        sockets.to(game_id).emit('playerJoined', game.getPlayers().length);
         if (game.isStarted()) {
           sockets.to(user_id).emit('canStart');
           sockets.to(user_id).emit('start', game.getPlayers(), user_id);

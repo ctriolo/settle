@@ -188,12 +188,20 @@ window.onload = function() {
     socket.emit('join', CONFIG.room, CONFIG.token);
   });
 
-
+  socket.on('playerJoined', function(players) {
+    for (var i = 1; i < players; i++) {
+      $('#player' + i + ' .opponentvideo').show();
+      $('#player' + i + ' .right').show();
+      $('#player' + i + ' .well').css({"background-color":"whiteSmoke"});
+      $('#player' + i + ' .well').css({"opacity":"1"});
+    }
+  });
   /**
    * OpenTok
    */
   socket.on('joined', function(apiKey, sessionId, token, myIndex) 
   {
+
     var session = TB.initSession(sessionId);
     session.addEventListener("sessionConnected", sessionConnectedHandler);
     session.addEventListener("streamCreated", streamCreatedHandler);
@@ -205,7 +213,6 @@ window.onload = function() {
       h = $('#MY_VIDEO').height();
       w = $('#MY_VIDEO').width();
       session.publish('MY_VIDEO', {height:h, width:w, class:'MY_VIDEO'});
-      
       socket.emit('associateMyConnIDwithMyIndex', CONFIG.room, myIndex, session.connection.connectionId); // ot3. send game[index=connID]
       subscribeToStreams(event.streams);
     }
@@ -706,14 +713,6 @@ window.onload = function() {
       for (var j = 0; j < user_objects.length; j++) {
         if (users[i] == user_objects[j].id) objs.push(user_objects[j]);
       }
-    }
-    for (var i = users.length; i < 4; i++) {
-      console.log("not here: " + i);
-      console.log('.player' + i + ' .opponentvideo');
-      $('#player' + i + ' .opponentvideo').hide();
-      $('#player' + i + ' .right').hide();
-      $('#player' + i + ' .well').css({"background-color":"black"});
-      $('#player' + i + ' .well').css({"opacity":".6"});
     }
     console.log(users, objs);
 
