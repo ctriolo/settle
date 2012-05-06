@@ -895,7 +895,7 @@ Game.prototype.buildDevelopment = function(user_id) {
     if (VICTORY_CARDS.indexOf(card) != -1) this.players[player_id].victory_cards++;
   }
 
-  setTimeout(function() { this.can_build = true;}, 500};
+  setTimeout(function() { this.can_build = true;}, 500);
   return card;
 }
 
