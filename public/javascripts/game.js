@@ -217,7 +217,7 @@ window.onload = function() {
     function sessionConnectedHandler(event) {
       h = $('#MY_VIDEO').height();
       w = $('#MY_VIDEO').width();
-      session.publish('MY_VIDEO', {height:h, width:w, class:'MY_VIDEO'});
+///session.publish('MY_VIDEO', {height:h, width:w, class:'MY_VIDEO'});
       socket.emit('associateMyConnIDwithMyIndex', CONFIG.room, myIndex, session.connection.connectionId); // ot3. send game[index=connID]
       subscribeToStreams(event.streams);
     }
@@ -289,6 +289,9 @@ window.onload = function() {
     // player 0 video
         
     var myWidth = theirWidth // 2*BORDER_SIZE
+    if (0 < HAS_STARTED)
+      myWidth -= 10; // BORDER_SIZE
+    
     var wholeWidth = $('.others').width();
     $('#player0').width(myWidth);
     $('.actions').width( wholeWidth - myWidth )
@@ -298,9 +301,9 @@ window.onload = function() {
       $('#p0mywell').height( p0h-20 ) // 2*BORDER_SIZE
     }
 
-    w1 = $('#p0mywell').width()
-    w2 = $('#p0mywell').height()*0.6 *4/3.0
-    w = Math.min(w1, w2);
+    w = $('#p0mywell').width()
+    //w2 = $('#p0mywell').height()*0.6 *4/3.0
+    //w = Math.min(w1, w2);
     h = w*3/4.0;
     $('#MY_VIDEO').width(w);
     $('#MY_VIDEO').height(h);
@@ -745,6 +748,8 @@ window.onload = function() {
       $('#player' + i + " .player").css({"border-color":player_colors[players.indexOf(users[i])]});
       $('#player' + i).css({"border-width":"4px"});
     }
+    for (var i = users.length; i < 4; i++)
+      $('#p'+i+'mywell').css({"border":"0px solid"});
 
     // USER NAMES
     for (var i = 0; i < users.length; i++) {
