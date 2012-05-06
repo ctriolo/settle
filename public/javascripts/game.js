@@ -264,6 +264,7 @@ window.onload = function() {
    */
 
   var HAS_STARTED = -1;
+  var BORDER_SIZE = 10;
 
   window.onresize = dynamicResize;
   function dynamicResize() 
@@ -276,7 +277,7 @@ window.onload = function() {
       var pImywell = '#p' + i + 'mywell'
       if (i < HAS_STARTED) {
         var pih = $('#player'+i).height();
-        $(pImywell).height( pih-20 ); // 2*BORDER_SIZE
+        $(pImywell).height( pih - 2*BORDER_SIZE ); // 2*BORDER_SIZE
       }
       h = $(pImywell).height();
       w = h*4/3.0;
@@ -290,7 +291,7 @@ window.onload = function() {
         
     var myWidth = theirWidth // 2*BORDER_SIZE
     if (0 < HAS_STARTED)
-      myWidth -= 10; // BORDER_SIZE
+      myWidth -= BORDER_SIZE; // BORDER_SIZE
     
     var wholeWidth = $('.others').width();
     $('#player0').width(myWidth);
@@ -298,7 +299,7 @@ window.onload = function() {
     
     if (0 < HAS_STARTED) {
       var p0h = $('#player0').height()
-      $('#p0mywell').height( p0h-20 ) // 2*BORDER_SIZE
+      $('#p0mywell').height( p0h - 2*BORDER_SIZE ) // 2*BORDER_SIZE
     }
 
     w = $('#p0mywell').width()
@@ -744,7 +745,7 @@ window.onload = function() {
   
     // BORDER COLORS
     for (var i = 0; i < users.length; i++) {
-      $('#p'+i+'mywell').css({"border":"10px solid"});
+      $('#p'+i+'mywell').css({"border":BORDER_SIZE + "px solid"});
       $('#player' + i + " .player").css({"border-color":player_colors[players.indexOf(users[i])]});
       $('#player' + i).css({"border-width":"4px"});
     }
