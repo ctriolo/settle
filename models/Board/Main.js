@@ -64,26 +64,8 @@ if (process.argv.length > 3) {
 
 // make a board and print its JSON string
 var b = new Board(min, max);
-console.log(b.prettyprint2());
-printBoard(b);
-//console.log( b.json() + "\n" );
-//console.log( b.root().hexNbors(b) );
-//console.log("\n" + b.json2() + "\n")
 //console.log(b.prettyprint2());
-
-/*
-for (var i = 0; i < b.hexes.length; i++) {
-    for (var j = 0; j < b.hexes[i].length; j++)
-    {
-        var hex = b.hexes[i][j];
-        if ( !hex.isCoastal(b) ) continue;
-
-        console.log(hex);
-        console.log(hex.eNeighbors(b));
-
-    }
-}
-*/
+//printBoard(b);
 
 testLongestRoad = function(b) 
 {
@@ -121,4 +103,6 @@ testLongestRoad = function(b)
     console.log(b.longestRoad(0)); // should be 8
 }
 
-testLongestRoad(b);
+//testLongestRoad(b);
+
+b.coastsInOrder( b.allEdges() );

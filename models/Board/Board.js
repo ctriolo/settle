@@ -187,6 +187,7 @@ Board.prototype.assignPorts = function()
     var numPorts = Math.floor(numCoasts / 3) - 1;
     var ports = this.generatePortArray(numPorts, numCoasts);
 
+    /**
     do {
         ports.shuffle();
         var k = 0;
@@ -194,6 +195,20 @@ Board.prototype.assignPorts = function()
             if (allEdges[i].isCoastal(this))
                 allEdges[i].port = ports[k++];
     } while (!this.hasValidPorts());
+    **/
+    
+    // just assign ports, to deal with nbors ???????
+    for (var i = 0; i < allEdges.length; i++)
+      if (allEdges[i].isCoastal(this))
+        allEdges[i].port = PortTypeEnum.NONE;
+    
+    do {
+      ports.shuffle(); 
+    } while( !this.validPortsArray(ports,2) ); // HACK; doesn't work for seafarers
+    
+    var coasts = this.coastsInOrder(allEdges);
+    for (var i = 0; i < ports.length; i++)
+      allEdges[ coasts[i] ].port = ports[i];
 }
 
 Board.prototype.generatePortArray = function(numPorts, numCoasts)
@@ -236,6 +251,70 @@ Board.prototype.hasValidPorts = function(minRadius)
     }
 
     return true;
+}
+
+Board.prototype.validPortsArray = function(pArr, minRadius) 
+{
+  minRad = 1;
+  if (arguments.length > 1) minRad = minRadius;
+
+  var portIndices = [];
+  
+  for (var i = 0; i < pArr.length; i++)
+    if (pArr[i] != PortTypeEnum.NONE)
+      portIndices.push(i);
+  portIndices.push( portIndices[0] + pArr.length );
+    
+  var minDist = pArr.length;
+  for (var i = 1; i < portIndices.length; i++) {
+    var dist = portIndices[i] - portIndices[i-1];
+    minDist = Math.min(dist, minDist);
+  }
+  
+  return minDist > minRad;
+}
+
+Board.prototype.coastsInOrder = function(allEdges)
+{
+  var ret = [];
+  
+  var i = 0;
+  while (!allEdges[i].isCoastal(this))
+    i++;
+    
+  ret.push(i);
+  
+  var edge = allEdges[i];
+  var nbors = edge.eNeighbors(this);
+  i = 0;
+  for (var n in nbors)
+    if (nbors[n].port != null)
+      i = allEdges.indexOf( nbors[n] );
+  ret.push(i);
+  
+  var a = ret[0];
+  var b = ret[1];
+  var c = i;
+
+  while (true) 
+  {
+    edge = allEdges[b];
+    var nbors = edge.eNeighbors(this);
+    for (var n in nbors) {
+      var i = allEdges.indexOf( nbors[n] );
+      if (nbors[n].port != null && i != a) // isCoast
+        c = i;
+    }
+    
+    if (c == ret[0])
+      break;
+      
+    ret.push(c);
+    a = b;
+    b = c;
+  }
+    
+  return ret;
 }
 
 /*  ======================
