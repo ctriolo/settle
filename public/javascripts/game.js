@@ -308,6 +308,12 @@ window.onload = function() {
     h = w*3/4.0;
     $('#MY_VIDEO').width(w);
     $('#MY_VIDEO').height(h);
+    
+    // dice roll container
+    var W = $(window).width();
+    var w = $(window).height() * 0.22;
+    var left = 7/12.0*W - w;
+    $('#dice-image-container').css('left',left);
   }
 
   window.onresize();
@@ -710,9 +716,27 @@ window.onload = function() {
    *
    * Lets us know that we can start the game.
    */
+     
+  var DICE_TOP_ORDER = [];
+  var dti = -1;
+   
   socket.on('start', function(players, you, user_objects) {
     users = players.slice(0);
     me = you;
+    
+    // set up dice roll order
+    numU = users.length;
+    my_index = users.indexOf(me);
+    DICE_TOP_ORDER = [];
+    for (var i = 0; i < numU; i++)
+      DICE_TOP_ORDER[i] = i;
+    for (var i = 0; i <= my_index; i++)
+      DICE_TOP_ORDER[i] = (i+1) % (my_index+1);
+    var DICE_TOPS = ['0%', '34%', '56%', '78%'];
+    for (var i = 0; i < DICE_TOP_ORDER.length; i++)
+      DICE_TOP_ORDER[i] = DICE_TOPS[ DICE_TOP_ORDER[i] ];
+    dti = 0;
+    
     $('.numberDiv').animate({'left': '-=100px'}, 'slow');
     console.log("MOVING");
     if (users.indexOf(me) != -1) {
@@ -1246,20 +1270,37 @@ window.onload = function() {
         '<div id="dice-image-container">' +
             '<img id="dice-image" src="">' +
         '</div>');
+        $('#dice-image-container').height('22%');
+        $('#dice-image').height('100%');
+        window.onresize();
     }
     this.first = 'defined';
 
-    if (typeof breakdown != 'undefined') {
-        $('#dice-image').show();
-        url = 'http://www.princeton.edu/~rgromero/dice-gif/a' + breakdown[0]
-            + ',' + breakdown[1] + '_mod6.gif';
-        $('#dice-image').attr('src', url);
-        setTimeout(function() {
-            handleDiceRoll(number, resources);
-            $('#dice-image').attr('src','');
-            $('#dice-image').hide();
-        }, 4 * 1000);
-    }
+    if (typeof breakdown == 'undefined')
+      return;
+    
+    $('#dice-image').show();
+    $('#dice-image-container').css('top', DICE_TOP_ORDER[dti] ); // 0%, 34%, 56%, 78%
+    dti++; dti %= DICE_TOP_ORDER.length;
+    url = 'http://www.princeton.edu/~rgromero/dice-gif/a' + breakdown[0]
+        + ',' + breakdown[1] + '_mod6.gif';
+    $('#dice-image').attr('src', url);
+    
+    $('#startBackground').css("background", '#000');
+    $('#startBackground').show();    
+    for (var i = DICE_TOP_ORDER.length; i < 4; i++)
+      $('#p'+i+'mywell').css('opacity','0');
+    
+    setTimeout(function() {
+        handleDiceRoll(number, resources);
+        $('#dice-image').attr('src','');
+        $('#dice-image').hide();
+        
+        $('#startBackground').hide();
+        for (var i = DICE_TOP_ORDER.length; i < 4; i++)
+          $('#p'+i+'mywell').css('opacity','0.6');
+        
+    }, 4 * 1000);
 
   });
 
