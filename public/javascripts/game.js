@@ -250,13 +250,8 @@ window.onload = function() {
   /**
    * Dynamic Resizing
    */
-  /*
-  window.onbeforeunload = function(){
-    if (!done)
-      return "You're about to leave a game in progess!";
-  };
-  */
-  //dynamicResize();
+
+  var HAS_STARTED = -1;
 
   window.onresize = dynamicResize;
   function dynamicResize() 
@@ -264,39 +259,39 @@ window.onload = function() {
     var theirWidth = -1;
 
     // player 123 video
-    for (var i = 1; i <= 3; i++) {
-      pI = document.getElementById('player' + i)
-      pIwell = pI.firstChild;
-      pIleft = pIwell.firstChild;
-      pIvidObj = pIleft.firstChild;
-
-      h = pIwell.clientHeight;
+    for (var i = 1; i <= 3; i++) 
+    {
+      var pImywell = '#p' + i + 'mywell'
+      if (i < HAS_STARTED) {
+        var pih = $('#player'+i).height();
+        $(pImywell).height( pih-20 ); // 2*BORDER_SIZE
+      }
+      h = $(pImywell).height();
       w = h*4/3.0;
-      pIvidObj.setAttribute('width', w);
-      pIvidObj.setAttribute('height', h);
+      $('#VIDEO' + i).width(w);
+      $('#VIDEO' + i).height(h);
       
       theirWidth = w;
     }
 
     // player 0 video
-    p0 = document.getElementById('player0')
-    p0well = p0.firstChild;
-    p0left = p0well.firstChild;
-    p0vidObj = p0left.firstChild;
-    
-    var myWidth = theirWidth
+        
+    var myWidth = theirWidth // 2*BORDER_SIZE
     var wholeWidth = $('.others').width();
     $('#player0').width(myWidth);
     $('.actions').width( wholeWidth - myWidth )
-    //p0.setAttribute('width',theirWidth);
+    
+    if (0 < HAS_STARTED) {
+      var p0h = $('#player0').height()
+      $('#p0mywell').height( p0h-20 ) // 2*BORDER_SIZE
+    }
 
-    w1 = p0well.clientWidth
-    w2 = p0well.clientHeight*0.6 *4/3.0
+    w1 = $('#p0mywell').width()
+    w2 = $('#p0mywell').height()*0.6 *4/3.0
     w = Math.min(w1, w2);
     h = w*3/4.0;
-    p0vidObj.setAttribute('width', w);
-    p0vidObj.setAttribute('height', h);
-
+    $('#MY_VIDEO').width(w);
+    $('#MY_VIDEO').height(h);
   }
 
   window.onresize();
@@ -331,7 +326,7 @@ window.onload = function() {
   });
 
   // handle stealing
-  $(".player.well").click(function(){
+  $(".player.mywell").click(function(){
     if ($(this).hasClass("enabled")) {
         var id = parseInt($(this).parent().attr('id').substring('player'.length));
         socket.emit('steal', users[id]);
@@ -382,7 +377,7 @@ window.onload = function() {
   socket.on('showTrade', function(offer, offerer, type) {
     if (me !== offerer) {
       var player_num = users.indexOf(offerer);
-      // get id name of player well
+      // get id name of player mywell
       var player_tag = '#player' + player_num;
       var container = $(player_tag + ' .showtrade-container');
       var acceptable = true;
@@ -717,21 +712,25 @@ window.onload = function() {
         if (users[i] == user_objects[j].id) objs.push(user_objects[j]);
       }
     }
+    // HIDING
     for (var i = users.length; i < 4; i++) {
       console.log("not here: " + i);
       console.log('.player' + i + ' .opponentvideo');
       $('#player' + i + ' .opponentvideo').hide();
       $('#player' + i + ' .right').hide();
-      $('#player' + i + ' .well').css({"background-color":"black"});
-      $('#player' + i + ' .well').css({"opacity":".6"});
+      $('#player' + i + ' .mywell').css({"background-color":"black"});
+      $('#player' + i + ' .mywell').css({"opacity":".6"});
     }
     console.log(users, objs);
-
-    for (var i = 0; i < players.length; i++) {
+  
+    // BORDER COLORS
+    for (var i = 0; i < users.length; i++) {
+      $('#p'+i+'mywell').css({"border":"10px solid"});
       $('#player' + i + " .player").css({"border-color":player_colors[players.indexOf(users[i])]});
-	$('#player' + i).css({"border-width":"4px"});
+      $('#player' + i).css({"border-width":"4px"});
     }
 
+    // USER NAMES
     for (var i = 0; i < users.length; i++) {
       $('#player'+i+' .name').text(objs[i].first_name);
     }
@@ -754,6 +753,8 @@ window.onload = function() {
     createTooltip('.resource-card', 'Resource', true);
     createTooltip('.development-card', 'Dev Card', true);
 
+    HAS_STARTED = users.length;
+    window.onresize();
 
   });
 
@@ -1289,24 +1290,24 @@ window.onload = function() {
       $('.roll-phase, .main-phase, .place-phase, .robber-phase').hide();
       $('.steal-phase').show();
       $('.actions').addClass("disabled");
-      $('.player.well').addClass("disabled");
+      $('.player.mywell').addClass("disabled");
       for (var i = 0; i < players.length; i++) {
-        $('#player' + users.indexOf(players[i]) + " .player.well").removeClass("disabled");
-        $('#player' + users.indexOf(players[i]) + " .player.well").addClass("enabled"); // enable stealing from these player wells
+        $('#player' + users.indexOf(players[i]) + " .player.mywell").removeClass("disabled");
+        $('#player' + users.indexOf(players[i]) + " .player.mywell").addClass("enabled"); // enable stealing from these player mywells
       }
     });
     socket.on('showMain', function() {
       showMainPhase();
       $('.actions').removeClass("disabled");
-      $('.player.well').removeClass("disabled");
-      $('.player.well').removeClass("enabled");
+      $('.player.mywell').removeClass("disabled");
+      $('.player.mywell').removeClass("enabled");
     });
 
     socket.on('showDice', function() {
       showMainPhase();
       $('.actions').removeClass("disabled");
-      $('.player.well').removeClass("disabled");
-      $('.player.well').removeClass("enabled");
+      $('.player.mywell').removeClass("disabled");
+      $('.player.mywell').removeClass("enabled");
       $('.main-phase').hide();
       $('.roll-phase').show();
     });

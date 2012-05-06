@@ -140,7 +140,7 @@ block labels
 
 block player
   #player0
-    .player.well
+    .player.mywell#p0mywell
       .left
         img(src='http://i.imgur.com/TFOqB.jpg', width=200, height=150).pic#MY_VIDEO
       .right
@@ -292,23 +292,23 @@ block actions
 block others
   .others
     #player1
-      .opponent.player.well
+      .opponent.player.mywell#p1mywell
         .opponentvideo
-          img(src='http://goo.gl/1YKzh').video#VIDEO1
+          img(src='http://i.imgur.com/cGxvu.png').video#VIDEO1
         include includes/opponent
     #player2
-      .opponent.player.well
+      .opponent.player.mywell#p2mywell
         .opponentvideo
-          img(src='http://goo.gl/1YKzh').video#VIDEO2
+          img(src='http://i.imgur.com/cGxvu.png').video#VIDEO2
         include includes/opponent
     #player3
-      .opponent.player.well
+      .opponent.player.mywell#p3mywell
         .opponentvideo
-          img(src='http://goo.gl/1YKzh').video#VIDEO3
+          img(src='http://i.imgur.com/cGxvu.png').video#VIDEO3
         include includes/opponent
 
 block messages
-  .message.well
+  .message.mywell
     h2 Messages
     #frequencyChart.chartShow
       | <image src = "http://www.cs.princeton.edu/~dcapra/frequencyChart.png"></img>
