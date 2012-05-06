@@ -65,6 +65,11 @@ function updatePopup(playerCards, secret) {
         $(tag + " .update-cards").removeClass("received");
         $(tag + " .update-cards").addClass("lost");
       }
+
+      // if you're involved can't be secret.
+      if (i == me) {
+        secret = false;
+      }
       var tot = 0;
       for (var resource in received) {
         var r = resource.toLowerCase();
@@ -188,12 +193,20 @@ window.onload = function() {
     socket.emit('join', CONFIG.room, CONFIG.token);
   });
 
-
+  socket.on('playerJoined', function(players) {
+    for (var i = 1; i < players; i++) {
+      $('#player' + i + ' .opponentvideo').show();
+      $('#player' + i + ' .right').show();
+      $('#player' + i + ' .well').css({"background-color":"whiteSmoke"});
+      $('#player' + i + ' .well').css({"opacity":"1"});
+    }
+  });
   /**
    * OpenTok
    */
   socket.on('joined', function(apiKey, sessionId, token, myIndex) 
   {
+
     var session = TB.initSession(sessionId);
     session.addEventListener("sessionConnected", sessionConnectedHandler);
     session.addEventListener("streamCreated", streamCreatedHandler);
@@ -205,7 +218,6 @@ window.onload = function() {
       h = $('#MY_VIDEO').height();
       w = $('#MY_VIDEO').width();
       session.publish('MY_VIDEO', {height:h, width:w, class:'MY_VIDEO'});
-      
       socket.emit('associateMyConnIDwithMyIndex', CONFIG.room, myIndex, session.connection.connectionId); // ot3. send game[index=connID]
       subscribeToStreams(event.streams);
     }
@@ -366,12 +378,14 @@ window.onload = function() {
   });
 
   socket.on('removeCards', function(number) {
-    // set button text
-    $('.removebtn').text('Remove ' + number + ' more cards');
-    $('.removebtn').attr('id', number);
-    toRemove = number;
-    $(".remove-container").show();
-    $(".remove-container").animate({"right": "40.5%"}, "slow");
+    setTimeout(function() {
+      // set button text
+      $('.removebtn').text('Remove ' + number + ' more cards');
+      $('.removebtn').attr('id', number);
+      toRemove = number;
+      $(".remove-container").show();
+      $(".remove-container").animate({"right": "40.5%"}, "slow");
+     }, 4 * 1000);
   });
 
   socket.on('showTrade', function(offer, offerer, type) {
@@ -712,6 +726,7 @@ window.onload = function() {
         if (users[i] == user_objects[j].id) objs.push(user_objects[j]);
       }
     }
+
     // HIDING
     for (var i = users.length; i < 4; i++) {
       console.log("not here: " + i);
@@ -721,6 +736,7 @@ window.onload = function() {
       $('#player' + i + ' .mywell').css({"background-color":"black"});
       $('#player' + i + ' .mywell').css({"opacity":".6"});
     }
+
     console.log(users, objs);
   
     // BORDER COLORS
@@ -918,13 +934,13 @@ window.onload = function() {
        for (var resource in player.resource_cards) {
          var r = resource.toLowerCase();
          if (player.user_id === me) {
-           $('#player'+player_id+' .js-'+r+'-number')
+           $('#player'+player_id+' .card .js-'+r+'-number')
              .text(player.resource_cards[resource])
          }
          total += player.resource_cards[resource];
        }
        if (player.user_id !== me) {
-         $('#player'+player_id+' .js-resource-number').text(total);
+         $('#player'+player_id+' .card .js-resource-number').text(total);
          // update victory point total
          $('#player'+player_id+' .js-victory-value').text(victory_points);
          victory_points += player.victory_cards;
@@ -1025,6 +1041,7 @@ window.onload = function() {
             $('#win .txt').text(name + " has won.");
           }
           $('#win').show();
+          $('#winSpace').show();
           $('#lobby').show();
           socket.emit('gameover', player.user_id);
           done = true;
@@ -1276,14 +1293,16 @@ window.onload = function() {
       });
 
     socket.on('showRobber', function(removeWaiting) {
-      $('.roll-phase, .main-phase, .steal-phase').hide();
-      $('.robber-phase').show();
-      if (removeWaiting) {
-        $('.robber-phase .btn').text("Waiting for Players to Remove Cards");
-      }
-      else
-        $('.robber-phase .btn').text("Move the Robber");
-      $('.numberToken.robber').addClass('highlight');
+      setTimeout(function() {
+        $('.roll-phase, .main-phase, .steal-phase').hide();
+        $('.robber-phase').show();
+        if (removeWaiting) {
+          $('.robber-phase .btn').text("Waiting for Players to Remove Cards");
+        }
+        else
+          $('.robber-phase .btn').text("Move the Robber");
+        $('.numberToken.robber').addClass('highlight');
+      }, 4 * 1000);
     });
 
     socket.on('showSteal', function(players) {
@@ -1329,14 +1348,12 @@ window.onload = function() {
      * handles card stealing css
      */
     socket.on('stealCard', function(thief, player_id, resource) {
-      $('.roll-phase, .robber-phase, .place-phase, .steal-phase').hide();
-      $('.main-phase').show();
       var update_object = {};
       var resource_object = {};
       var r = resource;
       resource_object[r] = 1;
-      update_object[thief] = {'resources': resource_object, 'received':true}
-      update_object[player_id] = {'resources': resource_object, 'received':false}
+      update_object[thief] = {'resources': resource_object, 'received':true};
+      update_object[player_id] = {'resources': resource_object, 'received':false};
       updatePopup(update_object, true);
     });
 

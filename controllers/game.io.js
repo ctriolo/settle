@@ -16,7 +16,7 @@ var GameProvider = require('../models/GameProvider')
 
 var sid_to_uid = {}; // session to user
 var uid_to_gid = {}; // user to game
-var stop_build = false;
+
 /**
  * updatePlayerInfo
  *
@@ -71,6 +71,7 @@ module.exports = function(sockets) {
         sid_to_uid[session_id] = user_id;
         uid_to_gid[user_id] = game_id;
         sockets.to(game_id).send('A client just connected.');
+        sockets.to(game_id).emit('playerJoined', game.getPlayers().length);
         if (game.isStarted()) {
           sockets.to(user_id).emit('canStart');
           sockets.to(user_id).emit('start', game.getPlayers(), user_id);
@@ -340,7 +341,7 @@ module.exports = function(sockets) {
       try {
         var resource = game.steal(player_id);
         gp.save(game);
-        sockets.to(game.whoseTurn()).emit('stealCard', game.whoseTurn(), player_id,  resource);
+        sockets.to(game_id).emit('stealCard', game.whoseTurn(), player_id,  resource);
         socket.emit('canBuild', game.canBuild(user_id));
         if (game.whichPhase() == PHASE.MAIN) {
           sockets.to(game.whoseTurn()).emit('showMain');
@@ -616,11 +617,9 @@ module.exports = function(sockets) {
           throw "Can't build right now";
         game.buildDevelopment(user_id);
         gp.save(game);
-        stop_build = true;
         updatePlayerInfo(sockets, game);
         socket.emit('canBuild', game.canBuild(user_id));
         sockets.to(game_id).emit('developmentUpdate', user_id);
-        setTimeout(function() { stop_build = false;}, 500);
       } catch (error) {
         console.log('ERROR: ' + error);
       }

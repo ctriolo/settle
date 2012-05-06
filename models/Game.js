@@ -137,7 +137,7 @@ function Game() {
   this.current_player = -1;
   this.current_phase = PHASE.START;
   this.steal_players = 0; // number of players that need to lose cards
-
+  this.can_build = true;
   // Add Knight Cards
   for (var i = 0; i < 14; i++) {
     this.development_cards.push(DEVELOPMENT.KNIGHT);
@@ -209,6 +209,10 @@ Game.prototype._validatePhase = function(phase1, phase2) {
         + this.current_phase + ' phase.';
 };
 
+Game.prototype._validateBuild = function() {
+  if (!this.can_build)
+    throw "Can't build right now";
+};
 
 /**
  * _nextPlayer (private)
@@ -675,6 +679,14 @@ Game.prototype.bankTrade = function(offer, offerer) {
   this._validatePhase(PHASE.MAIN);
   var offerer = this._translate(offerer);
   this._validatePlayer(offerer);
+
+  // check this trade can be made
+  for(var i = 0; i < offer['offer'].length; i++) {
+    if (this.players[offerer].resource_cards[RESOURCE_ARRAY[i]] < offer['offer'][i])
+      throw "You cannot make this trade";
+  }
+
+
   for(var i = 0; i < offer['for'].length; i++) {
       this.players[offerer].resource_cards[RESOURCE_ARRAY[i]] += offer['for'][i];
   }
@@ -692,10 +704,14 @@ Game.prototype.acceptTrade = function(offer, accepter, offerer) {
   var accepter = this._translate(accepter);
   offerer = this._translate(offerer);
   for(var i = 0; i < offer['for'].length; i++) {
+      if (this.players[accepter].resource_cards[RESOURCE_ARRAY[i]] < offer['for'][i])
+        throw "You can't make this trade"
       this.players[accepter].resource_cards[RESOURCE_ARRAY[i]] -= offer['for'][i];
       this.players[offerer].resource_cards[RESOURCE_ARRAY[i]] += offer['for'][i];
   }
   for(var i = 0; i < offer['offer'].length; i++) {
+      if (this.players[offerer].resource_cards[RESOURCE_ARRAY[i]] < offer['offer'][i])
+        throw "You can't make this trade"
       this.players[accepter].resource_cards[RESOURCE_ARRAY[i]] += offer['offer'][i];
       this.players[offerer].resource_cards[RESOURCE_ARRAY[i]] -= offer['offer'][i];
   }
@@ -867,11 +883,11 @@ Game.prototype.buildRoad = function(user_id, edge_id) {
 Game.prototype.buildDevelopment = function(user_id) {
   var player_id = this._translate(user_id);
   this._validatePlayer(player_id);
-  console.log('validating finishdevelopment');
+  this._validateBuild();
   this._validatePhase(PHASE.MAIN);
   if (!this.canBuildDevelopment(user_id)) throw 'You are not able to build a development!';
-console.log('DEFINIATELY', this, this.development_cards);
   this._subtractResources(player_id, DEVELOPMENT_COST);
+  this.can_build = false;
   var card = this.development_cards.pop();
   if (card) {
     this.players[player_id].pending_development_cards[card]++;
@@ -879,6 +895,7 @@ console.log('DEFINIATELY', this, this.development_cards);
     if (VICTORY_CARDS.indexOf(card) != -1) this.players[player_id].victory_cards++;
   }
 
+  setTimeout(function() { this.can_build = true;}, 500};
   return card;
 }
 
