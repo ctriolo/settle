@@ -12,6 +12,7 @@ var done = false;
 var ports = [];
 var old_title = document.title;
 var toRemove = 0;
+var my_turn = false;
 function makeSVG(tag, attrs) {
   var el= document.createElementNS('http://www.w3.org/2000/svg', tag);
   for (var k in attrs)
@@ -29,6 +30,21 @@ function cancelCurrentAction() {
   $('.intersection,.edge,.hex,.road,.settlement,.city').removeClass(selectable);
   $('.intersection,.edge,.hex,.road,.settlement,.city').off('hover');
   $('.intersection,.edge,.hex,.road,.settlement,.city').off('click');
+};
+
+function alertNotTurn() {
+  if (my_turn) {
+    document.title = old_title;
+    setTimeout(function() {
+      alertTurn()}, 1000);
+  }
+};
+function alertTurn() {
+  if (my_turn) {
+    document.title = "Your turn!";
+    setTimeout(function() {
+      alertNotTurn()}, 1000);
+  }
 };
 
 /**
@@ -217,7 +233,7 @@ window.onload = function() {
     function sessionConnectedHandler(event) {
       h = $('#MY_VIDEO').height();
       w = $('#MY_VIDEO').width();
-///session.publish('MY_VIDEO', {height:h, width:w, class:'MY_VIDEO'});
+      session.publish('MY_VIDEO', {height:h, width:w, class:'MY_VIDEO'});
       socket.emit('associateMyConnIDwithMyIndex', CONFIG.room, myIndex, session.connection.connectionId); // ot3. send game[index=connID]
       subscribeToStreams(event.streams);
     }
@@ -345,6 +361,8 @@ window.onload = function() {
   $(".roll").click(function(){
     showMainPhase();
     socket.emit('rollDice');
+    my_turn = false;
+    document.title = "Your turn!";
   });
 
   // handle stealing
@@ -818,6 +836,9 @@ window.onload = function() {
    * @param   ids   array   the ids of the valid edges
    */
   socket.on('startingSettlementSelect', function(ids) {
+    $('#startBackground').css("background", 'lime');
+    $('#startBackground').show();
+    $('#startBackground').fadeOut('slow');
     for (var i = 0; i < ids.length; i++) {
       $("#intersection"+ids[i]).addClass('selectable');
       // set up popups
@@ -1556,13 +1577,15 @@ window.onload = function() {
       if (turn_user == me) {
         $('.roll-phase').show();
         $('.waiting-phase').hide();
-        document.title = "Your turn!";
+        my_turn = true;
+        alertTurn();
         $('#startBackground').css("background", 'lime');
         $('#startBackground').show();
         $('#startBackground').fadeOut('slow');
 
 
       } else {
+        my_turn = false;
         $('.roll-phase').hide();
         $('.waiting-phase').show();
         document.title = old_title;
