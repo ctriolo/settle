@@ -613,8 +613,6 @@ module.exports = function(sockets) {
       var game_id = uid_to_gid[user_id];
       var game = gp.findById(game_id);
       try {
-        if (stop_build)
-          throw "Can't build right now";
         game.buildDevelopment(user_id);
         gp.save(game);
         updatePlayerInfo(sockets, game);
