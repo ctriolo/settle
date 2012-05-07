@@ -209,6 +209,9 @@ Board.prototype.assignPorts = function()
     var coasts = this.coastsInOrder(allEdges);
     for (var i = 0; i < ports.length; i++)
       allEdges[ coasts[i] ].port = ports[i];
+      
+    //console.log(ports);
+    //console.log(coasts);
 }
 
 Board.prototype.generatePortArray = function(numPorts, numCoasts)
