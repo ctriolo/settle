@@ -50,6 +50,7 @@ RESOURCE = {
 };
 
 RESOURCE_ARRAY = [ RESOURCE.WHEAT, RESOURCE.WOOD, RESOURCE.SHEEP, RESOURCE.BRICK, RESOURCE.STONE];
+PORT_ARRAY = ["Wheat21", "Wood21", "Sheep21", "Brick21", "Stone21"];
 
 DEVELOPMENT = {
   KNIGHT:         'Knight',
@@ -674,25 +675,54 @@ Game.prototype.endTurn = function(user_id) {
   * bankTrade
   *
   */
-
-Game.prototype.bankTrade = function(offer, offerer) {
-  this._validatePhase(PHASE.MAIN);
-  var offerer = this._translate(offerer);
-  this._validatePlayer(offerer);
-
-  // check this trade can be made
-  for(var i = 0; i < offer['offer'].length; i++) {
-    if (this.players[offerer].resource_cards[RESOURCE_ARRAY[i]] < offer['offer'][i])
-      throw "You cannot make this trade";
-  }
-
-
+Game.prototype.tradeCards = function(offer, offerer) {
   for(var i = 0; i < offer['for'].length; i++) {
       this.players[offerer].resource_cards[RESOURCE_ARRAY[i]] += offer['for'][i];
   }
   for(var i = 0; i < offer['offer'].length; i++) {
       this.players[offerer].resource_cards[RESOURCE_ARRAY[i]] -= offer['offer'][i];
   }
+};
+
+Game.prototype.bankTrade = function(offer, offerer) {
+  this._validatePhase(PHASE.MAIN);
+  var offerer = this._translate(offerer);
+  this._validatePlayer(offerer);
+
+  var offer_total = 0;
+  var for_total = 0;
+  var offer_found = 0;
+  var for_found = 0;
+  var offer_type = -1;
+
+  for(var i = 0; i < offer['for'].length; i++) {
+      for_total += offer['for'][i];
+      if (offer['for'][i] > 0) {
+        for_found += 1;
+      }
+  }
+  for(var i = 0; i < offer['offer'].length; i++) {
+    // check this trade can be made
+    if (this.players[offerer].resource_cards[RESOURCE_ARRAY[i]] < offer['offer'][i])
+      throw "You cannot make this trade";
+    offer_total += offer['offer'][i];
+    if (offer['offer'][i] > 0) {
+      offer_found += 1;
+      offer_type = i;
+    }
+  }
+  // check valid
+  var ports = this.players[offerer].ports;
+  if (offer_found !== 1 || for_found !== 1)
+    throw 'Invalid Bank Trade';
+  else if (offer_total === for_total * 4)
+    this.tradeCards(offer, offerer);
+  else if (ports.indexOf('Any31') !== -1 && offer_total === for_total*3)
+    this.tradeCards(offer, offerer);
+  else if (ports.indexOf(PORT_ARRAY[offer_type]) !== -1 && offer_total === for_total *2)
+    this.tradeCards(offer, offerer);
+  else
+    throw 'Invalid Bank Trade';
 }
 
 /**

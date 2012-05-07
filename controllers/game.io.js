@@ -408,7 +408,6 @@ module.exports = function(sockets) {
       * allow bank trades
       **/
       socket.on('bankTrade', function(offer, offerer) {
-        console.log("BANK TRADING*************");
         var session_id = socket.handshake.sessionID;
         var user_id = sid_to_uid[session_id];
         var game_id = uid_to_gid[user_id];
@@ -416,6 +415,7 @@ module.exports = function(sockets) {
         try {
           var ret = game.bankTrade(offer, offerer);
           updatePlayerInfo(sockets, game);
+          console.log("SAVING");
           gp.save(game);
           sockets.to(game_id).emit('tradeCleanup');
           socket.emit('canBuild', game.canBuild(user_id));
