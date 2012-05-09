@@ -217,6 +217,7 @@ window.onload = function() {
       $('#player' + i + ' .well').css({"opacity":"1"});
     }
   });
+  
   /**
    * OpenTok
    */
@@ -287,45 +288,61 @@ window.onload = function() {
   {
     var theirWidth = -1;
 
-    // player 123 video
+    // ******** PLAYER 1-2-3 VIDEO ********
+    
     for (var i = 1; i <= 3; i++) 
     {
-      var pImywell = '#p' + i + 'mywell'
+      // get video object
+      pI_vidObj = document.getElementById('player' + i).firstChild.firstChild.firstChild
+    
+      // started, so incorporate border size
       if (i < HAS_STARTED) {
-        var pih = $('#player'+i).height();
-        $(pImywell).height( pih - 2*BORDER_SIZE ); // 2*BORDER_SIZE
+        var pI_div_H = $('#player'+i).height();
+        $('#p'+i+'mywell').height( pI_div_H - 2*BORDER_SIZE ); // 2*BORDER_SIZE
       }
-      h = $(pImywell).height();
+      
+      // set height/width
+      h = $('#p'+i+'mywell').height();
       w = h*4/3.0;
-      $('#VIDEO' + i).width(w);
-      $('#VIDEO' + i).height(h);
+      pI_vidObj.setAttribute('width', w);
+      pI_vidObj.setAttribute('height', h);
       
       theirWidth = w;
     }
 
-    // player 0 video
-        
-    var myWidth = theirWidth // 2*BORDER_SIZE
-    if (0 < HAS_STARTED)
-      myWidth -= BORDER_SIZE; // BORDER_SIZE
+    // ******** PLAYER 0 VIDEO ********
     
+    // get player0video object
+    p0_vidObj = document.getElementById('player0').firstChild.firstChild.firstChild;
+    
+    // set up myWidth
+    var myWidth = theirWidth
+    if (0 < HAS_STARTED)
+      myWidth -= BORDER_SIZE;
+    
+    // set width of encapsulating divs
     var wholeWidth = $('.others').width();
     $('#player0').width(myWidth);
     $('.actions').width( wholeWidth - myWidth )
     
+    // if started, deduct border size
     if (0 < HAS_STARTED) {
-      var p0h = $('#player0').height()
-      $('#p0mywell').height( p0h - 2*BORDER_SIZE ) // 2*BORDER_SIZE
+      var p0_div_H = $('#player0').height()
+      $('#p0mywell').height( p0_div_H - 2*BORDER_SIZE ) // 2*BORDER_SIZE
     }
 
-    w = $('#p0mywell').width()
-    //w2 = $('#p0mywell').height()*0.6 *4/3.0
-    //w = Math.min(w1, w2);
-    h = w*3/4.0;
+    // set width of video itself
+    var w = $('#p0mywell').width()
+    var h = w*3/4.0;
+    p0_vidObj.setAttribute('width', w);
+    p0_vidObj.setAttribute('height', h);
+
+    // in case the picture is still there
     $('#MY_VIDEO').width(w);
     $('#MY_VIDEO').height(h);
     
-    // dice roll container
+    // ******** DICE ROLL CONTAINER ********
+    
     var W = $(window).width();
     var w = $(window).height() * 0.22;
     var left = 7/12.0*W - w;
