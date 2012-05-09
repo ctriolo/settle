@@ -386,7 +386,12 @@ module.exports = function(sockets) {
         var game_id = uid_to_gid[user_id];
         var game = gp.findById(game_id);
         try {
-          sockets.to(game_id).emit('showTrade', offer, offerer, "");
+          // if trade from current player, show to everyone. 
+          // Otherwise only to the current player
+          if (offerer === game.whoseTurn())
+            sockets.to(game_id).emit('showTrade', offer, offerer, "");
+          else
+            sockets.to(game.whoseTurn()).emit('showTrade', offer, offerer, "");
         } catch (error) {
           console.log('ERROR: ' + error);
         }

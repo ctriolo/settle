@@ -451,14 +451,17 @@ window.onload = function() {
       var player_tag = '#player' + player_num;
       var container = $(player_tag + ' .showtrade-container');
       var acceptable = true;
-      container.removeClass("accepted");
-      container.removeClass("rejected");
+      container.removeClass("accept");
+      container.removeClass("reject");
       // change color based on whether this trade was accepted/rejected/offered
       $(player_tag + " .showtrade-container .trade-actions").show();
-      if (type === "accepted")
+      if (type === "accepted") {
         container.addClass("accepted");
+        container.removeClass("rejected");
+      }
       else if (type === "rejected") {
         container.addClass("rejected");
+        container.removeClass("accepted");
         $(player_tag + " .showtrade-container .trade-actions").hide();
       }
       else {
@@ -496,6 +499,12 @@ window.onload = function() {
       // animate container pop-up
       $(player_tag + " .showtrade-container").show();
       $(player_tag + " .showtrade-container").animate({"right": "100%"}, "slow");
+      if (type === "rejected") {
+        setTimeout(function() {
+          $(player_tag + " .showtrade-container").animate({"right": "5%"}, "slow");
+          $(player_tag + " .showtrade-container").hide();
+        }, 2000);
+      }
       recent_offer[player_num] = offer;
     }
   });
@@ -522,6 +531,10 @@ window.onload = function() {
       container.removeClass("accept");
       container.addClass("reject");
       socket.emit('rejectTrade', recent_offer[num1], me, users[num1]);
+      setTimeout(function() {
+        $(player_tag + " .showtrade-container").animate({"right": "5%"}, "slow");
+        $(player_tag + " .showtrade-container").hide();
+      }, 2000);
     }
   });
   $(".counterTrade").click(function() {
@@ -1360,10 +1373,10 @@ window.onload = function() {
     */
     $(".hex").click(
       function(){
-        if(!$(this).hasClass("robber")) {
+        if(!$(this).hasClass("robber") && $(this).attr('id')) {
           var id = parseInt($(this).attr('id').substring('hex'.length));
           socket.emit('updateRobber', id);
-       }
+        }
       }
     );
 
