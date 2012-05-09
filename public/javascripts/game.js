@@ -450,8 +450,8 @@ window.onload = function() {
       var player_tag = '#player' + player_num;
       var container = $(player_tag + ' .showtrade-container');
       var acceptable = true;
-      container.removeClass("accept");
-      container.removeClass("reject");
+      container.removeClass("accepted");
+      container.removeClass("rejected");
       // change color based on whether this trade was accepted/rejected/offered
       $(player_tag + " .showtrade-container .trade-actions").show();
       if (type === "accepted")
