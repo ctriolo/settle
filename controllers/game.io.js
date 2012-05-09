@@ -659,7 +659,7 @@ module.exports = function(sockets) {
       try {
         game.playKnight(user_id);
         gp.save(game);
-        sockets.to(game.whoseTurn()).emit('showRobber', false);
+        sockets.to(game.whoseTurn()).emit('showKnight', false);
         updatePlayerInfo(sockets, game);
       } catch (error) {
         console.log('ERROR: ' + error);

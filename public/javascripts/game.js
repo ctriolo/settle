@@ -1401,6 +1401,17 @@ window.onload = function() {
         }
       });
 
+    socket.on('showKnight', function(removeWaiting) {
+      $('.roll-phase, .main-phase, .steal-phase').hide();
+      $('.robber-phase').show();
+      if (removeWaiting) {
+        $('.robber-phase .btn').text("Waiting for Players to Remove Cards");
+      }
+      else
+        $('.robber-phase .btn').text("Move the Robber");
+      $('.numberToken.robber').addClass('highlight');
+    });
+
     socket.on('showRobber', function(removeWaiting) {
       setTimeout(function() {
         $('.roll-phase, .main-phase, .steal-phase').hide();
