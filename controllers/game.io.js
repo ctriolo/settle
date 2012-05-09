@@ -614,6 +614,9 @@ module.exports = function(sockets) {
       var game = gp.findById(game_id);
       try {
         game.buildDevelopment(user_id);
+        setTimeout(function() {
+          game.allowBuild();
+          gp.save(game);}, 500);
         gp.save(game);
         updatePlayerInfo(sockets, game);
         socket.emit('canBuild', game.canBuild(user_id));

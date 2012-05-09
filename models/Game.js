@@ -913,6 +913,7 @@ Game.prototype.buildRoad = function(user_id, edge_id) {
 Game.prototype.buildDevelopment = function(user_id) {
   var player_id = this._translate(user_id);
   this._validatePlayer(player_id);
+  console.log("CAN_BUILD: " + this.can_build);
   this._validateBuild();
   this._validatePhase(PHASE.MAIN);
   if (!this.canBuildDevelopment(user_id)) throw 'You are not able to build a development!';
@@ -924,9 +925,11 @@ Game.prototype.buildDevelopment = function(user_id) {
     this.players[player_id].development_cards[card]++;
     if (VICTORY_CARDS.indexOf(card) != -1) this.players[player_id].victory_cards++;
   }
-
-  setTimeout(function() { this.can_build = true;}, 500);
   return card;
+}
+Game.prototype.allowBuild = function() {
+  console.log("ALLOWING BUILD");
+  this.can_build = true;
 }
 
 Game.prototype.cancelBuild = function() {
