@@ -198,13 +198,23 @@ function showPlacePhase(phrase, showCancel) {
     $('.roll-phase, .main-phase, .steal-phase, .waiting-phase, .robber-phase').hide();
 }
 
+window.onbeforeunload = function() {
+  if (!done) {
+    return 'You are about to leave a game in progress. '
+         + 'You will not be able to return.';
+  }
+};
+
 window.onload = function() {
 
   /**
    * Socket IO Connection
    */
 
-  var socket = io.connect('/game');
+  var opts  = {};
+  opts['sync disconnect on unload'] = false;
+
+  var socket = io.connect('/game', opts);
   socket.on('connect', function() {
     socket.emit('join', CONFIG.room, CONFIG.token);
   });
@@ -217,10 +227,11 @@ window.onload = function() {
       $('#player' + i + ' .well').css({"opacity":"1"});
     }
   });
+  
   /**
    * OpenTok
    */
-  socket.on('joined', function(apiKey, sessionId, token, myIndex) 
+  socket.on('joined', function(apiKey, sessionId, token, myIndex)
   {
 
     var session = TB.initSession(sessionId);
@@ -242,7 +253,7 @@ window.onload = function() {
       subscribeToStreams(event.streams);
     }
 
-    function subscribeToStreams(streams) 
+    function subscribeToStreams(streams)
     {
       if (typeof subscribeToStreams.nextPlayer == 'undefined')
         subscribeToStreams.nextPlayer = 1;
@@ -250,8 +261,8 @@ window.onload = function() {
       for (i = 0; i < streams.length; i++) {
         var stream = streams[i];
         var connId = stream.connection.connectionId;
-        
-        if (connId != session.connection.connectionId) 
+
+        if (connId != session.connection.connectionId)
         {
           // EMIT CONNECTION ID TO SERVER, GET PLAYER #
           socket.emit('sendConnIDtoGetPlayerIndex', CONFIG.room, CONFIG.token, connId); // ot5. ask for index from game[connID]
@@ -259,16 +270,16 @@ window.onload = function() {
           {
             var playerNo = index;
             if (playerNo < myIndex) playerNo++;
-            
+
             replaceID = 'VIDEO' + playerNo;
-            
+
             h = $('#' + replaceID).height();
             w = $('#' + replaceID).width();
             session.subscribe(stream, replaceID, {height:h, width:w});
             socket.$events['sendPlayerIndexFromConnID'] = null; // GIANT HACKKKKKK
           });
-          
-          
+
+
         }
       }
     }
@@ -283,49 +294,65 @@ window.onload = function() {
   var BORDER_SIZE = 10;
 
   window.onresize = dynamicResize;
-  function dynamicResize() 
+  function dynamicResize()
   {
     var theirWidth = -1;
 
-    // player 123 video
+    // ******** PLAYER 1-2-3 VIDEO ********
+    
     for (var i = 1; i <= 3; i++) 
     {
-      var pImywell = '#p' + i + 'mywell'
+      // get video object
+      pI_vidObj = document.getElementById('player' + i).firstChild.firstChild.firstChild
+    
+      // started, so incorporate border size
       if (i < HAS_STARTED) {
-        var pih = $('#player'+i).height();
-        $(pImywell).height( pih - 2*BORDER_SIZE ); // 2*BORDER_SIZE
+        var pI_div_H = $('#player'+i).height();
+        $('#p'+i+'mywell').height( pI_div_H - 2*BORDER_SIZE ); // 2*BORDER_SIZE
       }
-      h = $(pImywell).height();
+      
+      // set height/width
+      h = $('#p'+i+'mywell').height();
       w = h*4/3.0;
-      $('#VIDEO' + i).width(w);
-      $('#VIDEO' + i).height(h);
+      pI_vidObj.setAttribute('width', w);
+      pI_vidObj.setAttribute('height', h);
       
       theirWidth = w;
     }
 
-    // player 0 video
-        
-    var myWidth = theirWidth // 2*BORDER_SIZE
-    if (0 < HAS_STARTED)
-      myWidth -= BORDER_SIZE; // BORDER_SIZE
+    // ******** PLAYER 0 VIDEO ********
     
+    // get player0video object
+    p0_vidObj = document.getElementById('player0').firstChild.firstChild.firstChild;
+    
+    // set up myWidth
+    var myWidth = theirWidth
+    if (0 < HAS_STARTED)
+      myWidth -= BORDER_SIZE;
+    
+    // set width of encapsulating divs
     var wholeWidth = $('.others').width();
     $('#player0').width(myWidth);
     $('.actions').width( wholeWidth - myWidth )
     
+    // if started, deduct border size
     if (0 < HAS_STARTED) {
-      var p0h = $('#player0').height()
-      $('#p0mywell').height( p0h - 2*BORDER_SIZE ) // 2*BORDER_SIZE
+      var p0_div_H = $('#player0').height()
+      $('#p0mywell').height( p0_div_H - 2*BORDER_SIZE ) // 2*BORDER_SIZE
     }
 
-    w = $('#p0mywell').width()
-    //w2 = $('#p0mywell').height()*0.6 *4/3.0
-    //w = Math.min(w1, w2);
-    h = w*3/4.0;
+    // set width of video itself
+    var w = $('#p0mywell').width()
+    var h = w*3/4.0;
+    p0_vidObj.setAttribute('width', w);
+    p0_vidObj.setAttribute('height', h);
+
+    // in case the picture is still there
     $('#MY_VIDEO').width(w);
     $('#MY_VIDEO').height(h);
     
-    // dice roll container
+    // ******** DICE ROLL CONTAINER ********
+    
     var W = $(window).width();
     var w = $(window).height() * 0.22;
     var left = 7/12.0*W - w;
@@ -734,14 +761,14 @@ window.onload = function() {
    *
    * Lets us know that we can start the game.
    */
-     
+
   var DICE_TOP_ORDER = [];
   var dti = -1;
-   
+
   socket.on('start', function(players, you, user_objects) {
     users = players.slice(0);
     me = you;
-    
+
     // set up dice roll order
     numU = users.length;
     my_index = users.indexOf(me);
@@ -754,7 +781,7 @@ window.onload = function() {
     for (var i = 0; i < DICE_TOP_ORDER.length; i++)
       DICE_TOP_ORDER[i] = DICE_TOPS[ DICE_TOP_ORDER[i] ];
     dti = 0;
-    
+
     $('.numberDiv').animate({'left': '-=100px'}, 'slow');
     console.log("MOVING");
     if (users.indexOf(me) != -1) {
@@ -784,7 +811,7 @@ window.onload = function() {
     }
 
     console.log(users, objs);
-  
+
     // BORDER COLORS
     for (var i = 0; i < users.length; i++) {
       $('#p'+i+'mywell').css({"border":BORDER_SIZE + "px solid"});
@@ -1299,28 +1326,28 @@ window.onload = function() {
 
     if (typeof breakdown == 'undefined')
       return;
-    
+
     $('#dice-image').show();
     $('#dice-image-container').css('top', DICE_TOP_ORDER[dti] ); // 0%, 34%, 56%, 78%
     dti++; dti %= DICE_TOP_ORDER.length;
     url = 'http://www.princeton.edu/~rgromero/dice-gif/a' + breakdown[0]
         + ',' + breakdown[1] + '_mod6.gif';
     $('#dice-image').attr('src', url);
-    
+
     $('#startBackground').css("background", '#000');
-    $('#startBackground').show();    
+    $('#startBackground').show();
     for (var i = DICE_TOP_ORDER.length; i < 4; i++)
       $('#p'+i+'mywell').css('opacity','0');
-    
+
     setTimeout(function() {
         handleDiceRoll(number, resources);
         $('#dice-image').attr('src','');
         $('#dice-image').hide();
-        
+
         $('#startBackground').hide();
         for (var i = DICE_TOP_ORDER.length; i < 4; i++)
           $('#p'+i+'mywell').css('opacity','0.6');
-        
+
     }, 4 * 1000);
 
   });
