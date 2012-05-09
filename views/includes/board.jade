@@ -12,7 +12,12 @@ for hex in board.hexes
   if (hex.number)
     | <g class="numberToken number#{hex.number}">
     | <circle cx="#{hex.center.x}" cy="#{hex.center.y}" r="#{hex.radius/2.4}" />
-    | <text x="#{hex.center.x+1}" y="#{hex.center.y+10}">#{hex.number}</text>
+    | <text class="number" x="#{hex.center.x+1}" y="#{hex.center.y+10}">#{hex.number}</text>
+    | <text class="pips" x="#{hex.center.x+1}" y="#{hex.center.y+20}">
+    - var pips = 6 - Math.abs(7 - hex.number);
+    - for (var i = 0; i < pips; i++)
+      | &bull;
+    | </text>
   else
     | <g class="numberToken desert robber">
     | <circle cx="#{hex.center.x}" cy="#{hex.center.y}" r="#{hex.radius/2.4}" />

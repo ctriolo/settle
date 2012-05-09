@@ -416,6 +416,14 @@ Game.prototype.updateLongestRoad = function() {
   var max = 0;
   var player = -1;
 
+  // Set the previous longest road player as the max
+  for (var i = 0; i < this.players.length; i++) {
+    if (this.players[i]['has_longest_road'] == true) {
+      max = this.board.longestRoad(i);
+      player = i;
+    }
+  }
+
   for (var i = 0; i < this.players.length; i++) {
     var roads = this.board.longestRoad(i);
     this.players[i]['longest_road'] = roads;

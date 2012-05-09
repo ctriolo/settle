@@ -54,11 +54,19 @@
 }
 
 #board .numberToken text {
-  font-size: 28px;
   font-family: Arial Black;
   text-anchor: middle;
   stroke-width: 1;
 }
+
+#board .numberToken text.pips {
+  font-size: 12px;
+}
+
+#board .numberToken text.number {
+  font-size: 28px;
+}
+
 #board .numberToken.desert circle {
   display: none;
 }
