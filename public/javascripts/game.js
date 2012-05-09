@@ -198,13 +198,23 @@ function showPlacePhase(phrase, showCancel) {
     $('.roll-phase, .main-phase, .steal-phase, .waiting-phase, .robber-phase').hide();
 }
 
+window.onbeforeunload = function() {
+  if (!done) {
+    return 'You are about to leave a game in progress. '
+         + 'You will not be able to return.';
+  }
+};
+
 window.onload = function() {
 
   /**
    * Socket IO Connection
    */
 
-  var socket = io.connect('/game');
+  var opts  = {};
+  opts['sync disconnect on unload'] = false;
+
+  var socket = io.connect('/game', opts);
   socket.on('connect', function() {
     socket.emit('join', CONFIG.room, CONFIG.token);
   });
@@ -221,7 +231,7 @@ window.onload = function() {
   /**
    * OpenTok
    */
-  socket.on('joined', function(apiKey, sessionId, token, myIndex) 
+  socket.on('joined', function(apiKey, sessionId, token, myIndex)
   {
 
     var session = TB.initSession(sessionId);
@@ -243,7 +253,7 @@ window.onload = function() {
       subscribeToStreams(event.streams);
     }
 
-    function subscribeToStreams(streams) 
+    function subscribeToStreams(streams)
     {
       if (typeof subscribeToStreams.nextPlayer == 'undefined')
         subscribeToStreams.nextPlayer = 1;
@@ -251,8 +261,8 @@ window.onload = function() {
       for (i = 0; i < streams.length; i++) {
         var stream = streams[i];
         var connId = stream.connection.connectionId;
-        
-        if (connId != session.connection.connectionId) 
+
+        if (connId != session.connection.connectionId)
         {
           // EMIT CONNECTION ID TO SERVER, GET PLAYER #
           socket.emit('sendConnIDtoGetPlayerIndex', CONFIG.room, CONFIG.token, connId); // ot5. ask for index from game[connID]
@@ -260,16 +270,16 @@ window.onload = function() {
           {
             var playerNo = index;
             if (playerNo < myIndex) playerNo++;
-            
+
             replaceID = 'VIDEO' + playerNo;
-            
+
             h = $('#' + replaceID).height();
             w = $('#' + replaceID).width();
             session.subscribe(stream, replaceID, {height:h, width:w});
             socket.$events['sendPlayerIndexFromConnID'] = null; // GIANT HACKKKKKK
           });
-          
-          
+
+
         }
       }
     }
@@ -284,7 +294,7 @@ window.onload = function() {
   var BORDER_SIZE = 10;
 
   window.onresize = dynamicResize;
-  function dynamicResize() 
+  function dynamicResize()
   {
     var theirWidth = -1;
 
@@ -751,14 +761,14 @@ window.onload = function() {
    *
    * Lets us know that we can start the game.
    */
-     
+
   var DICE_TOP_ORDER = [];
   var dti = -1;
-   
+
   socket.on('start', function(players, you, user_objects) {
     users = players.slice(0);
     me = you;
-    
+
     // set up dice roll order
     numU = users.length;
     my_index = users.indexOf(me);
@@ -771,7 +781,7 @@ window.onload = function() {
     for (var i = 0; i < DICE_TOP_ORDER.length; i++)
       DICE_TOP_ORDER[i] = DICE_TOPS[ DICE_TOP_ORDER[i] ];
     dti = 0;
-    
+
     $('.numberDiv').animate({'left': '-=100px'}, 'slow');
     console.log("MOVING");
     if (users.indexOf(me) != -1) {
@@ -801,7 +811,7 @@ window.onload = function() {
     }
 
     console.log(users, objs);
-  
+
     // BORDER COLORS
     for (var i = 0; i < users.length; i++) {
       $('#p'+i+'mywell').css({"border":BORDER_SIZE + "px solid"});
@@ -1316,28 +1326,28 @@ window.onload = function() {
 
     if (typeof breakdown == 'undefined')
       return;
-    
+
     $('#dice-image').show();
     $('#dice-image-container').css('top', DICE_TOP_ORDER[dti] ); // 0%, 34%, 56%, 78%
     dti++; dti %= DICE_TOP_ORDER.length;
     url = 'http://www.princeton.edu/~rgromero/dice-gif/a' + breakdown[0]
         + ',' + breakdown[1] + '_mod6.gif';
     $('#dice-image').attr('src', url);
-    
+
     $('#startBackground').css("background", '#000');
-    $('#startBackground').show();    
+    $('#startBackground').show();
     for (var i = DICE_TOP_ORDER.length; i < 4; i++)
       $('#p'+i+'mywell').css('opacity','0');
-    
+
     setTimeout(function() {
         handleDiceRoll(number, resources);
         $('#dice-image').attr('src','');
         $('#dice-image').hide();
-        
+
         $('#startBackground').hide();
         for (var i = DICE_TOP_ORDER.length; i < 4; i++)
           $('#p'+i+'mywell').css('opacity','0.6');
-        
+
     }, 4 * 1000);
 
   });
