@@ -13,6 +13,7 @@ var ports = [];
 var old_title = document.title;
 var toRemove = 0;
 var my_turn = false;
+
 function makeSVG(tag, attrs) {
   var el= document.createElementNS('http://www.w3.org/2000/svg', tag);
   for (var k in attrs)
@@ -106,7 +107,7 @@ function updatePopup(playerCards, secret) {
         }
         else {
           $(tag).show();
-          $(tag).animate({"right": "40.5%"}, "slow");
+          $(tag).animate({"right": "39.5%"}, "slow");
         }
       }
     }
@@ -404,7 +405,7 @@ window.onload = function() {
     if ($(this).hasClass("popupShow")) {
       $(".trade-container").show();
       $(this).addClass("active");
-      $(".trade-container").animate({"right": "40.5%"}, "slow");
+      $(".trade-container").animate({"right": "39.5%"}, "slow");
       $(this).removeClass("popupShow");
     }
     else {
@@ -439,7 +440,7 @@ window.onload = function() {
       $('.removebtn').attr('id', number);
       toRemove = number;
       $(".remove-container").show();
-      $(".remove-container").animate({"right": "40.5%"}, "slow");
+      $(".remove-container").animate({"right": "39.5%"}, "slow");
      }, 4 * 1000);
   });
 
@@ -530,7 +531,7 @@ window.onload = function() {
     $(".offerbtn").removeClass("disabled");
     updateCards(false);
     $(".trade-container").show();
-    $(".trade-container").animate({"right": "40.5%"}, "slow");
+    $(".trade-container").animate({"right": "39.5%"}, "slow");
     $(this).removeClass("popupShow");
   });
 
@@ -685,7 +686,7 @@ window.onload = function() {
     if (total_rolls > 0) {
       if ($(this).hasClass("chartShow")) {
         $(".frequency-container").show();
-        $(".frequency-container").animate({"right": "40.5%"}, "slow");
+        $(".frequency-container").animate({"right": "39.5%"}, "slow");
         $(this).removeClass("chartShow");
 
       }

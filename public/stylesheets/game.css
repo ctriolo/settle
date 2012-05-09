@@ -433,9 +433,13 @@ body {
   width: 90%;
   height: 90%;
 }
-.for-cards {
+.trade-container .for-cards {
   top: 55%;
 }
+.others .offer-cards {
+  top: 55%;
+}
+
 .cards.trade {
   position: absolute;
   top: 0%;
