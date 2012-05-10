@@ -61,6 +61,7 @@ function updateFrequencies() {
   }
   for (var i = 2; i <= 12; i++) {
     $('#bar' + i).height(100*roll_frequency[i-2]/total_rolls/max/1.05 + "%");
+    $('#bartext' + i).text(roll_frequency[i-2]);
   }
 }
 

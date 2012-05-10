@@ -477,6 +477,9 @@ body {
   width: 90%;
   background-color: white;
 }
+.bartext {
+  color: white;
+}
 #list-container {
   height: 70%;
   overflow: scroll;
