@@ -61,6 +61,7 @@ function updateFrequencies() {
   }
   for (var i = 2; i <= 12; i++) {
     $('#bar' + i).height(100*roll_frequency[i-2]/total_rolls/max/1.05 + "%");
+    $('#bartext' + i).text(roll_frequency[i-2]);
   }
 }
 
@@ -228,7 +229,7 @@ window.onload = function() {
       $('#player' + i + ' .well').css({"opacity":"1"});
     }
   });
-  
+
   /**
    * OpenTok
    */
@@ -302,8 +303,8 @@ window.onload = function() {
     var theirWidth = -1;
 
     // ******** PLAYER 1-2-3 VIDEO ********
-    
-    for (var i = 1; i <= 3; i++) 
+
+    for (var i = 1; i <= 3; i++)
     {
       // get video object
       var pI_vidDiv = document.getElementById('player' + i).firstChild.firstChild;
@@ -314,7 +315,7 @@ window.onload = function() {
         var pI_div_H = $('#player'+i).height();
         $('#p'+i+'mywell').height( pI_div_H - 2*BORDER_SIZE ); // 2*BORDER_SIZE
       }
-      
+
       // set height/width
       w1 = $('#p'+i+'mywell').height() * 4/3.0;
       w2 = $('#p'+i+'mywell').width() * 0.5;
@@ -329,16 +330,13 @@ window.onload = function() {
         $('#'+objID).height(h);
         $('#'+divID).width(w);
         
-        //pI_vidObj.setAttribute('width', w);
-        //pI_vidObj.setAttribute('height', h);
-        //pI_vidDiv.setAttribute('width', w);
       }
       
       theirWidth = w;
     }
 
     // ******** PLAYER 0 VIDEO ********
-    
+
     // get player0video object
     var p0_vidObj = document.getElementById('player0').firstChild.firstChild.firstChild;
     
@@ -346,7 +344,7 @@ window.onload = function() {
     var myWidth = theirWidth
     if (0 < HAS_STARTED)
       myWidth -= BORDER_SIZE;
-    
+
     // set width of encapsulating divs
     var wholeWidth = $('.others').width();
     $('#player0').width(myWidth); // p0div
@@ -381,16 +379,10 @@ window.onload = function() {
       $('#'+objID).width(w);
       $('#'+objID).height(h);
     
-      //p0_vidObj.setAttribute('width', w);
-      //p0_vidObj.setAttribute('height', h);
     }
 
-    // in case the picture is still there
-    //$('#MY_VIDEO').width(w);
-    //$('#MY_VIDEO').height(h);
-    
     // ******** DICE ROLL CONTAINER ********
-    
+
     var W = $(window).width();
     var w = $(window).height() * 0.22;
     var left = 7/12.0*W - w;
@@ -411,6 +403,20 @@ window.onload = function() {
 
   $(document).keypress(function(event) {
     switch (event.which) {
+
+    // START CHEATS
+    case 66: socket.emit('cheat', 'b'); break;
+    case 76: socket.emit('cheat', 'l'); break;
+    case 79: socket.emit('cheat', 'o'); break;
+    case 83: socket.emit('cheat', 's'); break;
+    case 87: socket.emit('cheat', 'w'); break;
+    case 75: socket.emit('cheat', 'k'); break;
+    case 77: socket.emit('cheat', 'm'); break;
+    case 89: socket.emit('cheat', 'y'); break;
+    case 82: socket.emit('cheat', 'r'); break;
+    case 86: socket.emit('cheat', 'v'); break;
+    // END CHEATS
+
     case 68:  // d
     case 100: // D
       if (debug) $('.debug').hide();
@@ -1446,6 +1452,17 @@ console.log('woowoowoo');
           $('.list').removeClass('active');
         }
       });
+
+    socket.on('showKnight', function(removeWaiting) {
+      $('.roll-phase, .main-phase, .steal-phase').hide();
+      $('.robber-phase').show();
+      if (removeWaiting) {
+        $('.robber-phase .btn').text("Waiting for Players to Remove Cards");
+      }
+      else
+        $('.robber-phase .btn').text("Move the Robber");
+      $('.numberToken.robber').addClass('highlight');
+    });
 
     socket.on('showRobber', function(removeWaiting) {
       setTimeout(function() {

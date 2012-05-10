@@ -494,6 +494,9 @@ body {font-size:75%;}  /* Set the size of 1em to 12px in all browsers */
   width: 90%;
   background-color: white;
 }
+.bartext {
+  color: white;
+}
 #list-container {
   height: 70%;
   overflow: scroll;

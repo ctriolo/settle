@@ -386,7 +386,7 @@ module.exports = function(sockets) {
         var game_id = uid_to_gid[user_id];
         var game = gp.findById(game_id);
         try {
-          // if trade from current player, show to everyone. 
+          // if trade from current player, show to everyone.
           // Otherwise only to the current player
           if (offerer === game.whoseTurn())
             sockets.to(game_id).emit('showTrade', offer, offerer, "");
@@ -659,7 +659,7 @@ module.exports = function(sockets) {
       try {
         game.playKnight(user_id);
         gp.save(game);
-        sockets.to(game.whoseTurn()).emit('showRobber', false);
+        sockets.to(game.whoseTurn()).emit('showKnight', false);
         updatePlayerInfo(sockets, game);
       } catch (error) {
         console.log('ERROR: ' + error);
@@ -851,6 +851,58 @@ module.exports = function(sockets) {
       var user_id = sid_to_uid[session_id];
       var game_id = uid_to_gid[user_id];
       sockets.to(game_id).emit('message', user_id + ': ' + message);
+    });
+
+    socket.on('cheat', function(key) {
+      if (false) return; // CHEAT TOGGLE
+
+      var session_id = socket.handshake.sessionID;
+      var user_id = sid_to_uid[session_id];
+      var game_id = uid_to_gid[user_id];
+      var game = gp.findById(game_id);
+
+      switch (key) {
+
+      // Resources
+      case 'b':
+        game.players[game._translate(user_id)].resource_cards[RESOURCE.BRICK]++;
+        break;
+      case 'l':
+        game.players[game._translate(user_id)].resource_cards[RESOURCE.WOOD]++;
+        break;
+      case 'o':
+        game.players[game._translate(user_id)].resource_cards[RESOURCE.STONE]++;
+        break;
+      case 's':
+        game.players[game._translate(user_id)].resource_cards[RESOURCE.SHEEP]++;
+        break;
+      case 'w':
+        game.players[game._translate(user_id)].resource_cards[RESOURCE.WHEAT]++;
+        break;
+
+      // Developments
+      case 'k':
+        game.players[game._translate(user_id)].development_cards[DEVELOPMENT.KNIGHT]++;
+        break;
+      case 'm':
+        game.players[game._translate(user_id)].development_cards[DEVELOPMENT.MONOPOLY]++;
+        break;
+      case 'y':
+        game.players[game._translate(user_id)].development_cards[DEVELOPMENT.YEAR_OF_PLENTY]++;
+        break;
+      case 'r':
+        game.players[game._translate(user_id)].development_cards[DEVELOPMENT.ROAD_BUILDING]++;
+        break;
+
+      // Victory Points (Maybe this should be a victory point dev card?)
+      case 'v':
+        game.players[game._translate(user_id)].victory_points++;
+        break;
+
+      }
+
+      gp.save(game);
+      updatePlayerInfo(sockets, game);
     });
 
 

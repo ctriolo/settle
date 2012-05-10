@@ -10,7 +10,11 @@ var User = require('../models/User.js')
   , gameProvider = GameProvider.getInstance();
 
 module.exports.title = function(req, res){
-  res.render('title', {title: 'Settle'});
+  if (req.session.auth && req.session.auth.loggedIn) {
+    res.redirect('/dashboard');
+  } else {
+    res.render('title', {title: 'Settle'});
+  }
 };
 
 module.exports.dashboard = function(req, res){
