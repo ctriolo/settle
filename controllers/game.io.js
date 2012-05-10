@@ -36,20 +36,29 @@ function updateDashboard(sockets, gp) {
   sockets.to('dashboard').emit('updateDashboard', gp.getJoinable());
 }
 
-module.exports = function(sockets) {
+module.exports = function(sockets, dsockets) {
   var gp = GameProvider.getInstance();
-  var up = new UserProvider('localhost', 27017);
+  var up = require('../models/UserProviderInstance');
 
-  sockets.on('connection', function(socket) {
-
-    /*
-    socket.on('disconnect', function() {
-      alert("Goodbye");
-    }); */
-
+  dsockets.on('connection', function(socket) {
 
     socket.on('joinDashboard', function() {
       socket.join('dashboard');
+    });
+
+  });
+
+  sockets.on('connection', function(socket) {
+
+    socket.on('disconnect', function() {
+      var session_id = socket.handshake.sessionID;
+      var user_id = sid_to_uid[session_id];
+      up.findById(user_id, function(error, user){
+        if (user) {
+          user.in_game = false;
+          up.save(user, function(){});
+        }
+      });
     });
 
     /**
@@ -97,7 +106,10 @@ module.exports = function(sockets) {
           sockets.to(user_id).emit('joined', OPENTOK_API_KEY, game.sessionId, token, game.players[game._translate(user_id)].index); // ot2. send index
         }
 
-        updateDashboard(sockets, gp);
+        user.in_game = true;
+        up.save(user, function(){});
+
+        updateDashboard(dsockets, gp);
 
       });
     });
@@ -160,7 +172,7 @@ module.exports = function(sockets) {
         socket.send(error);
       }
 
-      updateDashboard(sockets, gp);
+      updateDashboard(dsockets, gp);
     });
 
     socket.on('gameover', function(winner) {
