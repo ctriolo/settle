@@ -144,9 +144,9 @@ block labels
 block player
   #player0
     .player.mywell#p0mywell
-      .left
+      #myleft.left
         img(src='http://i.imgur.com/TFOqB.jpg', width=200, height=150).pic#MY_VIDEO
-      .right
+      #myright.right
         h3.name Empty
         .cards
           .card
@@ -296,17 +296,17 @@ block others
   .others
     #player1
       .opponent.player.mywell#p1mywell
-        .opponentvideo
+        .opponentvideo#oppvideo1
           img(src='http://i.imgur.com/cGxvu.png').video#VIDEO1
         include includes/opponent
     #player2
       .opponent.player.mywell#p2mywell
-        .opponentvideo
+        .opponentvideo#oppvideo2
           img(src='http://i.imgur.com/cGxvu.png').video#VIDEO2
         include includes/opponent
     #player3
       .opponent.player.mywell#p3mywell
-        .opponentvideo
+        .opponentvideo#oppvideo3
           img(src='http://i.imgur.com/cGxvu.png').video#VIDEO3
         include includes/opponent
 

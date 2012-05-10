@@ -11,6 +11,7 @@ function User(obj) {
   // Updateable
   this.wins = obj.wins || 0;
   this.loses = obj.loses || 0;
+  this.in_game = obj.in_game || false;
 
   // Overwritable
   this.token = obj.token || "";

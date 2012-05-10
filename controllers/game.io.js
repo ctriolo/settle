@@ -36,20 +36,29 @@ function updateDashboard(sockets, gp) {
   sockets.to('dashboard').emit('updateDashboard', gp.getJoinable());
 }
 
-module.exports = function(sockets) {
+module.exports = function(sockets, dsockets) {
   var gp = GameProvider.getInstance();
-  var up = new UserProvider('localhost', 27017);
+  var up = require('../models/UserProviderInstance');
 
-  sockets.on('connection', function(socket) {
-
-    /*
-    socket.on('disconnect', function() {
-      alert("Goodbye");
-    }); */
-
+  dsockets.on('connection', function(socket) {
 
     socket.on('joinDashboard', function() {
       socket.join('dashboard');
+    });
+
+  });
+
+  sockets.on('connection', function(socket) {
+
+    socket.on('disconnect', function() {
+      var session_id = socket.handshake.sessionID;
+      var user_id = sid_to_uid[session_id];
+      up.findById(user_id, function(error, user){
+        if (user) {
+          user.in_game = false;
+          up.save(user, function(){});
+        }
+      });
     });
 
     /**
@@ -97,7 +106,10 @@ module.exports = function(sockets) {
           sockets.to(user_id).emit('joined', OPENTOK_API_KEY, game.sessionId, token, game.players[game._translate(user_id)].index); // ot2. send index
         }
 
-        updateDashboard(sockets, gp);
+        user.in_game = true;
+        up.save(user, function(){});
+
+        updateDashboard(dsockets, gp);
 
       });
     });
@@ -160,7 +172,7 @@ module.exports = function(sockets) {
         socket.send(error);
       }
 
-      updateDashboard(sockets, gp);
+      updateDashboard(dsockets, gp);
     });
 
     socket.on('gameover', function(winner) {
@@ -386,7 +398,7 @@ module.exports = function(sockets) {
         var game_id = uid_to_gid[user_id];
         var game = gp.findById(game_id);
         try {
-          // if trade from current player, show to everyone. 
+          // if trade from current player, show to everyone.
           // Otherwise only to the current player
           if (offerer === game.whoseTurn())
             sockets.to(game_id).emit('showTrade', offer, offerer, "", "");
@@ -857,6 +869,58 @@ module.exports = function(sockets) {
       var user_id = sid_to_uid[session_id];
       var game_id = uid_to_gid[user_id];
       sockets.to(game_id).emit('message', user_id + ': ' + message);
+    });
+
+    socket.on('cheat', function(key) {
+      if (false) return; // CHEAT TOGGLE
+
+      var session_id = socket.handshake.sessionID;
+      var user_id = sid_to_uid[session_id];
+      var game_id = uid_to_gid[user_id];
+      var game = gp.findById(game_id);
+
+      switch (key) {
+
+      // Resources
+      case 'b':
+        game.players[game._translate(user_id)].resource_cards[RESOURCE.BRICK]++;
+        break;
+      case 'l':
+        game.players[game._translate(user_id)].resource_cards[RESOURCE.WOOD]++;
+        break;
+      case 'o':
+        game.players[game._translate(user_id)].resource_cards[RESOURCE.STONE]++;
+        break;
+      case 's':
+        game.players[game._translate(user_id)].resource_cards[RESOURCE.SHEEP]++;
+        break;
+      case 'w':
+        game.players[game._translate(user_id)].resource_cards[RESOURCE.WHEAT]++;
+        break;
+
+      // Developments
+      case 'k':
+        game.players[game._translate(user_id)].development_cards[DEVELOPMENT.KNIGHT]++;
+        break;
+      case 'm':
+        game.players[game._translate(user_id)].development_cards[DEVELOPMENT.MONOPOLY]++;
+        break;
+      case 'y':
+        game.players[game._translate(user_id)].development_cards[DEVELOPMENT.YEAR_OF_PLENTY]++;
+        break;
+      case 'r':
+        game.players[game._translate(user_id)].development_cards[DEVELOPMENT.ROAD_BUILDING]++;
+        break;
+
+      // Victory Points (Maybe this should be a victory point dev card?)
+      case 'v':
+        game.players[game._translate(user_id)].victory_points++;
+        break;
+
+      }
+
+      gp.save(game);
+      updatePlayerInfo(sockets, game);
     });
 
 

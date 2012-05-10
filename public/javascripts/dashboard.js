@@ -4,7 +4,7 @@ window.onload = function() {
    * Socket IO Connection
    */
 
-  var socket = io.connect('/game');
+  var socket = io.connect('/dashboard');
   socket.on('connect', function() {
     socket.emit('joinDashboard');
   });
