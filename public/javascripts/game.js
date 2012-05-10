@@ -246,6 +246,8 @@ window.onload = function() {
       h = $('#MY_VIDEO').height();
       w = $('#MY_VIDEO').width();
       session.publish('MY_VIDEO', {height:h, width:w, class:'MY_VIDEO'});
+      setTimeout(function() { window.onresize(); }, 1000);
+      
       socket.emit('associateMyConnIDwithMyIndex', CONFIG.room, myIndex, session.connection.connectionId); // ot3. send game[index=connID]
       subscribeToStreams(event.streams);
     }
@@ -304,7 +306,8 @@ window.onload = function() {
     for (var i = 1; i <= 3; i++) 
     {
       // get video object
-      pI_vidObj = document.getElementById('player' + i).firstChild.firstChild.firstChild
+      var pI_vidDiv = document.getElementById('player' + i).firstChild.firstChild;
+      var pI_vidObj = document.getElementById('player' + i).firstChild.firstChild.firstChild;
     
       // started, so incorporate border size
       if (i < HAS_STARTED) {
@@ -313,10 +316,23 @@ window.onload = function() {
       }
       
       // set height/width
-      h = $('#p'+i+'mywell').height();
-      w = h*4/3.0;
-      pI_vidObj.setAttribute('width', w);
-      pI_vidObj.setAttribute('height', h);
+      w1 = $('#p'+i+'mywell').height() * 4/3.0;
+      w2 = $('#p'+i+'mywell').width() * 0.5;
+      w = Math.min(w1, w2);
+      h = w * 3/4.0;
+      
+      if (typeof pI_vidObj != 'undefined') {
+        var objID = pI_vidObj.id;
+        var divID = pI_vidDiv.id;
+      
+        $('#'+objID).width(w);
+        $('#'+objID).height(h);
+        $('#'+divID).width(w);
+        
+        //pI_vidObj.setAttribute('width', w);
+        //pI_vidObj.setAttribute('height', h);
+        //pI_vidDiv.setAttribute('width', w);
+      }
       
       theirWidth = w;
     }
@@ -324,7 +340,7 @@ window.onload = function() {
     // ******** PLAYER 0 VIDEO ********
     
     // get player0video object
-    p0_vidObj = document.getElementById('player0').firstChild.firstChild.firstChild;
+    var p0_vidObj = document.getElementById('player0').firstChild.firstChild.firstChild;
     
     // set up myWidth
     var myWidth = theirWidth
@@ -333,8 +349,18 @@ window.onload = function() {
     
     // set width of encapsulating divs
     var wholeWidth = $('.others').width();
-    $('#player0').width(myWidth);
+    $('#player0').width(myWidth); // p0div
+    $('#p0mywell').width(myWidth); // p0mywell
+    // surroundings
+    $('#myleft').width(myWidth);
+    $('.right').width(myWidth-20); // padding
+    $('.right').css('min-width', myWidth-20); // padding
+    $('.right').css('margin-right', 0);
     $('.actions').width( wholeWidth - myWidth )
+    
+    // also cards and points
+    $('.cards').width(myWidth);
+    $('.points').width(myWidth);
     
     // if started, deduct border size
     if (0 < HAS_STARTED) {
@@ -345,12 +371,23 @@ window.onload = function() {
     // set width of video itself
     var w = $('#p0mywell').width()
     var h = w*3/4.0;
-    p0_vidObj.setAttribute('width', w);
-    p0_vidObj.setAttribute('height', h);
+    
+    console.log('bout to set my width to ' + w)
+    if (typeof p0_vidObj != 'undefined') {    
+      var objID = p0_vidObj.id;
+      
+      console.log('my ID is ' + objID);
+      
+      $('#'+objID).width(w);
+      $('#'+objID).height(h);
+    
+      //p0_vidObj.setAttribute('width', w);
+      //p0_vidObj.setAttribute('height', h);
+    }
 
     // in case the picture is still there
-    $('#MY_VIDEO').width(w);
-    $('#MY_VIDEO').height(h);
+    //$('#MY_VIDEO').width(w);
+    //$('#MY_VIDEO').height(h);
     
     // ******** DICE ROLL CONTAINER ********
     
@@ -358,6 +395,12 @@ window.onload = function() {
     var w = $(window).height() * 0.22;
     var left = 7/12.0*W - w;
     $('#dice-image-container').css('left',left);
+    
+    // ******** FONT SIZE ********
+    
+    var viewportW = $(window).width();
+    if ( viewportW < 900 ) $('body').css('font-size', (viewportW-300)/(900.0-300) * 75+'%');
+    else $('body').css('font-size', '75%');
   }
 
   window.onresize();
@@ -758,6 +801,9 @@ window.onload = function() {
    * Attaches an emit('start') onto the the start button and enables it.
    */
   socket.on('canStart', function(can_start) {
+  
+console.log('woowoowoo');
+    
     $('#start').removeClass('disabled');
     $('#start').text("Start");
     $('#start').css("background-color", "#05C");

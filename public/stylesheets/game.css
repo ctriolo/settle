@@ -14,6 +14,8 @@ body {
   //min-height: 600px;
 }
 
+body {font-size:75%;}  /* Set the size of 1em to 12px in all browsers */
+
 .container-fluid {
   padding: 0;
 }
@@ -95,6 +97,7 @@ body {
 
 .name {
   color: #333;
+  font-size: 1.5em;
 }
 .name.highlight {
   color: lime;
@@ -234,17 +237,31 @@ body {
 }
 
 #start, #win {
+
+  /* overall position */
   position: fixed;
-  width: 26%;
-  height: 10%;
-  top: 44%;
-  left: 14.6%;
-  font-size: 55px;
+  z-index: 5;
+
+  /* horizontal position */
+  width: 8em;
+  left: 29%;
+  margin-left: -4em;
+  
+  /* vertical position */
+  height: 2em;
+  top: 50%;
+  margin-top: -1em;
+
+  /* text */
+  font-size: 5em;
+  padding: 0;
+
+  /* color */
   opacity: .8;
   background-color:#CD0000;
   color:#FFFFFF;
-  z-index: 5;
 }
+
 #winSpace {
   display:none;
   width: 100%;
@@ -531,7 +548,8 @@ body {
   position: absolute;
   top: 25%;
   right: 5%;
-  height: 8%;
+  max-height: 8%;
+  max-width: 40%;
   opacity: .2;
 }
 #frequencyChart img {
