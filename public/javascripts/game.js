@@ -452,6 +452,14 @@ window.onload = function() {
     document.title = "Your turn!";
   });
 
+  $('a.x').click(function() {
+    console.log("X clicked");
+    var p = $(this).parents('.showtrade-container');
+    console.log(p);
+    p.animate({"right":"5%"}, "slow");
+    p.hide();
+  });
+
   // handle stealing
   $(".player.mywell").click(function(){
     if ($(this).hasClass("enabled")) {
