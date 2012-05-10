@@ -20,11 +20,19 @@ var next_id = 0;
  * creates a game, and redirects to its url
  */
 module.exports.create = function(req, res) {
-  var game = new Game();
-  game.id = next_id++;
-  gp.save(game);
+  var user_id = parseInt(req.session.auth.userId);
+  up.findById(user_id, function(error, user){
 
-  res.redirect('/game/'+game.id);
+    if (user.in_game) {
+      return res.redirect('/dashboard');
+    }
+
+    var game = new Game();
+    game.id = next_id++;
+    gp.save(game);
+
+    res.redirect('/game/'+game.id);
+  });
 };
 
 /**
