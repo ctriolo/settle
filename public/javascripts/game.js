@@ -302,6 +302,8 @@ window.onload = function() {
   {
     var theirWidth = -1;
 
+    var BORDER_FIX = (0 < HAS_STARTED) ? 2*BORDER_SIZE : 0;
+
     // ******** PLAYER 1-2-3 VIDEO ********
 
     for (var i = 1; i <= 3; i++)
@@ -311,13 +313,13 @@ window.onload = function() {
       var pI_vidObj = document.getElementById('player' + i).firstChild.firstChild.firstChild;
     
       // started, so incorporate border size
-      if (i < HAS_STARTED) {
+      if (i < HAS_STARTED) { // only for active players
         var pI_div_H = $('#player'+i).height();
-        $('#p'+i+'mywell').height( pI_div_H - 2*BORDER_SIZE ); // 2*BORDER_SIZE
+        $('#p'+i+'mywell').height( pI_div_H - BORDER_FIX ); // 2*BORDER_SIZE
       }
 
       // set height/width
-      w1 = $('#p'+i+'mywell').height() * 4/3.0;
+      w1 = 4/3.0 * $('#p'+i+'mywell').height();
       w2 = $('#p'+i+'mywell').width() * 0.5;
       w = Math.min(w1, w2);
       h = w * 3/4.0;
@@ -329,21 +331,25 @@ window.onload = function() {
         $('#'+objID).width(w);
         $('#'+objID).height(h);
         $('#'+divID).width(w);
-        
+
+        if (HAS_STARTED == -1)
+          theirWidth = w;
+        if (i < HAS_STARTED)
+          theirWidth = w;
       }
       
-      theirWidth = w;
     }
 
     // ******** PLAYER 0 VIDEO ********
 
     // get player0video object
     var p0_vidObj = document.getElementById('player0').firstChild.firstChild.firstChild;
+    var started = (0 < HAS_STARTED)
     
     // set up myWidth
-    var myWidth = theirWidth
-    if (0 < HAS_STARTED)
-      myWidth -= BORDER_SIZE;
+    var myWidth = theirWidth;
+      
+console.log('myWidth calculated at ' + myWidth);
 
     // set width of encapsulating divs
     var wholeWidth = $('.others').width();
@@ -354,7 +360,7 @@ window.onload = function() {
     $('.right').width(myWidth-20); // padding
     $('.right').css('min-width', myWidth-20); // padding
     $('.right').css('margin-right', 0);
-    $('.actions').width( wholeWidth - myWidth )
+    $('.actions').width( wholeWidth - $('#player0').width() )
     
     // also cards and points
     $('.cards').width(myWidth);
@@ -392,7 +398,16 @@ window.onload = function() {
     
     var viewportW = $(window).width();
     if ( viewportW < 900 ) $('body').css('font-size', (viewportW-300)/(900.0-300) * 75+'%');
-    else $('body').css('font-size', '75%');
+    else                   $('body').css('font-size', '75%');
+    
+    if (viewportW > 900)      $('.btn.big').width('20em');
+    else if (viewportW < 400) $('.btn.big').width('7em');
+    else                      $('.btn.big').width( (viewportW-400)/500.0 *13 +7 +'em');
+    
+    if (viewportW > 900)      $('.btn').width('10em');
+    else if (viewportW < 400) $('.btn').width('7em');
+    else                      $('.btn').width( (viewportW-400)/500.0 *3 +7 +'em');
+    
   }
 
   window.onresize();
@@ -807,9 +822,6 @@ window.onload = function() {
    * Attaches an emit('start') onto the the start button and enables it.
    */
   socket.on('canStart', function(can_start) {
-  
-console.log('woowoowoo');
-    
     $('#start').removeClass('disabled');
     $('#start').text("Start");
     $('#start').css("background-color", "#05C");

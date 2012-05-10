@@ -198,10 +198,13 @@ body {font-size:75%;}  /* Set the size of 1em to 12px in all browsers */
 }
 
 .actions .btn {
-  width: 120px;
+width: 10em;
+font-size: 1em;
 }
+
 .actions .btn.big {
-  width: 240px;
+  width: 20em;
+  font-size: 1em;
 }
 
 .actions .dropdown-menu {
@@ -328,8 +331,8 @@ body {font-size:75%;}  /* Set the size of 1em to 12px in all browsers */
 .cards .stone-card,
 .cards .resource-card,
 .cards .development-card {
-  height: 30px;
-  width:  20px;
+  height: 2.4em;
+  width:  1.6em;
   border: 3px solid black;
   moz-border-radius: 3px;
       border-radius: 3px;
@@ -552,7 +555,7 @@ body {font-size:75%;}  /* Set the size of 1em to 12px in all browsers */
   top: 25%;
   right: 5%;
   max-height: 8%;
-  max-width: 40%;
+  max-width: 35%;
   opacity: .2;
 }
 #frequencyChart img {
