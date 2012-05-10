@@ -696,7 +696,8 @@ Game.prototype.bankTrade = function(offer, offerer) {
   this._validatePhase(PHASE.MAIN);
   var offerer = this._translate(offerer);
   this._validatePlayer(offerer);
-
+  this._validateBuild();
+  this.can_build = false;
   var offer_total = 0;
   var for_total = 0;
   var offer_found = 0;
@@ -741,6 +742,8 @@ Game.prototype.bankTrade = function(offer, offerer) {
 Game.prototype.acceptTrade = function(offer, accepter, offerer) {
   var accepter = this._translate(accepter);
   offerer = this._translate(offerer);
+  this._validateBuild();
+  this.can_build = false
   for(var i = 0; i < offer['for'].length; i++) {
       if (this.players[accepter].resource_cards[RESOURCE_ARRAY[i]] < offer['for'][i])
         throw "You can't make this trade"

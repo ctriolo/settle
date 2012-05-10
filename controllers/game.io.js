@@ -389,9 +389,9 @@ module.exports = function(sockets) {
           // if trade from current player, show to everyone. 
           // Otherwise only to the current player
           if (offerer === game.whoseTurn())
-            sockets.to(game_id).emit('showTrade', offer, offerer, "");
+            sockets.to(game_id).emit('showTrade', offer, offerer, "", "");
           else
-            sockets.to(game.whoseTurn()).emit('showTrade', offer, offerer, "");
+            sockets.to(game_id).emit('showTrade', offer, offerer, game.whoseTurn(), "");
         } catch (error) {
           console.log('ERROR: ' + error);
         }
@@ -403,7 +403,7 @@ module.exports = function(sockets) {
         var game_id = uid_to_gid[user_id];
         var game = gp.findById(game_id);
         try {
-          sockets.to(game_id).emit('showTrade', offer, rejecter, "rejected");
+          sockets.to(game_id).emit('showTrade', offer, rejecter, "", "rejected");
         } catch (error) {
           console.log('ERROR: ' + error);
         }
@@ -419,6 +419,9 @@ module.exports = function(sockets) {
         var game = gp.findById(game_id);
         try {
           var ret = game.bankTrade(offer, offerer);
+          setTimeout(function() {
+            game.allowBuild();
+            gp.save(game);}, 500);
           updatePlayerInfo(sockets, game);
           console.log("SAVING");
           gp.save(game);
@@ -442,6 +445,9 @@ module.exports = function(sockets) {
           try {
             console.log(accepter + " " + user_id);
             var ret = game.acceptTrade(offer, accepter, offerer);
+            setTimeout(function() {
+              game.allowBuild();
+              gp.save(game);}, 500);
             updatePlayerInfo(sockets, game);
             gp.save(game);
             sockets.to(game_id).emit('tradeCleanup');
@@ -458,7 +464,7 @@ module.exports = function(sockets) {
           offer['offer'] = offer['for'];
           offer['for'] = temp;
           try {
-            sockets.to(game_id).emit('showTrade', offer, accepter, "accepted");
+            sockets.to(game_id).emit('showTrade', offer, accepter, offerer, "accepted");
           } catch (error) {
             console.log('ERROR: ' + error);
           }

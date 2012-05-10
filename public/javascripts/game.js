@@ -445,7 +445,7 @@ window.onload = function() {
      }, 4 * 1000);
   });
 
-  socket.on('showTrade', function(offer, offerer, type) {
+  socket.on('showTrade', function(offer, offerer, accepter, type) {
     if (me !== offerer) {
       var player_num = users.indexOf(offerer);
       // get id name of player mywell
@@ -459,6 +459,8 @@ window.onload = function() {
       if (type === "accepted") {
         container.addClass("accepted");
         container.removeClass("rejected");
+        if (me !== accepter && accepter !== "")
+          $(player_tag + " .showtrade-container .trade-actions").hide();
       }
       else if (type === "rejected") {
         container.addClass("rejected");
@@ -468,6 +470,8 @@ window.onload = function() {
       else {
         container.removeClass("accepted");
         container.removeClass("rejected");
+        if (me !== accepter && accepter !== "")
+          $(player_tag + " .showtrade-container .trade-actions").hide();
       }
 
       // show the given cards from the offer
@@ -532,10 +536,6 @@ window.onload = function() {
       container.removeClass("accept");
       container.addClass("reject");
       socket.emit('rejectTrade', recent_offer[num1], me, users[num1]);
-      setTimeout(function() {
-        $(player_tag + " .showtrade-container").animate({"right": "5%"}, "slow");
-        $(player_tag + " .showtrade-container").hide();
-      }, 2000);
     }
   });
   $(".counterTrade").click(function() {
