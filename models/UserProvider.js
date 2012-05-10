@@ -90,7 +90,7 @@ UserProvider.prototype.save = function(users, callback) {
       if (typeof(users.length)=="undefined")
       //  users = [users]; // single user
 
-      user_collection.update({id:users.id}, users, {upsert:true}, function() {
+      user_collection.update({id:users.id}, users, {safe:true, upsert:true}, function() {
         callback(null, users);
       });
     }

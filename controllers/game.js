@@ -9,6 +9,9 @@ var Game = require('../models/Game')
   , GameProvider = require('../models/GameProvider')
   , UIBoard = require('../models/Board/UIBoard');
 
+var gp = GameProvider.getInstance();
+var up = require('../models/UserProviderInstance');
+
 var next_id = 0;
 
 /**
@@ -17,8 +20,6 @@ var next_id = 0;
  * creates a game, and redirects to its url
  */
 module.exports.create = function(req, res) {
-  var gp = GameProvider.getInstance();
-
   var game = new Game();
   game.id = next_id++;
   gp.save(game);
@@ -33,7 +34,6 @@ module.exports.create = function(req, res) {
  */
 module.exports.view = function(req, res) {
   var id = req.params.id?req.params.id:'';
-  var gp = GameProvider.getInstance();
   var game = gp.findById(id);
   var user_id = parseInt(req.session.auth.userId);
 
@@ -41,17 +41,25 @@ module.exports.view = function(req, res) {
     return res.redirect('/dashboard');
   }
 
-  if (!game.isPlayer(user_id) && !game.isStarted()) {
-    game.addPlayer(user_id);
-  }
+  up.findById(user_id, function(error, user){
 
-  gp.save(game);
+    if (user.in_game) {
+      return res.redirect('/dashboard');
+    }
 
-  res.render('game', {
-    'layout': false,
-    'title': id,
-    'id': id,
-    'token': req.session.auth.facebook.accessToken,
-    'board': (new UIBoard(game.board)).render()
+    if (!game.isPlayer(user_id) && !game.isStarted()) {
+      game.addPlayer(user_id);
+    }
+
+    gp.save(game);
+
+    res.render('game', {
+      'layout': false,
+      'title': id,
+      'id': id,
+      'token': req.session.auth.facebook.accessToken,
+      'board': (new UIBoard(game.board)).render()
+    });
+
   });
 };
