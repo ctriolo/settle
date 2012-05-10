@@ -349,8 +349,6 @@ window.onload = function() {
     // set up myWidth
     var myWidth = theirWidth;
       
-console.log('myWidth calculated at ' + myWidth);
-
     // set width of encapsulating divs
     var wholeWidth = $('.others').width();
     $('#player0').width(myWidth); // p0div
@@ -376,12 +374,9 @@ console.log('myWidth calculated at ' + myWidth);
     var w = $('#p0mywell').width()
     var h = w*3/4.0;
     
-    console.log('bout to set my width to ' + w)
     if (typeof p0_vidObj != 'undefined') {    
       var objID = p0_vidObj.id;
-      
-      console.log('my ID is ' + objID);
-      
+            
       $('#'+objID).width(w);
       $('#'+objID).height(h);
     
