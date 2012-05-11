@@ -192,7 +192,8 @@
  */
 
 #board circle.settlement {
-  stroke-width: 0;
+  stroke-width: 5;
+  stroke: black;
 }
 
 #board circle.settlement.selectable {
