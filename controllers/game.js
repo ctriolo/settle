@@ -26,6 +26,7 @@ module.exports.create = function(req, res) {
     if (user.in_game) {
       return res.redirect('/dashboard');
     }
+    console.log("Creating game");
 
     var game = new Game();
     game.id = next_id++;
@@ -56,7 +57,7 @@ module.exports.view = function(req, res) {
     }
 
     if (!game.isPlayer(user_id) && !game.isStarted()) {
-      game.addPlayer(user_id);
+      game.addPlayer(user_id, user.first_name, user.last_name, user.wins, user.loses);
     }
 
     gp.save(game);

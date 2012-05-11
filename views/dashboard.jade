@@ -34,26 +34,3 @@ block content
         .row
           .span12
             ul.thumbnails
-              - for (var i = 0; i < games.length; i++)
-                li.span2
-                  a(href="/game/#{games[i].id}").thumbnail
-                    .row
-                      .span2
-                        if (games[i].players.length > 0)
-                          img(src="http://graph.facebook.com/#{games[i].players[0].user_id}/picture?type=square").small
-                        else
-                          img(src="http://i.imgur.com/TFOqB.jpg").small
-                        if (games[i].players.length > 1)
-                          img(src="http://graph.facebook.com/#{games[i].players[1].user_id}/picture?type=square").small
-                        else
-                          img(src="http://i.imgur.com/TFOqB.jpg").small
-                    .row
-                      .span2
-                        if (games[i].players.length > 2)
-                          img(src="http://graph.facebook.com/#{games[i].players[2].user_id}/picture?type=square").small
-                        else
-                          img(src="http://i.imgur.com/TFOqB.jpg").small
-                        if (games[i].players.length > 3)
-                          img(src="http://graph.facebook.com/#{games[i].players[3].user_id}/picture?type=square").small
-                        else
-                          img(src="http://i.imgur.com/TFOqB.jpg").small

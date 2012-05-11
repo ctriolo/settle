@@ -44,6 +44,7 @@ module.exports = function(sockets, dsockets) {
 
     socket.on('joinDashboard', function() {
       socket.join('dashboard');
+      socket.emit('updateDashboard', gp.getJoinable());
     });
 
   });
