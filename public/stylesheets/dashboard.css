@@ -36,3 +36,9 @@ body {
 .small {
   width: 65px;
 }
+
+.alert {
+  margin-bottom: 0px;
+  margin-top: 18px;
+  text-align: center;
+}

@@ -19,6 +19,10 @@ var GameProvider = (function(){
       return this.games[id];
     };
 
+    this.deleteById = function(id) {
+      delete this.games[id];
+    };
+
     this.getJoinable = function() {
       var joinable = [];
 

@@ -240,7 +240,7 @@ window.onload = function() {
   socket.on('joined', function(apiKey, sessionId, token, myIndex)
   {
     MY_INDEX = myIndex;
-  
+
     SESSION = TB.initSession(sessionId);
     SESSION.addEventListener("sessionConnected", sessionConnectedHandler);
     SESSION.addEventListener("streamCreated", streamCreatedHandler);
@@ -282,7 +282,7 @@ console.log(stream);
     }
 
   });
-  
+
   socket.on('sendPlayerIndexFromConnID', function(index, streamINDEX) // ot7. receive index and use to replace correct img
   {
 console.log('(B) receiving #streamINDEX from server: ' + streamINDEX);
@@ -317,7 +317,7 @@ console.log(STREAMS[streamINDEX])
       // get video object
       var pI_vidDiv = document.getElementById('player' + i).firstChild.firstChild;
       var pI_vidObj = document.getElementById('player' + i).firstChild.firstChild.firstChild;
-    
+
       // started, so incorporate border size
       if (i < HAS_STARTED) { // only for active players
         var pI_div_H = $('#player'+i).height();
@@ -329,11 +329,11 @@ console.log(STREAMS[streamINDEX])
       w2 = $('#p'+i+'mywell').width() * 0.5;
       w = Math.min(w1, w2);
       h = w * 3/4.0;
-      
+
       if (typeof pI_vidObj != 'undefined') {
         var objID = pI_vidObj.id;
         var divID = pI_vidDiv.id;
-      
+
         $('#'+objID).width(w);
         $('#'+objID).height(h);
         $('#'+divID).width(w);
@@ -343,7 +343,7 @@ console.log(STREAMS[streamINDEX])
         if (i < HAS_STARTED)
           theirWidth = w;
       }
-      
+
     }
 
     // ******** PLAYER 0 VIDEO ********
@@ -351,10 +351,10 @@ console.log(STREAMS[streamINDEX])
     // get player0video object
     var p0_vidObj = document.getElementById('player0').firstChild.firstChild.firstChild;
     var started = (0 < HAS_STARTED)
-    
+
     // set up myWidth
     var myWidth = theirWidth;
-      
+
     // set width of encapsulating divs
     var wholeWidth = $('.others').width();
     $('#player0').width(myWidth); // p0div
@@ -365,11 +365,11 @@ console.log(STREAMS[streamINDEX])
     $('.right').css('min-width', myWidth-20); // padding
     $('.right').css('margin-right', 0);
     $('.actions').width( wholeWidth - $('#player0').width() )
-    
+
     // also cards and points
     $('.cards').width(myWidth);
     $('.points').width(myWidth);
-    
+
     // if started, deduct border size
     if (0 < HAS_STARTED) {
       var p0_div_H = $('#player0').height()
@@ -379,13 +379,13 @@ console.log(STREAMS[streamINDEX])
     // set width of video itself
     var w = $('#p0mywell').width()
     var h = w*3/4.0;
-    
-    if (typeof p0_vidObj != 'undefined') {    
+
+    if (typeof p0_vidObj != 'undefined') {
       var objID = p0_vidObj.id;
-            
+
       $('#'+objID).width(w);
       $('#'+objID).height(h);
-    
+
     }
 
     // ******** DICE ROLL CONTAINER ********
@@ -394,21 +394,21 @@ console.log(STREAMS[streamINDEX])
     var w = $(window).height() * 0.22;
     var left = 7/12.0*W - w;
     $('#dice-image-container').css('left',left);
-    
+
     // ******** FONT SIZE ********
-    
+
     var viewportW = $(window).width();
     if ( viewportW < 900 ) $('body').css('font-size', (viewportW-300)/(900.0-300) * 75+'%');
     else                   $('body').css('font-size', '75%');
-    
+
     if (viewportW > 900)      $('.btn.big').width('20em');
     else if (viewportW < 400) $('.btn.big').width('7em');
     else                      $('.btn.big').width( (viewportW-400)/500.0 *13 +7 +'em');
-    
+
     if (viewportW > 900)      $('.btn').width('10em');
     else if (viewportW < 400) $('.btn').width('7em');
     else                      $('.btn').width( (viewportW-400)/500.0 *3 +7 +'em');
-    
+
   }
 
   window.onresize();
@@ -500,6 +500,11 @@ console.log(STREAMS[streamINDEX])
       offer["offer"].push(parseInt($(this).text()));
     });
     socket.emit('offerTrade', offer, me);
+  });
+
+  socket.on('playerLeftEarly', function() {
+    window.onbeforeunload = function() {};
+    window.location = '/dashboard?error=player_left';
   });
 
   socket.on('disconnect', function() {
