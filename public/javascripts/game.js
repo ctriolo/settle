@@ -1232,8 +1232,8 @@ window.onload = function() {
         // only say you win if you think you've won
         if (player.user_id == me) {
           var undead = 0;
-          for (var i in players) {
-            if (!players[i].dead) {
+          for (var j in players) {
+            if (!players[j].dead) {
               undead++;
             }
           }
