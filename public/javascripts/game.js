@@ -242,6 +242,7 @@ window.onload = function() {
   var MY_INDEX = -1;
   var STREAMS = [];
   var SESSION = null;
+  var PERMISSION_MODE = false;
 
   /**
    * OpenTok
@@ -261,6 +262,7 @@ window.onload = function() {
       h = $('#MY_VIDEO').height();
       w = $('#MY_VIDEO').width();
       SESSION.publish('MY_VIDEO', {height:h, width:w, class:'MY_VIDEO'});
+      PERMISSION_MODE = true;
       setTimeout(function() { window.onresize(); }, 1500);
       socket.emit('associateMyConnIDwithMyIndex', CONFIG.room, myIndex, SESSION.connection.connectionId); // ot3. send game[index=connID]
       subscribeToStreams(event.streams);
@@ -289,6 +291,11 @@ window.onload = function() {
                       CONFIG.token, 
                       connId, 
                       STREAMS.length - 1); 
+        }
+        else 
+        {
+          PERMISSION_MODE = false;
+          window.onresize();
         }
       }
     }
@@ -398,13 +405,10 @@ window.onload = function() {
     if (typeof p0_vidObj != 'undefined') {
       var objID = p0_vidObj.id;
       
-      if (typeof this.FIRST != 'undefined') {
-        var h = w * $('#'+objID).width()/$('#'+objID).width();
-        this.first = 'defined';
+      if (!PERMISSION_MODE) {
+        $('#'+objID).width(w);
+        $('#'+objID).height(h);
       }
-      
-      $('#'+objID).width(w);
-      $('#'+objID).height(h);
       $('#'+objID).css('position','relative');
       $('#'+objID).css('float','right');
     }
