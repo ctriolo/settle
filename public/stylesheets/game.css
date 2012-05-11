@@ -107,6 +107,7 @@ body {font-size:75%;}  /* Set the size of 1em to 12px in all browsers */
   float: left;
   width: 220px;
   text-align: left;
+  height:100%;
 }
 
 .player .right {
