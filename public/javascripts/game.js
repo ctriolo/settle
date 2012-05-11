@@ -1205,25 +1205,26 @@ console.log(STREAMS[streamINDEX])
      	updateCards(false);
 	if (victory_points >= 10) {
           console.log("GAME OVER");
-          $('#startBackground').css("background", '#000000');
-          $('#startBackground').show();
-          if (player.user_id === me) {
-            $('#win').addClass("won");
-          }
-          else {
-            $('#win').addClass('loss');
-            var name = $('#player' + player_id + ' .name').text();
-            $('#win .txt').text(name + " has won.");
-          }
-          $('#win').show();
-          $('#winSpace').show();
-          $('#lobby').show();
           socket.emit('gameover', player.user_id);
-          done = true;
         }
       }
     });
-
+    socket.on('endGame', function(winner) {
+      $('#startBackground').css("background", '#000000');
+      $('#startBackground').show();
+      if (winner === me) {
+        $('#win').addClass("won");
+      }
+      else {
+        $('#win').addClass('loss');
+        var name = $('#player' + users.indexOf(winner) + ' .name').text();
+        $('#win .txt').text(name + " has won.");
+      }
+      $('#win').show();
+      $('#winSpace').show();
+      $('#lobby').show();
+      done = true;
+    });
 
   /**
    * selectSettlement
