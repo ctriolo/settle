@@ -23,9 +23,9 @@ module.exports.create = function(req, res) {
   var user_id = parseInt(req.session.auth.userId);
   up.findById(user_id, function(error, user){
 
-    if (user.in_game) {
+    /*if (user.in_game) {
       return res.redirect('/dashboard');
-    }
+    }*/
     console.log("Creating game");
 
     var game = new Game();
@@ -52,9 +52,9 @@ module.exports.view = function(req, res) {
 
   up.findById(user_id, function(error, user){
 
-    if (user.in_game) {
+    /*if (user.in_game) {
       return res.redirect('/dashboard');
-    }
+    }*/
 
     if (!game.isPlayer(user_id) && !game.isStarted()) {
       game.addPlayer(user_id, user.first_name, user.last_name, user.wins, user.loses);
