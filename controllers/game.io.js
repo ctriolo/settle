@@ -131,7 +131,7 @@ module.exports = function(sockets, dsockets) {
           }
     });
 
-    socket.on('sendConnIDtoGetPlayerIndex', function(game_id, token, connID, stream) {
+    socket.on('sendConnIDtoGetPlayerIndex', function(game_id, token, connID, streamINDEX) {
       up.findByToken(token, function(error, user)
       {
 //console.log('(E). received request for connID of #game_id,#token,#connID'+game_id+','+token+','+connID)
@@ -139,7 +139,7 @@ module.exports = function(sockets, dsockets) {
         var game = gp.findById(game_id);
         for (var p = 0; p < game.players.length; p++)
           if (game.players[p].connectionId == connID) {
-            sockets.to(user_id).emit('sendPlayerIndexFromConnID', game.players[p].index, stream) // ot6. send index for game[connID]
+            sockets.to(user_id).emit('sendPlayerIndexFromConnID', game.players[p].index, streamINDEX) // ot6. send index for game[connID]
 //console.log('(F). sending #index of ' + game.players[p].index);
           }
       });
