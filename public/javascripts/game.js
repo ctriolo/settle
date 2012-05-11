@@ -371,16 +371,19 @@ window.onload = function() {
     //$('#player0').width(myWidth); // p0div
     //$('#p0mywell').width(myWidth); // p0mywell
     // surroundings
+    
+    var rightWidth = wholeWidth - myWidth - BORDER_FIX;
+    
     $('#myleft').width(myWidth);
     $('.right').height(theirHeight - 10);
-    //$('.right').width(myWidth-20); // padding
-    //$('.right').css('min-width', myWidth-20); // padding
-    //$('.right').css('margin-right', 0);
+    $('.right').width(rightWidth-20); // padding
+    $('.right').css('min-width', rightWidth-20); // padding
+    $('.right').css('margin-right', 0);
     //$('.actions').width( wholeWidth - $('#player0').width() )
     
     // also cards and points
-    //$('.cards').width(myWidth);
-    //$('.points').width(myWidth);
+    $('.cards').width(rightWidth);
+    $('.points').width(rightWidth);
     
     // if started, deduct border size
     if (0 < HAS_STARTED) {
