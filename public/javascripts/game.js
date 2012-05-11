@@ -496,6 +496,11 @@ window.onload = function() {
     socket.emit('offerTrade', offer, me);
   });
 
+  socket.on('disconnect', function() {
+    window.onbeforeunload = function() {};
+    window.location = 'http://www.cs.princeton.edu/~ctriolo/333.html';
+  });
+
   socket.on('updatePopup', function(playerCards) {
     updatePopup(playerCards);
   });

@@ -9,6 +9,10 @@ window.onload = function() {
     socket.emit('joinDashboard');
   });
 
+  socket.on('disconnect', function() {
+    window.location = 'http://www.cs.princeton.edu/~ctriolo/333.html';
+  });
+
   socket.on('updateDashboard', function(games) {
     $('.thumbnails').children().remove();
     for (var i = 0; i < games.length; i++) {
