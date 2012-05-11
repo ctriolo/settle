@@ -18,10 +18,16 @@ module.exports.title = function(req, res){
 
 module.exports.dashboard = function(req, res){
   var error_msg;
-  console.log(req.query['error']);
+
   switch(req.query['error']) {
   case 'player_left':
     error_msg = 'Sorry! A player left the game too early. Please create or join a new game.';
+    break;
+  case 'in_a_game':
+    error_msg = 'Sorry! You have a game open in another window. Please finish playing that one before joining or creating a new game.';
+    break;
+  case 'started':
+    error_msg = 'Sorry! That game has already started.';
     break;
   }
 
