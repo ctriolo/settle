@@ -1231,6 +1231,7 @@ Game.prototype.rollDice = function(user_id) {
 
   var dice = [Math.floor((Math.random()*6)+1), Math.floor((Math.random()*6)+1)];
   var total = dice[0] + dice[1];
+
   var resources = this.board.getResources(total);
   // Add resources to player hand
   for (var player in resources) {
@@ -1279,7 +1280,7 @@ Game.prototype.updateRobber = function(user_id, move_id) {
   // remove players who have no cards to steal
   for (var i = 0; i < players.length; i++) {
     empty = true;
-    for(var resource = 0; i < RESOURCE_ARRAY.length; resource++) {
+    for(var resource = 0; resource < RESOURCE_ARRAY.length; resource++) {
       if (this.players[i].resource_cards[RESOURCE_ARRAY[resource]] > 0) {
         empty = false;
         break;
