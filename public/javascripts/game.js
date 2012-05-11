@@ -283,19 +283,21 @@ window.onload = function() {
         {
           // EMIT CONNECTION ID TO SERVER, GET PLAYER #
           STREAMS.push(stream);
-          socket.emit('sendConnIDtoGetPlayerIndex', CONFIG.room, CONFIG.token, connId, STREAMS.length - 1); // ot5. ask for index from game[connID]
-console.log('(A) sending #streamINDEX to server: ' + (STREAMS.length-1));
-console.log(stream);
+          // ot5. ask for index from game[connID]
+          socket.emit('sendConnIDtoGetPlayerIndex', 
+                      CONFIG.room, 
+                      CONFIG.token, 
+                      connId, 
+                      STREAMS.length - 1); 
         }
       }
     }
 
   });
-
-  socket.on('sendPlayerIndexFromConnID', function(index, streamINDEX) // ot7. receive index and use to replace correct img
+  
+  // ot7. receive index and use to replace correct img
+  socket.on('sendPlayerIndexFromConnID', function(index, streamINDEX) 
   {
-console.log('(B) receiving #streamINDEX from server: ' + streamINDEX);
-console.log(STREAMS[streamINDEX])
     var playerNo = index;
     if (playerNo < MY_INDEX) playerNo++;
     var replaceID = 'VIDEO' + playerNo;
@@ -315,7 +317,7 @@ console.log(STREAMS[streamINDEX])
   window.onresize = dynamicResize;
   function dynamicResize()
   {
-    var theirWidth = -1;
+    var theirWidth = -1, theirHeight = -1;
 
     var BORDER_FIX = (0 < HAS_STARTED) ? 2*BORDER_SIZE : 0;
 
@@ -347,10 +349,10 @@ console.log(STREAMS[streamINDEX])
         $('#'+objID).height(h);
         $('#'+divID).width(w);
 
-        if (HAS_STARTED == -1)
+        if (HAS_STARTED == -1 || i < HAS_STARTED) {
           theirWidth = w;
-        if (i < HAS_STARTED)
-          theirWidth = w;
+          theirHeight = h;
+        }
       }
 
     }
@@ -366,19 +368,20 @@ console.log(STREAMS[streamINDEX])
 
     // set width of encapsulating divs
     var wholeWidth = $('.others').width();
-    $('#player0').width(myWidth); // p0div
-    $('#p0mywell').width(myWidth); // p0mywell
+    //$('#player0').width(myWidth); // p0div
+    //$('#p0mywell').width(myWidth); // p0mywell
     // surroundings
     $('#myleft').width(myWidth);
-    $('.right').width(myWidth-20); // padding
-    $('.right').css('min-width', myWidth-20); // padding
-    $('.right').css('margin-right', 0);
-    $('.actions').width( wholeWidth - $('#player0').width() )
-
+    $('.right').height(theirHeight - 10);
+    //$('.right').width(myWidth-20); // padding
+    //$('.right').css('min-width', myWidth-20); // padding
+    //$('.right').css('margin-right', 0);
+    //$('.actions').width( wholeWidth - $('#player0').width() )
+    
     // also cards and points
-    $('.cards').width(myWidth);
-    $('.points').width(myWidth);
-
+    //$('.cards').width(myWidth);
+    //$('.points').width(myWidth);
+    
     // if started, deduct border size
     if (0 < HAS_STARTED) {
       var p0_div_H = $('#player0').height()
@@ -386,15 +389,21 @@ console.log(STREAMS[streamINDEX])
     }
 
     // set width of video itself
-    var w = $('#p0mywell').width()
+    var w = theirWidth;
     var h = w*3/4.0;
 
     if (typeof p0_vidObj != 'undefined') {
       var objID = p0_vidObj.id;
-
+      
+      if (typeof this.FIRST != 'undefined') {
+        var h = w * $('#'+objID).width()/$('#'+objID).width();
+        this.first = 'defined';
+      }
+      
       $('#'+objID).width(w);
       $('#'+objID).height(h);
-
+      $('#'+objID).css('position','relative');
+      $('#'+objID).css('float','right');
     }
 
     // ******** DICE ROLL CONTAINER ********
@@ -409,7 +418,8 @@ console.log(STREAMS[streamINDEX])
     var viewportW = $(window).width();
     if ( viewportW < 900 ) $('body').css('font-size', (viewportW-300)/(900.0-300) * 75+'%');
     else                   $('body').css('font-size', '75%');
-
+    
+    /*
     if (viewportW > 900)      $('.btn.big').width('20em');
     else if (viewportW < 400) $('.btn.big').width('7em');
     else                      $('.btn.big').width( (viewportW-400)/500.0 *13 +7 +'em');
@@ -417,7 +427,11 @@ console.log(STREAMS[streamINDEX])
     if (viewportW > 900)      $('.btn').width('10em');
     else if (viewportW < 400) $('.btn').width('7em');
     else                      $('.btn').width( (viewportW-400)/500.0 *3 +7 +'em');
-
+    */
+    
+    $('#start').width('8em');
+    
+    window.resizeTo(600,600);
   }
 
   window.onresize();

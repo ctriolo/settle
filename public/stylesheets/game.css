@@ -46,8 +46,8 @@ body {font-size:75%;}  /* Set the size of 1em to 12px in all browsers */
 }
 
 #player0 {
-  height:34%;
-  width: 50%;
+  height:22%;
+  width: 100%;
   position:static;
   float: left;
 }
@@ -107,21 +107,18 @@ body {font-size:75%;}  /* Set the size of 1em to 12px in all browsers */
   float: left;
   width: 220px;
   text-align: left;
+  height:100%;
 }
 
 .player .right {
   float:left;
-  margin-right: 10px;
-  min-width: 200px;
-  padding: 10px;
+  min-width: 190px;
+  padding-left: 10px;
+  padding-top: 10px;
+  background-color: whiteSmoke;
 }
 .opponent .right {
   display:none;
-}
-
-.player .pic {
-  //height: 150px;
-  //width: 200px;
 }
 
 .player {
@@ -141,6 +138,7 @@ body {font-size:75%;}  /* Set the size of 1em to 12px in all browsers */
   display: block;
   float: left;
 }
+
 
 /**
  * Dice Image
@@ -172,8 +170,8 @@ body {font-size:75%;}  /* Set the size of 1em to 12px in all browsers */
 }
 .actions {
   position: static;
-  height:34%;
-  width: 50%;
+  height:12%;
+  width: 100%;
   /*border: 3px solid black;*/
   /*moz-border-radius: 3px;
       border-radius: 3px;*/
@@ -198,13 +196,15 @@ body {font-size:75%;}  /* Set the size of 1em to 12px in all browsers */
 }
 
 .actions .btn {
-width: 10em;
-font-size: 1em;
+  width: 120px;
+  /*width: 10em;*/
+  /*font-size: 1em;*/
 }
 
 .actions .btn.big {
-  width: 20em;
-  font-size: 1em;
+  width: 240px;
+  /*width: 20em;*/
+  /*font-size: 1em;*/
 }
 
 .actions .dropdown-menu {
@@ -561,9 +561,9 @@ font-size: 1em;
 }
 #frequencyChart {
   position: absolute;
-  top: 25%;
+  top: 29%;
   right: 5%;
-  max-height: 8%;
+  max-height: 4%;
   max-width: 35%;
   opacity: .2;
 }
