@@ -36,6 +36,16 @@ function updateDashboard(sockets, gp) {
   sockets.to('dashboard').emit('updateDashboard', gp.getJoinable());
 }
 
+function deleteGame(sockets, gp, game) {
+  var user_ids = game.getPlayers().slice(0); //copy
+
+  gp.deleteById(game.id);
+
+  for (var i = 0; i < user_ids.length; i++) {
+    sockets.to(user_ids[i]).emit('playerLeftEarly');
+  }
+}
+
 module.exports = function(sockets, dsockets) {
   var gp = GameProvider.getInstance();
   var up = require('../models/UserProviderInstance');
@@ -54,12 +64,23 @@ module.exports = function(sockets, dsockets) {
     socket.on('disconnect', function() {
       var session_id = socket.handshake.sessionID;
       var user_id = sid_to_uid[session_id];
+      var game_id = uid_to_gid[user_id];
+
+      delete uid_to_gid[user_id];
       up.findById(user_id, function(error, user){
         if (user) {
           user.in_game = false;
           up.save(user, function(){});
         }
       });
+
+      var game = gp.findById(game_id);
+      if (!game) return; // game deleted already
+      if (game && game.whichPhase() == PHASE.START) {
+        deleteGame(sockets, gp, game);
+      } else if (game.whichPhase() != PHASE.END) {
+        console.log('do something');
+      }
     });
 
     /**
@@ -131,7 +152,7 @@ module.exports = function(sockets, dsockets) {
           }
     });
 
-    socket.on('sendConnIDtoGetPlayerIndex', function(game_id, token, connID, stream) {
+    socket.on('sendConnIDtoGetPlayerIndex', function(game_id, token, connID, streamINDEX) {
       up.findByToken(token, function(error, user)
       {
 //console.log('(E). received request for connID of #game_id,#token,#connID'+game_id+','+token+','+connID)
@@ -139,7 +160,7 @@ module.exports = function(sockets, dsockets) {
         var game = gp.findById(game_id);
         for (var p = 0; p < game.players.length; p++)
           if (game.players[p].connectionId == connID) {
-            sockets.to(user_id).emit('sendPlayerIndexFromConnID', game.players[p].index, stream) // ot6. send index for game[connID]
+            sockets.to(user_id).emit('sendPlayerIndexFromConnID', game.players[p].index, streamINDEX) // ot6. send index for game[connID]
 //console.log('(F). sending #index of ' + game.players[p].index);
           }
       });

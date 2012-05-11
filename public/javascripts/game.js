@@ -230,38 +230,39 @@ window.onload = function() {
     }
   });
 
+  var MY_INDEX = -1;
+  var STREAMS = [];
+  var SESSION = null;
+
   /**
    * OpenTok
    */
   socket.on('joined', function(apiKey, sessionId, token, myIndex)
   {
-//console.log('(1). I just joined. My index is ' + myIndex);
-    var session = TB.initSession(sessionId);
-    session.addEventListener("sessionConnected", sessionConnectedHandler);
-    session.addEventListener("streamCreated", streamCreatedHandler);
-    session.connect(apiKey, token);
+    MY_INDEX = myIndex;
+
+    SESSION = TB.initSession(sessionId);
+    SESSION.addEventListener("sessionConnected", sessionConnectedHandler);
+    SESSION.addEventListener("streamCreated", streamCreatedHandler);
+    SESSION.connect(apiKey, token);
 
 
     /* var publisher; */
     function sessionConnectedHandler(event) {
       h = $('#MY_VIDEO').height();
       w = $('#MY_VIDEO').width();
-      session.publish('MY_VIDEO', {height:h, width:w, class:'MY_VIDEO'});
+      SESSION.publish('MY_VIDEO', {height:h, width:w, class:'MY_VIDEO'});
       setTimeout(function() { window.onresize(); }, 1500);
-//console.log('(2). I"m sending the server my room,index,connID: '+CONFIG.room+','+myIndex+','+session.connection.connectionId);
-      socket.emit('associateMyConnIDwithMyIndex', CONFIG.room, myIndex, session.connection.connectionId); // ot3. send game[index=connID]
+      socket.emit('associateMyConnIDwithMyIndex', CONFIG.room, myIndex, SESSION.connection.connectionId); // ot3. send game[index=connID]
       subscribeToStreams(event.streams);
-//console.log('(3). I just published. Now gonna subscribe to #streams = ' + event.streams.length);
     }
 
     function streamCreatedHandler(event) { // when each person joins (usually one)
       subscribeToStreams(event.streams);
-//console.log('(4). I just received a created stream. Now gonna subscribe to #streams = ' + event.streams.length);
     }
 
     function subscribeToStreams(streams)
     {
-//console.log('(5). Subscribing to streams. #streams = ' + streams.length);
       if (typeof subscribeToStreams.nextPlayer == 'undefined')
         subscribeToStreams.nextPlayer = 1;
 
@@ -269,32 +270,30 @@ window.onload = function() {
         var stream = streams[i];
         var connId = stream.connection.connectionId;
 
-        if (connId != session.connection.connectionId)
+        if (connId != SESSION.connection.connectionId)
         {
           // EMIT CONNECTION ID TO SERVER, GET PLAYER #
-//console.log('(6). Asking server for index of room,token,connID'+CONFIG.room+','+CONFIG.token+','+connId)
-          socket.emit('sendConnIDtoGetPlayerIndex', CONFIG.room, CONFIG.token, connId, stream); // ot5. ask for index from game[connID]
-console.log('(A) sending stream to server');
+          STREAMS.push(stream);
+          socket.emit('sendConnIDtoGetPlayerIndex', CONFIG.room, CONFIG.token, connId, STREAMS.length - 1); // ot5. ask for index from game[connID]
+console.log('(A) sending #streamINDEX to server: ' + (STREAMS.length-1));
 console.log(stream);
         }
       }
     }
 
   });
-  
-  socket.on('sendPlayerIndexFromConnID', function(index, stream) // ot7. receive index and use to replace correct img
+
+  socket.on('sendPlayerIndexFromConnID', function(index, streamINDEX) // ot7. receive index and use to replace correct img
   {
-console.log('(B) receiving stream from server');
-console.log(stream)
-//console.log('(7). Just got word from the server. The player"s index is ' + index);
+console.log('(B) receiving #streamINDEX from server: ' + streamINDEX);
+console.log(STREAMS[streamINDEX])
     var playerNo = index;
-    if (playerNo < myIndex) playerNo++;
-//console.log('(8). Player no. and replacing tag #VIDEO'+playerNo);
+    if (playerNo < MY_INDEX) playerNo++;
     var replaceID = 'VIDEO' + playerNo;
 
     h = $('#' + replaceID).height();
     w = $('#' + replaceID).width();
-    session.subscribe(stream, replaceID, {height:h, width:w});
+    SESSION.subscribe(STREAMS[streamINDEX], replaceID, {height:h, width:w});
   });
 
   /**
@@ -318,7 +317,7 @@ console.log(stream)
       // get video object
       var pI_vidDiv = document.getElementById('player' + i).firstChild.firstChild;
       var pI_vidObj = document.getElementById('player' + i).firstChild.firstChild.firstChild;
-    
+
       // started, so incorporate border size
       if (i < HAS_STARTED) { // only for active players
         var pI_div_H = $('#player'+i).height();
@@ -330,11 +329,11 @@ console.log(stream)
       w2 = $('#p'+i+'mywell').width() * 0.5;
       w = Math.min(w1, w2);
       h = w * 3/4.0;
-      
+
       if (typeof pI_vidObj != 'undefined') {
         var objID = pI_vidObj.id;
         var divID = pI_vidDiv.id;
-      
+
         $('#'+objID).width(w);
         $('#'+objID).height(h);
         $('#'+divID).width(w);
@@ -344,7 +343,7 @@ console.log(stream)
         if (i < HAS_STARTED)
           theirWidth = w;
       }
-      
+
     }
 
     // ******** PLAYER 0 VIDEO ********
@@ -352,10 +351,10 @@ console.log(stream)
     // get player0video object
     var p0_vidObj = document.getElementById('player0').firstChild.firstChild.firstChild;
     var started = (0 < HAS_STARTED)
-    
+
     // set up myWidth
     var myWidth = theirWidth;
-      
+
     // set width of encapsulating divs
     var wholeWidth = $('.others').width();
     $('#player0').width(myWidth); // p0div
@@ -366,11 +365,11 @@ console.log(stream)
     $('.right').css('min-width', myWidth-20); // padding
     $('.right').css('margin-right', 0);
     $('.actions').width( wholeWidth - $('#player0').width() )
-    
+
     // also cards and points
     $('.cards').width(myWidth);
     $('.points').width(myWidth);
-    
+
     // if started, deduct border size
     if (0 < HAS_STARTED) {
       var p0_div_H = $('#player0').height()
@@ -380,13 +379,13 @@ console.log(stream)
     // set width of video itself
     var w = $('#p0mywell').width()
     var h = w*3/4.0;
-    
-    if (typeof p0_vidObj != 'undefined') {    
+
+    if (typeof p0_vidObj != 'undefined') {
       var objID = p0_vidObj.id;
-            
+
       $('#'+objID).width(w);
       $('#'+objID).height(h);
-    
+
     }
 
     // ******** DICE ROLL CONTAINER ********
@@ -395,21 +394,21 @@ console.log(stream)
     var w = $(window).height() * 0.22;
     var left = 7/12.0*W - w;
     $('#dice-image-container').css('left',left);
-    
+
     // ******** FONT SIZE ********
-    
+
     var viewportW = $(window).width();
     if ( viewportW < 900 ) $('body').css('font-size', (viewportW-300)/(900.0-300) * 75+'%');
     else                   $('body').css('font-size', '75%');
-    
+
     if (viewportW > 900)      $('.btn.big').width('20em');
     else if (viewportW < 400) $('.btn.big').width('7em');
     else                      $('.btn.big').width( (viewportW-400)/500.0 *13 +7 +'em');
-    
+
     if (viewportW > 900)      $('.btn').width('10em');
     else if (viewportW < 400) $('.btn').width('7em');
     else                      $('.btn').width( (viewportW-400)/500.0 *3 +7 +'em');
-    
+
   }
 
   window.onresize();
@@ -501,6 +500,11 @@ console.log(stream)
       offer["offer"].push(parseInt($(this).text()));
     });
     socket.emit('offerTrade', offer, me);
+  });
+
+  socket.on('playerLeftEarly', function() {
+    window.onbeforeunload = function() {};
+    window.location = '/dashboard?error=player_left';
   });
 
   socket.on('disconnect', function() {
