@@ -3,8 +3,7 @@
  */
 
 var User = require('../models/User.js')
-  , UserProvider = require('../models/UserProvider.js')
-  , userProvider = new UserProvider('localhost', 27017)
+  , userProvider = require('../models/UserProviderInstance')
   , Game = require('../models/Game')
   , GameProvider = require('../models/GameProvider')
   , gameProvider = GameProvider.getInstance();

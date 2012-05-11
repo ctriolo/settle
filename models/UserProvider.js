@@ -46,12 +46,12 @@ UserProvider.prototype.findAll = function(callback) {
     else {
       user_collection.find().toArray(function(error, results) {
         if (error) callback(error);
-	else {
-	  for (var i = 0; i < results.length; i++) {
-	    results[i] = new User(results[i]);
-	  }
-	  callback(null, results);
-	}
+        else {
+          for (var i = 0; i < results.length; i++) {
+            results[i] = new User(results[i]);
+          }
+          callback(null, results);
+        }
       });
     }
   });
@@ -87,7 +87,7 @@ UserProvider.prototype.save = function(users, callback) {
   this.getCollection(function(error, user_collection) {
     if (error) callback(error)
     else {
-      if (typeof(users.length)=="undefined")
+      //if (typeof(users.length)=="undefined")
       //  users = [users]; // single user
 
       user_collection.update({id:users.id}, users, {safe:true, upsert:true}, function() {

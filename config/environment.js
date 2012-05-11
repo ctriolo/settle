@@ -11,9 +11,8 @@ module.exports = function(app, express, io){
 
   // EveryAuth
 
-  var UserProvider = require('../models/UserProvider.js')
-    , User = require('../models/User.js')
-    , userProvider = new UserProvider('localhost', 27017);
+  var userProvider = require('../models/UserProviderInstance')
+    , User = require('../models/User.js');
 
   app.configure('development', function(){
     everyauth.facebook.appId(keys.development.facebook.id)
