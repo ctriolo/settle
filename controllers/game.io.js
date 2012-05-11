@@ -36,6 +36,16 @@ function updateDashboard(sockets, gp) {
   sockets.to('dashboard').emit('updateDashboard', gp.getJoinable());
 }
 
+function deleteGame(sockets, gp, game) {
+  var user_ids = game.getPlayers().slice(0); //copy
+
+  gp.deleteById(game.id);
+
+  for (var i = 0; i < user_ids.length; i++) {
+    sockets.to(user_ids[i]).emit('playerLeftEarly');
+  }
+}
+
 module.exports = function(sockets, dsockets) {
   var gp = GameProvider.getInstance();
   var up = require('../models/UserProviderInstance');
@@ -54,12 +64,32 @@ module.exports = function(sockets, dsockets) {
     socket.on('disconnect', function() {
       var session_id = socket.handshake.sessionID;
       var user_id = sid_to_uid[session_id];
+      var game_id = uid_to_gid[user_id];
+
+      delete uid_to_gid[user_id];
       up.findById(user_id, function(error, user){
         if (user) {
           user.in_game = false;
           up.save(user, function(){});
         }
       });
+
+      var game = gp.findById(game_id);
+      if (!game) return; // game deleted already
+      if (game && (game.whichPhase() == PHASE.START ||
+          game.whichPhase() == PHASE.STARTING_SETTLEMENT ||
+          game.whichPhase() == PHASE.STARTING_ROAD)) {
+        deleteGame(sockets, gp, game);
+      } else if (game.whichPhase() != PHASE.END) {
+        if (game.whoseTurn() == user_id) {
+          game.removePlayer(user_id);
+          sockets.to(game_id).emit('newTurn', game.whoseTurn(), false);
+        } else {
+          game.removePlayer(user_id);
+        }
+        gp.save(game);
+        updatePlayerInfo(sockets, game);
+      }
     });
 
     /**
@@ -82,7 +112,12 @@ module.exports = function(sockets, dsockets) {
         sid_to_uid[session_id] = user_id;
         uid_to_gid[user_id] = game_id;
         sockets.to(game_id).send('A client just connected.');
-        sockets.to(game_id).emit('playerJoined', game.getPlayers().length);
+
+        var user_ids = game.getPlayers();
+        for (var i = 0; i < user_ids.length; i++) {
+          sockets.to(user_ids[i]).emit('playerJoined', game.players, game._translate(user_ids[i]));
+        }
+
         if (game.isStarted()) {
           sockets.to(user_id).emit('canStart');
           sockets.to(user_id).emit('start', game.getPlayers(), user_id);
@@ -186,6 +221,7 @@ module.exports = function(sockets, dsockets) {
       try {
         game.gameover(winner);
         gp.save(game);
+        sockets.to(game_id).emit('endGame', winner);
         // handle user statistics here
         var user_ids = game.getPlayers();
         for (var i = 0; i < user_ids.length; i++) {
@@ -283,7 +319,7 @@ module.exports = function(sockets, dsockets) {
             sockets.to(game.whoseTurn()).emit('showRobber', false);
         }
         gp.save(game);
-        sockets.to(game_id).emit('rollDiceResults', ret.number, ret.resources, ret.breakdown);
+        sockets.to(game_id).emit('rollDiceResults', ret.number, ret.resources, ret.breakdown, game.whoseTurn());
         socket.emit('canBuild', game.canBuild(user_id));
         setTimeout(function() {updatePlayerInfo(sockets, game)}, 4*1000);
       } catch (error) {

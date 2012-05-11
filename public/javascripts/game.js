@@ -221,13 +221,22 @@ window.onload = function() {
     socket.emit('join', CONFIG.room, CONFIG.token);
   });
 
-  socket.on('playerJoined', function(players) {
-    for (var i = 1; i < players; i++) {
+  socket.on('playerJoined', function(players, whereAmI) {
+    console.log(players, whereAmI);
+    var my_player_object = players[whereAmI];
+    players.splice(whereAmI, 1); // take out me
+    players.unshift(my_player_object); // put me first
+
+    $('#player' + 0 + ' .name').text(players[0].first_name);
+
+    for (var i = 1; i < players.length; i++) {
+      $('#player' + i + ' .name').text(players[i].first_name);
       $('#player' + i + ' .opponentvideo').show();
       $('#player' + i + ' .right').show();
-      $('#player' + i + ' .well').css({"background-color":"whiteSmoke"});
-      $('#player' + i + ' .well').css({"opacity":"1"});
+      $('#player' + i + ' .mywell').css({"background-color":"whiteSmoke"});
+      $('#player' + i + ' .mywell').css({"opacity":"1"});
     }
+
   });
 
   var MY_INDEX = -1;
@@ -240,7 +249,7 @@ window.onload = function() {
   socket.on('joined', function(apiKey, sessionId, token, myIndex)
   {
     MY_INDEX = myIndex;
-  
+
     SESSION = TB.initSession(sessionId);
     SESSION.addEventListener("sessionConnected", sessionConnectedHandler);
     SESSION.addEventListener("streamCreated", streamCreatedHandler);
@@ -319,7 +328,7 @@ window.onload = function() {
       // get video object
       var pI_vidDiv = document.getElementById('player' + i).firstChild.firstChild;
       var pI_vidObj = document.getElementById('player' + i).firstChild.firstChild.firstChild;
-    
+
       // started, so incorporate border size
       if (i < HAS_STARTED) { // only for active players
         var pI_div_H = $('#player'+i).height();
@@ -331,11 +340,11 @@ window.onload = function() {
       w2 = $('#p'+i+'mywell').width() * 0.5;
       w = Math.min(w1, w2);
       h = w * 3/4.0;
-      
+
       if (typeof pI_vidObj != 'undefined') {
         var objID = pI_vidObj.id;
         var divID = pI_vidDiv.id;
-      
+
         $('#'+objID).width(w);
         $('#'+objID).height(h);
         $('#'+divID).width(w);
@@ -345,7 +354,7 @@ window.onload = function() {
           theirHeight = h;
         }
       }
-      
+
     }
 
     // ******** PLAYER 0 VIDEO ********
@@ -353,10 +362,10 @@ window.onload = function() {
     // get player0video object
     var p0_vidObj = document.getElementById('player0').firstChild.firstChild.firstChild;
     var started = (0 < HAS_STARTED)
-    
+
     // set up myWidth
     var myWidth = theirWidth;
-      
+
     // set width of encapsulating divs
     var wholeWidth = $('.others').width();
     //$('#player0').width(myWidth); // p0div
@@ -382,8 +391,8 @@ window.onload = function() {
     // set width of video itself
     var w = theirWidth;
     var h = w*3/4.0;
-    
-    if (typeof p0_vidObj != 'undefined') {    
+
+    if (typeof p0_vidObj != 'undefined') {
       var objID = p0_vidObj.id;
       
       if (typeof this.FIRST != 'undefined') {
@@ -403,9 +412,9 @@ window.onload = function() {
     var w = $(window).height() * 0.22;
     var left = 7/12.0*W - w;
     $('#dice-image-container').css('left',left);
-    
+
     // ******** FONT SIZE ********
-    
+
     var viewportW = $(window).width();
     if ( viewportW < 900 ) $('body').css('font-size', (viewportW-300)/(900.0-300) * 75+'%');
     else                   $('body').css('font-size', '75%');
@@ -414,7 +423,7 @@ window.onload = function() {
     if (viewportW > 900)      $('.btn.big').width('20em');
     else if (viewportW < 400) $('.btn.big').width('7em');
     else                      $('.btn.big').width( (viewportW-400)/500.0 *13 +7 +'em');
-    
+
     if (viewportW > 900)      $('.btn').width('10em');
     else if (viewportW < 400) $('.btn').width('7em');
     else                      $('.btn').width( (viewportW-400)/500.0 *3 +7 +'em');
@@ -514,6 +523,11 @@ window.onload = function() {
       offer["offer"].push(parseInt($(this).text()));
     });
     socket.emit('offerTrade', offer, me);
+  });
+
+  socket.on('playerLeftEarly', function() {
+    window.onbeforeunload = function() {};
+    window.location = '/dashboard?error=player_left';
   });
 
   socket.on('disconnect', function() {
@@ -868,8 +882,7 @@ window.onload = function() {
    * Lets us know that we can start the game.
    */
 
-  var DICE_TOP_ORDER = [];
-  var dti = -1;
+  var DICE_TOP = ['0%', '34%', '56%', '78%'];
 
   socket.on('start', function(players, you, user_objects) {
     users = players.slice(0);
@@ -877,16 +890,6 @@ window.onload = function() {
 
     // set up dice roll order
     numU = users.length;
-    my_index = users.indexOf(me);
-    DICE_TOP_ORDER = [];
-    for (var i = 0; i < numU; i++)
-      DICE_TOP_ORDER[i] = i;
-    for (var i = 0; i <= my_index; i++)
-      DICE_TOP_ORDER[i] = (i+1) % (my_index+1);
-    var DICE_TOPS = ['0%', '34%', '56%', '78%'];
-    for (var i = 0; i < DICE_TOP_ORDER.length; i++)
-      DICE_TOP_ORDER[i] = DICE_TOPS[ DICE_TOP_ORDER[i] ];
-    dti = 0;
 
     $('.numberDiv').animate({'left': '-=100px'}, 'slow');
     console.log("MOVING");
@@ -1107,7 +1110,15 @@ window.onload = function() {
      console.log(players);
      for (var i = 0; i < players.length; i++) {
        var player = players[i];
+
        var player_id = users.indexOf(player.user_id);
+       // grey out dead players
+       if (player.dead) {
+         $('#player' + player_id + ' .opponentvideo').hide();
+         $('#player' + player_id + ' .right').hide();
+         $('#player' + player_id + ' .mywell').css({"background-color":"black"});
+         $('#player' + player_id + ' .mywell').css({"opacity":".6"});
+       }
        // update Victory Points
        var victory_points = player.victory_points;
        console.log(victory_points);
@@ -1214,25 +1225,26 @@ window.onload = function() {
      	updateCards(false);
 	if (victory_points >= 10) {
           console.log("GAME OVER");
-          $('#startBackground').css("background", '#000000');
-          $('#startBackground').show();
-          if (player.user_id === me) {
-            $('#win').addClass("won");
-          }
-          else {
-            $('#win').addClass('loss');
-            var name = $('#player' + player_id + ' .name').text();
-            $('#win .txt').text(name + " has won.");
-          }
-          $('#win').show();
-          $('#winSpace').show();
-          $('#lobby').show();
           socket.emit('gameover', player.user_id);
-          done = true;
         }
       }
     });
-
+    socket.on('endGame', function(winner) {
+      $('#startBackground').css("background", '#000000');
+      $('#startBackground').show();
+      if (winner === me) {
+        $('#win').addClass("won");
+      }
+      else {
+        $('#win').addClass('loss');
+        var name = $('#player' + users.indexOf(winner) + ' .name').text();
+        $('#win .txt').text(name + " has won.");
+      }
+      $('#win').show();
+      $('#winSpace').show();
+      $('#lobby').show();
+      done = true;
+    });
 
   /**
    * selectSettlement
@@ -1416,7 +1428,8 @@ window.onload = function() {
     }
   }
 
-  socket.on('rollDiceResults', function(number, resources, breakdown) {
+  socket.on('rollDiceResults', function(number, resources, breakdown, whoseTurn) {
+    var player_id = users.indexOf(whoseTurn);
 
     if (typeof this.first == 'undefined') {
         // show dice roll
@@ -1434,15 +1447,14 @@ window.onload = function() {
       return;
 
     $('#dice-image').show();
-    $('#dice-image-container').css('top', DICE_TOP_ORDER[dti] ); // 0%, 34%, 56%, 78%
-    dti++; dti %= DICE_TOP_ORDER.length;
+    $('#dice-image-container').css('top', DICE_TOP[player_id] ); // 0%, 34%, 56%, 78%
     url = 'http://www.princeton.edu/~rgromero/dice-gif/a' + breakdown[0]
         + ',' + breakdown[1] + '_mod6.gif';
     $('#dice-image').attr('src', url);
 
     $('#startBackground').css("background", '#000');
     $('#startBackground').show();
-    for (var i = DICE_TOP_ORDER.length; i < 4; i++)
+    for (var i = users.length; i < 4; i++)
       $('#p'+i+'mywell').css('opacity','0');
 
     setTimeout(function() {
@@ -1451,7 +1463,7 @@ window.onload = function() {
         $('#dice-image').hide();
 
         $('#startBackground').hide();
-        for (var i = DICE_TOP_ORDER.length; i < 4; i++)
+        for (var i = users.length; i < 4; i++)
           $('#p'+i+'mywell').css('opacity','0.6');
 
     }, 4 * 1000);

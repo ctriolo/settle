@@ -2,9 +2,8 @@
  * User Controllers
  */
 
-var UserProvider = require('../models/UserProvider.js')
-  , User = require('../models/User.js')
-  , userProvider = new UserProvider('localhost', 27017);
+var userProvider = require('../models/UserProviderInstance')
+  , User = require('../models/User.js');
 
 module.exports.view = function(req, res, next) {
   if (!req.params.id) next();

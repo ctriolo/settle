@@ -25,6 +25,11 @@ block header
                 a(href="\logout") Log Out
 block content
   .container
+    if (error)
+      .row
+        .span12
+          .alert.alert-error
+            h3.alert-heading= error
     .row
       .span12
         .page-header

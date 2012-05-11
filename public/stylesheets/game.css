@@ -60,7 +60,7 @@ body {font-size:75%;}  /* Set the size of 1em to 12px in all browsers */
 .opponentvideo {
   float: left;
   height:100%;
-  //////display:none;
+  display:none;
 }
 #player1, #player2, #player3 {
   position:static;
@@ -90,7 +90,7 @@ body {font-size:75%;}  /* Set the size of 1em to 12px in all browsers */
 .actions.disabled, .player.mywell.disabled {
   opacity: .6;
 }
-.opponent.well {
+.opponent.mywell {
   background-color: black;
   opacity: .6;
 }
@@ -115,6 +115,9 @@ body {font-size:75%;}  /* Set the size of 1em to 12px in all browsers */
   padding-left: 10px;
   padding-top: 10px;
   background-color: whiteSmoke;
+}
+.opponent .right {
+  display:none;
 }
 
 .player {

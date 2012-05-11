@@ -251,7 +251,9 @@ Game.prototype._nextPlayer = function() {
   } else {
 
     // Normal progression
-    this.current_player = (this.current_player + 1) % this.players.length;
+    do {
+      this.current_player = (this.current_player + 1) % this.players.length;
+    } while (this.players[this.current_player].dead)
 
     // Reset things
     this.players[this.current_player].played_development = false;
@@ -645,6 +647,28 @@ Game.prototype.addPlayer = function(user_id, first_name, last_name, wins, losses
   return this.players.length - 1;
 };
 
+/**
+ * removePlayer
+ *
+ * Adds a player with the indentifier user_id.
+ * Throws an exception if the action is invalid.
+ * @param   user_id  string   the public identifier for the player
+ */
+Game.prototype.removePlayer = function(user_id) {
+  var player_id = this._translate(user_id);
+
+  this.players[player_id].dead = true;
+  for (var i in RESOURCE) this.players[player_id].resource_cards[RESOURCE[i]] = 0;
+  for (var i in DEVELOPMENT) this.players[player_id].development_cards[DEVELOPMENT[i]] = 0;
+  for (var i in DEVELOPMENT) this.players[player_id].pending_development_cards[DEVELOPMENT[i]] = 0;
+
+  // if its his turn, change it.
+  if (this.current_player == player_id) {
+    this.current_phase = PHASE.DICE;
+    this._nextPlayer();
+  }
+
+};
 
 /**
  * start
@@ -662,10 +686,18 @@ Game.prototype.start = function() {
   this._next();
 };
 
-Game.prototype.gameover = function() {
+Game.prototype.gameover = function(winner) {
+  var player_id = this._translate(winner);
   if (this.current_phase == PHASE.END)
     throw 'The game has already been ended!';
   // might want to double check someone has 10 VP
+  var win = this.players[player_id];
+  var vp = win.victory_points;
+  if (win.has_longest_road) vp += 2;
+  if (win.has_largest_army) vp += 2;
+  vp += win.victory_cards;
+  if (vp < 10)
+    throw "This is not the winner!";
   this.current_phase = PHASE.END;
 };
 
@@ -1192,7 +1224,9 @@ Game.prototype.rollDice = function(user_id) {
   var resources = this.board.getResources(total);
   // Add resources to player hand
   for (var player in resources) {
-    this._addResources(player, resources[player]);
+    if (!this.players[player].dead) {
+      this._addResources(player, resources[player]);
+    }
   }
 
   // Construct return object
