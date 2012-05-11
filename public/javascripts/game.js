@@ -232,6 +232,7 @@ window.onload = function() {
 
   var MY_INDEX = -1;
   var STREAMS = [];
+  var SESSION = null;
 
   /**
    * OpenTok
@@ -240,19 +241,19 @@ window.onload = function() {
   {
     MY_INDEX = myIndex;
   
-    var session = TB.initSession(sessionId);
-    session.addEventListener("sessionConnected", sessionConnectedHandler);
-    session.addEventListener("streamCreated", streamCreatedHandler);
-    session.connect(apiKey, token);
+    SESSION = TB.initSession(sessionId);
+    SESSION.addEventListener("sessionConnected", sessionConnectedHandler);
+    SESSION.addEventListener("streamCreated", streamCreatedHandler);
+    SESSION.connect(apiKey, token);
 
 
     /* var publisher; */
     function sessionConnectedHandler(event) {
       h = $('#MY_VIDEO').height();
       w = $('#MY_VIDEO').width();
-      session.publish('MY_VIDEO', {height:h, width:w, class:'MY_VIDEO'});
+      SESSION.publish('MY_VIDEO', {height:h, width:w, class:'MY_VIDEO'});
       setTimeout(function() { window.onresize(); }, 1500);
-      socket.emit('associateMyConnIDwithMyIndex', CONFIG.room, myIndex, session.connection.connectionId); // ot3. send game[index=connID]
+      socket.emit('associateMyConnIDwithMyIndex', CONFIG.room, myIndex, SESSION.connection.connectionId); // ot3. send game[index=connID]
       subscribeToStreams(event.streams);
     }
 
@@ -269,12 +270,12 @@ window.onload = function() {
         var stream = streams[i];
         var connId = stream.connection.connectionId;
 
-        if (connId != session.connection.connectionId)
+        if (connId != SESSION.connection.connectionId)
         {
           // EMIT CONNECTION ID TO SERVER, GET PLAYER #
           STREAMS.push(stream);
           socket.emit('sendConnIDtoGetPlayerIndex', CONFIG.room, CONFIG.token, connId, STREAMS.length - 1); // ot5. ask for index from game[connID]
-console.log('(A) sending #streamINDEX to server: ' + STREAMS.length-1);
+console.log('(A) sending #streamINDEX to server: ' + (STREAMS.length-1));
 console.log(stream);
         }
       }
@@ -292,7 +293,7 @@ console.log(STREAMS[streamINDEX])
 
     h = $('#' + replaceID).height();
     w = $('#' + replaceID).width();
-    session.subscribe(STREAMS[streamINDEX], replaceID, {height:h, width:w});
+    SESSION.subscribe(STREAMS[streamINDEX], replaceID, {height:h, width:w});
   });
 
   /**
