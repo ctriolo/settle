@@ -71,11 +71,12 @@ module.exports = function(sockets, dsockets) {
      */
     socket.on('join', function(game_id, token) {
       up.findByToken(token, function(error, user){
+        if (!user) { return; }
         var session_id = socket.handshake.sessionID;
         var user_id = user.id;
         var game = gp.findById(game_id);
         if (DEBUG) { console.log('name:join ', user_id, game); }
-        if (!game) { return socket.emit('disconnect'); }
+        if (!game) { return; }
         socket.join(game_id);
         socket.join(user_id);
         sid_to_uid[session_id] = user_id;
