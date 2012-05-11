@@ -76,10 +76,19 @@ module.exports = function(sockets, dsockets) {
 
       var game = gp.findById(game_id);
       if (!game) return; // game deleted already
-      if (game && game.whichPhase() == PHASE.START) {
+      if (game && (game.whichPhase() == PHASE.START ||
+          game.whichPhase() == PHASE.STARTING_SETTLEMENT ||
+          game.whichPhase() == PHASE.STARTING_ROAD)) {
         deleteGame(sockets, gp, game);
       } else if (game.whichPhase() != PHASE.END) {
-        console.log('do something');
+        if (game.whoseTurn() == user_id) {
+          game.removePlayer(user_id);
+          sockets.to(game_id).emit('newTurn', game.whoseTurn(), false);
+        } else {
+          game.removePlayer(user_id);
+        }
+        gp.save(game);
+        updatePlayerInfo(sockets, game);
       }
     });
 
