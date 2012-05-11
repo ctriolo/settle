@@ -404,6 +404,15 @@ font-size: 1em;
   z-index: -1;
 }
 
+.x {
+  position: absolute;
+  top: 1%;
+  right: 1%;
+  font-size: 25px;
+  fill: #00CD00;
+  cursor: pointer;
+}
+
 .showtrade-container.rejected, .showtrade-container.reject, .update-cards.lost {
   background-color: rgb(250, 0, 0);
   background-color: rgba(250, 0, 0,.7);

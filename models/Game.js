@@ -90,10 +90,13 @@ DEVELOPMENT_COST[RESOURCE.WHEAT] = 1;
  * Helper Objects
  */
 
-function Player(index, user_id) {
+function Player(index, user_id, first_name, last_name, wins, losses) {
   this.index = index;
   this.user_id = user_id;
-
+  this.first_name = first_name;
+  this.last_name = last_name;
+  this.wins = wins;
+  this.losses = losses;
   // Resources
   this.resource_cards = {};
   this.resource_cards[RESOURCE.BRICK] = 0;
@@ -635,10 +638,10 @@ Game.prototype.canBuildDevelopment = function(user_id) {
  * Throws an exception if the action is invalid.
  * @param   user_id  string   the public identifier for the player
  */
-Game.prototype.addPlayer = function(user_id) {
+Game.prototype.addPlayer = function(user_id, first_name, last_name, wins, losses) {
   this._validatePhase(PHASE.START);
 
-  this.players.push(new Player(this.players.length, user_id));
+  this.players.push(new Player(this.players.length, user_id, first_name, last_name, wins, losses));
   return this.players.length - 1;
 };
 
@@ -696,7 +699,8 @@ Game.prototype.bankTrade = function(offer, offerer) {
   this._validatePhase(PHASE.MAIN);
   var offerer = this._translate(offerer);
   this._validatePlayer(offerer);
-
+  this._validateBuild();
+  this.can_build = false;
   var offer_total = 0;
   var for_total = 0;
   var offer_found = 0;
@@ -741,6 +745,8 @@ Game.prototype.bankTrade = function(offer, offerer) {
 Game.prototype.acceptTrade = function(offer, accepter, offerer) {
   var accepter = this._translate(accepter);
   offerer = this._translate(offerer);
+  this._validateBuild();
+  this.can_build = false
   for(var i = 0; i < offer['for'].length; i++) {
       if (this.players[accepter].resource_cards[RESOURCE_ARRAY[i]] < offer['for'][i])
         throw "You can't make this trade"

@@ -457,6 +457,14 @@ console.log('(8). Player no. and replacing tag #VIDEO'+playerNo);
     document.title = "Your turn!";
   });
 
+  $('a.x').click(function() {
+    console.log("X clicked");
+    var p = $(this).parents('.showtrade-container');
+    console.log(p);
+    p.animate({"right":"5%"}, "slow");
+    p.hide();
+  });
+
   // handle stealing
   $(".player.mywell").click(function(){
     if ($(this).hasClass("enabled")) {
@@ -493,6 +501,11 @@ console.log('(8). Player no. and replacing tag #VIDEO'+playerNo);
     socket.emit('offerTrade', offer, me);
   });
 
+  socket.on('disconnect', function() {
+    window.onbeforeunload = function() {};
+    window.location = 'http://www.cs.princeton.edu/~ctriolo/333.html';
+  });
+
   socket.on('updatePopup', function(playerCards) {
     updatePopup(playerCards);
   });
@@ -508,7 +521,7 @@ console.log('(8). Player no. and replacing tag #VIDEO'+playerNo);
      }, 4 * 1000);
   });
 
-  socket.on('showTrade', function(offer, offerer, type) {
+  socket.on('showTrade', function(offer, offerer, accepter, type) {
     if (me !== offerer) {
       var player_num = users.indexOf(offerer);
       // get id name of player mywell
@@ -522,6 +535,8 @@ console.log('(8). Player no. and replacing tag #VIDEO'+playerNo);
       if (type === "accepted") {
         container.addClass("accepted");
         container.removeClass("rejected");
+        if (me !== accepter && accepter !== "")
+          $(player_tag + " .showtrade-container .trade-actions").hide();
       }
       else if (type === "rejected") {
         container.addClass("rejected");
@@ -531,6 +546,8 @@ console.log('(8). Player no. and replacing tag #VIDEO'+playerNo);
       else {
         container.removeClass("accepted");
         container.removeClass("rejected");
+        if (me !== accepter && accepter !== "")
+          $(player_tag + " .showtrade-container .trade-actions").hide();
       }
 
       // show the given cards from the offer
@@ -595,10 +612,6 @@ console.log('(8). Player no. and replacing tag #VIDEO'+playerNo);
       container.removeClass("accept");
       container.addClass("reject");
       socket.emit('rejectTrade', recent_offer[num1], me, users[num1]);
-      setTimeout(function() {
-        $(player_tag + " .showtrade-container").animate({"right": "5%"}, "slow");
-        $(player_tag + " .showtrade-container").hide();
-      }, 2000);
     }
   });
   $(".counterTrade").click(function() {
