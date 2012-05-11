@@ -194,6 +194,7 @@ module.exports = function(sockets, dsockets) {
       try {
         game.gameover(winner);
         gp.save(game);
+        sockets.to(game_id).emit('endGame', winner);
         // handle user statistics here
         var user_ids = game.getPlayers();
         for (var i = 0; i < user_ids.length; i++) {
