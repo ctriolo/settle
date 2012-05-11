@@ -2,7 +2,7 @@
  * Board Client Side Javascript
  */
 var debug = false;
-var player_colors = ["blue", "yellow", "red", "orange"];
+var player_colors = ["red", "LimeGreen", "blue", "orange"];
 var users = [];
 var me;
 var roll_frequency = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
