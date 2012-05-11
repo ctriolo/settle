@@ -322,7 +322,7 @@ module.exports = function(sockets, dsockets) {
             sockets.to(game.whoseTurn()).emit('showRobber', false);
         }
         gp.save(game);
-        sockets.to(game_id).emit('rollDiceResults', ret.number, ret.resources, ret.breakdown);
+        sockets.to(game_id).emit('rollDiceResults', ret.number, ret.resources, ret.breakdown, game.whoseTurn());
         socket.emit('canBuild', game.canBuild(user_id));
         setTimeout(function() {updatePlayerInfo(sockets, game)}, 4*1000);
       } catch (error) {

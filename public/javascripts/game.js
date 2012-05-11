@@ -859,8 +859,7 @@ console.log(STREAMS[streamINDEX])
    * Lets us know that we can start the game.
    */
 
-  var DICE_TOP_ORDER = [];
-  var dti = -1;
+  var DICE_TOP = ['0%', '34%', '56%', '78%'];
 
   socket.on('start', function(players, you, user_objects) {
     users = players.slice(0);
@@ -868,16 +867,6 @@ console.log(STREAMS[streamINDEX])
 
     // set up dice roll order
     numU = users.length;
-    my_index = users.indexOf(me);
-    DICE_TOP_ORDER = [];
-    for (var i = 0; i < numU; i++)
-      DICE_TOP_ORDER[i] = i;
-    for (var i = 0; i <= my_index; i++)
-      DICE_TOP_ORDER[i] = (i+1) % (my_index+1);
-    var DICE_TOPS = ['0%', '34%', '56%', '78%'];
-    for (var i = 0; i < DICE_TOP_ORDER.length; i++)
-      DICE_TOP_ORDER[i] = DICE_TOPS[ DICE_TOP_ORDER[i] ];
-    dti = 0;
 
     $('.numberDiv').animate({'left': '-=100px'}, 'slow');
     console.log("MOVING");
@@ -1416,7 +1405,8 @@ console.log(STREAMS[streamINDEX])
     }
   }
 
-  socket.on('rollDiceResults', function(number, resources, breakdown) {
+  socket.on('rollDiceResults', function(number, resources, breakdown, whoseTurn) {
+    var player_id = users.indexOf(whoseTurn);
 
     if (typeof this.first == 'undefined') {
         // show dice roll
@@ -1434,15 +1424,14 @@ console.log(STREAMS[streamINDEX])
       return;
 
     $('#dice-image').show();
-    $('#dice-image-container').css('top', DICE_TOP_ORDER[dti] ); // 0%, 34%, 56%, 78%
-    dti++; dti %= DICE_TOP_ORDER.length;
+    $('#dice-image-container').css('top', DICE_TOP[player_id] ); // 0%, 34%, 56%, 78%
     url = 'http://www.princeton.edu/~rgromero/dice-gif/a' + breakdown[0]
         + ',' + breakdown[1] + '_mod6.gif';
     $('#dice-image').attr('src', url);
 
     $('#startBackground').css("background", '#000');
     $('#startBackground').show();
-    for (var i = DICE_TOP_ORDER.length; i < 4; i++)
+    for (var i = users.length; i < 4; i++)
       $('#p'+i+'mywell').css('opacity','0');
 
     setTimeout(function() {
@@ -1451,7 +1440,7 @@ console.log(STREAMS[streamINDEX])
         $('#dice-image').hide();
 
         $('#startBackground').hide();
-        for (var i = DICE_TOP_ORDER.length; i < 4; i++)
+        for (var i = users.length; i < 4; i++)
           $('#p'+i+'mywell').css('opacity','0.6');
 
     }, 4 * 1000);
