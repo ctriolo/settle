@@ -225,8 +225,8 @@ window.onload = function() {
     for (var i = 1; i < players; i++) {
       $('#player' + i + ' .opponentvideo').show();
       $('#player' + i + ' .right').show();
-      $('#player' + i + ' .well').css({"background-color":"whiteSmoke"});
-      $('#player' + i + ' .well').css({"opacity":"1"});
+      $('#player' + i + ' .mywell').css({"background-color":"whiteSmoke"});
+      $('#player' + i + ' .mywell').css({"opacity":"1"});
     }
   });
 
@@ -1098,7 +1098,15 @@ console.log(STREAMS[streamINDEX])
      console.log(players);
      for (var i = 0; i < players.length; i++) {
        var player = players[i];
+       
        var player_id = users.indexOf(player.user_id);
+       // grey out dead players
+       if (player.dead) {
+         $('#player' + player_id + ' .opponentvideo').hide();
+         $('#player' + player_id + ' .right').hide();
+         $('#player' + player_id + ' .mywell').css({"background-color":"black"});
+         $('#player' + player_id + ' .mywell').css({"opacity":".6"});
+       }
        // update Victory Points
        var victory_points = player.victory_points;
        console.log(victory_points);
