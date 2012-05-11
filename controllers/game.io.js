@@ -112,7 +112,12 @@ module.exports = function(sockets, dsockets) {
         sid_to_uid[session_id] = user_id;
         uid_to_gid[user_id] = game_id;
         sockets.to(game_id).send('A client just connected.');
-        sockets.to(game_id).emit('playerJoined', game.getPlayers().length);
+
+        var user_ids = game.getPlayers();
+        for (var i = 0; i < user_ids.length; i++) {
+          sockets.to(user_ids[i]).emit('playerJoined', game.players, game._translate(user_ids[i]));
+        }
+
         if (game.isStarted()) {
           sockets.to(user_id).emit('canStart');
           sockets.to(user_id).emit('start', game.getPlayers(), user_id);

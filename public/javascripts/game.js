@@ -221,13 +221,22 @@ window.onload = function() {
     socket.emit('join', CONFIG.room, CONFIG.token);
   });
 
-  socket.on('playerJoined', function(players) {
-    for (var i = 1; i < players; i++) {
+  socket.on('playerJoined', function(players, whereAmI) {
+    console.log(players, whereAmI);
+    var my_player_object = players[whereAmI];
+    players.splice(whereAmI, 1); // take out me
+    players.unshift(my_player_object); // put me first
+
+    $('#player' + 0 + ' .name').text(players[0].first_name);
+
+    for (var i = 1; i < players.length; i++) {
+      $('#player' + i + ' .name').text(players[i].first_name);
       $('#player' + i + ' .opponentvideo').show();
       $('#player' + i + ' .right').show();
       $('#player' + i + ' .mywell').css({"background-color":"whiteSmoke"});
       $('#player' + i + ' .mywell').css({"opacity":"1"});
     }
+
   });
 
   var MY_INDEX = -1;
@@ -1087,7 +1096,7 @@ console.log(STREAMS[streamINDEX])
      console.log(players);
      for (var i = 0; i < players.length; i++) {
        var player = players[i];
-       
+
        var player_id = users.indexOf(player.user_id);
        // grey out dead players
        if (player.dead) {
