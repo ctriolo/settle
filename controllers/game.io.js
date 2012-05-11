@@ -96,9 +96,7 @@ module.exports = function(sockets, dsockets) {
               sessionId: game.sessionId,
               role: OpenTok.Roles.SUBSCRIBER
             });
-//console.log('(A). Associating game.players[#index]:#token = '+game._translate(user_id)+','+token);
             game.players[game._translate(user_id)].token = token;
-//console.log('(B). Sending #index to back to client: ' + game.players[game._translate(user_id)].index);
             sockets.to(user_id).emit('joined', OPENTOK_API_KEY, game.sessionId, token, game.players[game._translate(user_id)].index); // ot2. send index
           });
         } else if (game.isPlayer(user_id)) {
@@ -106,9 +104,7 @@ module.exports = function(sockets, dsockets) {
             sessionId: game.sessionId,
             role: OpenTok.Roles.SUBSCRIBER
           });
-//console.log('(A). Associating game.players[#index]:#token = '+game._translate(user_id)+','+token);
           game.players[game._translate(user_id)].token = token;
-//console.log('(B). Sending #index to back to client: ' + game.players[game._translate(user_id)].index);
           sockets.to(user_id).emit('joined', OPENTOK_API_KEY, game.sessionId, token, game.players[game._translate(user_id)].index); // ot2. send index
         }
 
@@ -122,25 +118,21 @@ module.exports = function(sockets, dsockets) {
 
     socket.on('associateMyConnIDwithMyIndex', function(game_id, index, connID)
     {
-//console.log('(C). received #game_id,#index,#connID : '+game_id+','+index+','+connID)
       var game = gp.findById(game_id);
       for (var p = 0; p < game.players.length; p++)
         if (game.players[p].index == index) {
-          game.players[p].connectionId = connID; // ot4. receive game[index=connID]
-//console.log('(D). associating games.players[#p].connectionId = #connID : '+p+','+connID)
-          }
+          game.players[p].connectionId = connID;
+        }
     });
 
     socket.on('sendConnIDtoGetPlayerIndex', function(game_id, token, connID, streamINDEX) {
       up.findByToken(token, function(error, user)
       {
-//console.log('(E). received request for connID of #game_id,#token,#connID'+game_id+','+token+','+connID)
         var user_id = user.id;
         var game = gp.findById(game_id);
         for (var p = 0; p < game.players.length; p++)
           if (game.players[p].connectionId == connID) {
             sockets.to(user_id).emit('sendPlayerIndexFromConnID', game.players[p].index, streamINDEX) // ot6. send index for game[connID]
-//console.log('(F). sending #index of ' + game.players[p].index);
           }
       });
     });
