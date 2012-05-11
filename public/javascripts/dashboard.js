@@ -23,6 +23,16 @@ window.onload = function() {
 
   socket.on('updateDashboard', function(games) {
     $('.thumbnails').children().remove();
+
+    // Show no games msg if no games
+    if (games.length == 0) {
+      $('.no_games_msg').show();
+      $('.thumbnails').hide();
+    } else {
+      $('.no_games_msg').hide();
+      $('.thumbnails').show();
+    }
+
     for (var i = 0; i < games.length; i++) {
       var game_id = games[i].id;
       var player_pics = [];

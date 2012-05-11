@@ -28,7 +28,7 @@ block content
     if (error)
       .row
         .span12
-          .alert.alert-error
+          .alert.alert-error.error_msg
             h3.alert-heading= error
     .row
       .span12
@@ -39,3 +39,7 @@ block content
         .row
           .span12
             ul.thumbnails
+        .row
+          .span12
+            .alert.no_games_msg
+              h3.alert-heading There are no joinable games.

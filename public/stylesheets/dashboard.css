@@ -37,8 +37,12 @@ body {
   width: 65px;
 }
 
-.alert {
+.error_msg {
   margin-bottom: 0px;
   margin-top: 18px;
+  text-align: center;
+}
+
+.no_games_msg {
   text-align: center;
 }

@@ -90,6 +90,8 @@ module.exports = function(sockets, dsockets) {
         gp.save(game);
         updatePlayerInfo(sockets, game);
       }
+
+      updateDashboard(dsockets, gp);
     });
 
     /**
