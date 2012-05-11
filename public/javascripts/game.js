@@ -235,7 +235,7 @@ window.onload = function() {
    */
   socket.on('joined', function(apiKey, sessionId, token, myIndex)
   {
-console.log('(1). I just joined. My index is ' + myIndex);
+//console.log('(1). I just joined. My index is ' + myIndex);
     var session = TB.initSession(sessionId);
     session.addEventListener("sessionConnected", sessionConnectedHandler);
     session.addEventListener("streamCreated", streamCreatedHandler);
@@ -248,20 +248,20 @@ console.log('(1). I just joined. My index is ' + myIndex);
       w = $('#MY_VIDEO').width();
       session.publish('MY_VIDEO', {height:h, width:w, class:'MY_VIDEO'});
       setTimeout(function() { window.onresize(); }, 1500);
-console.log('(2). I"m sending the server my room,index,connID: '+CONFIG.room+','+myIndex+','+session.connection.connectionId);
+//console.log('(2). I"m sending the server my room,index,connID: '+CONFIG.room+','+myIndex+','+session.connection.connectionId);
       socket.emit('associateMyConnIDwithMyIndex', CONFIG.room, myIndex, session.connection.connectionId); // ot3. send game[index=connID]
       subscribeToStreams(event.streams);
-console.log('(3). I just published. Now gonna subscribe to #streams = ' + event.streams.length);
+//console.log('(3). I just published. Now gonna subscribe to #streams = ' + event.streams.length);
     }
 
     function streamCreatedHandler(event) { // when each person joins (usually one)
       subscribeToStreams(event.streams);
-console.log('(4). I just received a created stream. Now gonna subscribe to #streams = ' + event.streams.length);
+//console.log('(4). I just received a created stream. Now gonna subscribe to #streams = ' + event.streams.length);
     }
 
     function subscribeToStreams(streams)
     {
-console.log('(5). Subscribing to streams. #streams = ' + streams.length);
+//console.log('(5). Subscribing to streams. #streams = ' + streams.length);
       if (typeof subscribeToStreams.nextPlayer == 'undefined')
         subscribeToStreams.nextPlayer = 1;
 
@@ -272,27 +272,29 @@ console.log('(5). Subscribing to streams. #streams = ' + streams.length);
         if (connId != session.connection.connectionId)
         {
           // EMIT CONNECTION ID TO SERVER, GET PLAYER #
-console.log('(6). Asking server for index of room,token,connID'+CONFIG.room+','+CONFIG.token+','+connId)
-          socket.emit('sendConnIDtoGetPlayerIndex', CONFIG.room, CONFIG.token, connId); // ot5. ask for index from game[connID]
-          socket.on('sendPlayerIndexFromConnID', function(index) // ot7. receive index and use to replace correct img
-          {
-console.log('(7). Just got word from the server. The player"s index is ' + index);
-            var playerNo = index;
-            if (playerNo < myIndex) playerNo++;
-console.log('(8). Player no. and replacing tag #VIDEO'+playerNo);
-            replaceID = 'VIDEO' + playerNo;
-
-            h = $('#' + replaceID).height();
-            w = $('#' + replaceID).width();
-            session.subscribe(stream, replaceID, {height:h, width:w});
-            socket.$events['sendPlayerIndexFromConnID'] = null; // GIANT HACKKKKKK
-          });
-
-
+//console.log('(6). Asking server for index of room,token,connID'+CONFIG.room+','+CONFIG.token+','+connId)
+          socket.emit('sendConnIDtoGetPlayerIndex', CONFIG.room, CONFIG.token, connId, stream); // ot5. ask for index from game[connID]
+console.log('(A) sending stream to server');
+console.log(stream);
         }
       }
     }
 
+  });
+  
+  socket.on('sendPlayerIndexFromConnID', function(index, stream) // ot7. receive index and use to replace correct img
+  {
+console.log('(B) receiving stream from server');
+console.log(stream)
+//console.log('(7). Just got word from the server. The player"s index is ' + index);
+    var playerNo = index;
+    if (playerNo < myIndex) playerNo++;
+//console.log('(8). Player no. and replacing tag #VIDEO'+playerNo);
+    var replaceID = 'VIDEO' + playerNo;
+
+    h = $('#' + replaceID).height();
+    w = $('#' + replaceID).width();
+    session.subscribe(stream, replaceID, {height:h, width:w});
   });
 
   /**
