@@ -430,8 +430,6 @@ window.onload = function() {
     */
     
     $('#start').width('8em');
-    
-    window.resizeTo(600,600);
   }
 
   window.onresize();
