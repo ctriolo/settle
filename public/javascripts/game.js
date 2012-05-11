@@ -286,13 +286,13 @@ window.onload = function() {
           // EMIT CONNECTION ID TO SERVER, GET PLAYER #
           STREAMS.push(stream);
           // ot5. ask for index from game[connID]
-          socket.emit('sendConnIDtoGetPlayerIndex', 
-                      CONFIG.room, 
-                      CONFIG.token, 
-                      connId, 
-                      STREAMS.length - 1); 
+          socket.emit('sendConnIDtoGetPlayerIndex',
+                      CONFIG.room,
+                      CONFIG.token,
+                      connId,
+                      STREAMS.length - 1);
         }
-        else 
+        else
         {
           PERMISSION_MODE = false;
           window.onresize();
@@ -301,9 +301,9 @@ window.onload = function() {
     }
 
   });
-  
+
   // ot7. receive index and use to replace correct img
-  socket.on('sendPlayerIndexFromConnID', function(index, streamINDEX) 
+  socket.on('sendPlayerIndexFromConnID', function(index, streamINDEX)
   {
     var playerNo = index;
     if (playerNo < MY_INDEX) playerNo++;
@@ -378,20 +378,20 @@ window.onload = function() {
     //$('#player0').width(myWidth); // p0div
     //$('#p0mywell').width(myWidth); // p0mywell
     // surroundings
-    
+
     var rightWidth = wholeWidth - myWidth - BORDER_FIX;
-    
+
     $('#myleft').width(myWidth);
     $('.right').height(theirHeight - 10);
     $('.right').width(rightWidth-20); // padding
     $('.right').css('min-width', rightWidth-20); // padding
     $('.right').css('margin-right', 0);
     //$('.actions').width( wholeWidth - $('#player0').width() )
-    
+
     // also cards and points
     $('.cards').width(rightWidth);
     $('.points').width(rightWidth);
-    
+
     // if started, deduct border size
     if (0 < HAS_STARTED) {
       var p0_div_H = $('#player0').height()
@@ -404,7 +404,7 @@ window.onload = function() {
 
     if (typeof p0_vidObj != 'undefined') {
       var objID = p0_vidObj.id;
-      
+
       if (!PERMISSION_MODE) {
         $('#'+objID).width(w);
         $('#'+objID).height(h);
@@ -425,7 +425,7 @@ window.onload = function() {
     var viewportW = $(window).width();
     if ( viewportW < 900 ) $('body').css('font-size', (viewportW-300)/(900.0-300) * 75+'%');
     else                   $('body').css('font-size', '75%');
-    
+
     /*
     if (viewportW > 900)      $('.btn.big').width('20em');
     else if (viewportW < 400) $('.btn.big').width('7em');
@@ -435,7 +435,7 @@ window.onload = function() {
     else if (viewportW < 400) $('.btn').width('7em');
     else                      $('.btn').width( (viewportW-400)/500.0 *3 +7 +'em');
     */
-    
+
     $('#start').width('8em');
   }
 
@@ -1225,15 +1225,28 @@ window.onload = function() {
        }
        $('#player'+player_id+' .js-army-value').text(player.army_size);
 
-       // Update Victory Points
+        // Update Victory Points
 
-     	updateCards(false);
-	if (victory_points >= 10) {
-          console.log("GAME OVER");
-          socket.emit('gameover', player.user_id);
+        updateCards(false);
+
+        // only say you win if you think you've won
+        if (player.user_id == me) {
+          var undead = 0;
+          for (var i in players) {
+            if (!players[i].dead) {
+              undead++;
+            }
+          }
+
+          if (victory_points >= 10 || (undead == 1 && !player.dead)) {
+            console.log("GAME OVER");
+            socket.emit('gameover', player.user_id);
+          }
         }
+
       }
     });
+
     socket.on('endGame', function(winner) {
       $('#startBackground').css("background", '#000000');
       $('#startBackground').show();

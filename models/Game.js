@@ -690,13 +690,23 @@ Game.prototype.gameover = function(winner) {
   var player_id = this._translate(winner);
   if (this.current_phase == PHASE.END)
     throw 'The game has already been ended!';
+
+  // check if last one alive
+  var undead = 0;
+  for (var i = 0; i < this.players.length; i++) {
+    if (!this.players[i].dead) {
+      undead++;
+    }
+  }
+
   // might want to double check someone has 10 VP
   var win = this.players[player_id];
   var vp = win.victory_points;
   if (win.has_longest_road) vp += 2;
   if (win.has_largest_army) vp += 2;
   vp += win.victory_cards;
-  if (vp < 10)
+
+  if (vp < 10 && undead > 1)
     throw "This is not the winner!";
   this.current_phase = PHASE.END;
 };
