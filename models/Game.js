@@ -1231,7 +1231,7 @@ Game.prototype.rollDice = function(user_id) {
 
   var dice = [Math.floor((Math.random()*6)+1), Math.floor((Math.random()*6)+1)];
   var total = dice[0] + dice[1];
-
+  total = 7;
   var resources = this.board.getResources(total);
   // Add resources to player hand
   for (var player in resources) {

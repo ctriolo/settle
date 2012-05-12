@@ -342,7 +342,7 @@ module.exports = function(sockets, dsockets) {
         if (done) {
             sockets.to(game.whoseTurn()).emit('showRobber', false);
         }
-        sockets.to(game_id).emit('removeUpdate', player, total);
+        sockets.to(game_id).emit('removeUpdate', removedCards, player);
       } catch (error) {
         console.log('ERROR: ' + error);
       }

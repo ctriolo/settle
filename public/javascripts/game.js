@@ -14,6 +14,16 @@ var old_title = document.title;
 var toRemove = 0;
 var my_turn = false;
 
+RESOURCE = {
+  BRICK: 'Brick',
+  SHEEP: 'Sheep',
+  STONE: 'Stone',
+  WHEAT: 'Wheat',
+  WOOD:  'Wood',
+};
+
+RESOURCE_ARRAY = [ RESOURCE.WHEAT, RESOURCE.WOOD, RESOURCE.SHEEP, RESOURCE.BRICK, RESOURCE.STONE];
+
 function makeSVG(tag, attrs) {
   var el= document.createElementNS('http://www.w3.org/2000/svg', tag);
   for (var k in attrs)
@@ -721,13 +731,14 @@ window.onload = function() {
     socket.emit('removed', removeCards, me, tot);
   });
 
-  socket.on('removeUpdate', function(player, total) {
+  socket.on('removeUpdate', function(removedCards, player) {
     var update_object = {};
-    var i = total;
-    var resource_object = {'Wood':''};
-    resource_object['Wood'] = i;
+    var resource_object= {};
+    for (var resource in RESOURCE_ARRAY) {
+      resource_object[RESOURCE_ARRAY[resource]] = removedCards[resource];
+    }
     update_object[player] = {'resources': resource_object, 'received':false}
-    updatePopup(update_object, true);
+    updatePopup(update_object, false);
   });
 
   $(".resetRemove").click(function() {
