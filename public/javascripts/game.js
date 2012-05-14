@@ -253,6 +253,8 @@ window.onload = function() {
   var STREAMS = [];
   var SESSION = null;
   var PERMISSION_MODE = false;
+  
+  var DONE2 = false;
 
   /**
    * OpenTok
@@ -325,6 +327,9 @@ console.log('(7). Just got word from the server. The player"s index is ' + index
     var playerNo = index;
     if (playerNo < MY_INDEX) playerNo++;
     var replaceID = 'VIDEO' + playerNo;
+    
+    if (playerNo == 2 && DONE2) return;
+    if (playerNo == 2) DONE2 = true;
 
     h = $('#' + replaceID).height();
     w = $('#' + replaceID).width();
