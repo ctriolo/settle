@@ -254,7 +254,7 @@ window.onload = function() {
   var SESSION = null;
   var PERMISSION_MODE = false;
   
-  var DONE2 = false;
+  var VID_WIDTH = -1, VID_HEIGHT = -1;
 
   /**
    * OpenTok
@@ -328,9 +328,19 @@ window.onload = function() {
     if (playerNo < MY_INDEX) playerNo++;
     var replaceID = 'VIDEO' + playerNo;
     
-    if (playerNo == 2 && DONE2) return;
-    if (playerNo == 2) DONE2 = true;
-
+    // check if no children; if not add one
+    var pI_vidDiv = document.getElementById('player' + playerNo).firstChild.firstChild;
+    var myid = '#' + pI_vidDiv.id;
+    var numChildren = $(myid).children().length;
+    if (numChildren == 0) {
+        var htmlStr = '<img src="http://i.imgur.com/cGxvu.png" id="VIDEO' + playerNo + '"';
+        htmlStr += ' class="video" style="width: ' + VID_WIDTH + 'px;';
+        htmlStr += ' height: ' + VID_HEIGHT + 'px; ">';
+console.log('Thar aint nooo childer. So addin');
+console.log(htmlStr);
+        $(myid).append(htmlStr);
+    }
+    
     h = $('#' + replaceID).height();
     w = $('#' + replaceID).width();
 //console.log('(8). Player no. and replacing tag #VIDEO'+playerNo);
@@ -340,6 +350,8 @@ window.onload = function() {
   /**
    * Dynamic Resizing
    */
+
+
 
   var HAS_STARTED = -1;
   var BORDER_SIZE = 10;
@@ -382,6 +394,8 @@ window.onload = function() {
         if (HAS_STARTED == -1 || i < HAS_STARTED) {
           theirWidth = w;
           theirHeight = h;
+          VID_WIDTH = w;
+          VID_HEIGHT = h;
         }
       }
 
