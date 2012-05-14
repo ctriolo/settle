@@ -10,7 +10,7 @@
 	color: white;
 	moz-border-radius: 6px;
       	border-radius: 6px
-};
+}
 </style>
 </head>
 <body>
@@ -123,7 +123,7 @@ Initial dashboard
 </div>
 <hr/>
 <h3> April 27, 2012 </h3>
-Fixed an annoying bug. During building, two socket.io calls were being made for one button click. So if you had 2 roads and 2 brick, and built a road, it would take all of your resources for two roads. Added a BUILD phase to the game, so that only one build can be down per click. We also got opentok working! You can now video chat with player in your game. Each game has its own sessionID you use to subscribe and see everyone elses stream.
+Fixed an annoying bug. During building, two socket.io calls were being made for one button click. So if you had 2 roads and 2 brick, and built a road, it would take all of your resources for two roads. Added a BUILD phase to the game, so that only one build can be done per click. We also got opentok working! You can now video chat with players in your game. Each game has its own unique sessionID used to subscribe and see everyone elses stream.
 <hr/>
 <h3> May 1, 2012 </h3>
 Gave a lot of thought to ensuring our css worked on all window sizes. Now have dynamic resizing, so that video chats stay the correct size and that cards change sizes as well.
@@ -147,7 +147,7 @@ We gave some thought to how to keep players involved and speed up the game. One 
 In preparation for our demo, we built in some cheat codes that will allow us to better showcase our features. For example pressing "B" will give the player a brick card.
 <hr />
 <h3> May 10, 2012 </h3>
-The page now looks good on even incredibly small windows. Size interpolates smoothly so that at window widths of between 400 and 900 sizes are at intermediary values. There was a problem with the flash allow box that comes for opentok videos, in that if anything appeared on top of it you couldn't click "allow." The box also has a min-width and height. So for smaller resolutions, we pop the box out to the left to ensure that you can still see your name and cards. Then once you press "allow" the actual video chat box will pop-in to the correct size. We agreed on the final colors of red, blue, green and orange as four colors that are different from each other and also fit the color scheme of our board.
+The page now looks good on even incredibly small windows. Size interpolates smoothly so that at window widths between 400 and 900, font and card sizes are at intermediary values. There was a problem with the flash allow box that comes for opentok videos, in that if anything appeared on top of it you couldn't click "allow." The box also has a min-width and height. So for smaller resolutions, we pop the box out to the left to ensure that you can still see your name and cards. Then once you press "allow" the actual video chat box will pop-in to the correct size. We agreed on the final colors of red, blue, green and orange as four colors that are different from each other and also fit the color scheme of our board.
 <div class="imageDiv">
 <img src="Images/image9.jpeg" width="100%"/>
 Example of css width flexibility
@@ -158,7 +158,7 @@ Example of css width flexibility
 After a long night, we finished up the demo today! Everything seemed to go really smoothly. There was a bug where the Bootstrap tooltips were getting removed because hoverOff was never being called, but we'll fix that. We also didn't get a chance to show the full extent of our game -- such as trading, frequency chart and robber -- but the video chat worked and the game looks great! It's been an incredibly challenging project with so many things (some small some large) to figure out, but we're really proud of the finished product.
 <div class="imageDiv" style="width:70%;">
 <img src="Images/image10.jpeg" width="100%"/>
-Finished product at settledowncityup.com!
+Finished product at SettleDownCityUp.com!
 </div>
 </body>
 </html>
