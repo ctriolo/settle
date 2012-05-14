@@ -275,7 +275,7 @@ console.log('(1). I just joined. My index is ' + myIndex);
       SESSION.publish('MY_VIDEO', {height:h, width:w, class:'MY_VIDEO'});
       PERMISSION_MODE = true;
       setTimeout(function() { window.onresize(); }, 1500);
-console.log('(2). I"m sending the server my room,index,connID: '+CONFIG.room+','+myIndex+','+session.connection.connectionId);
+console.log('(2). I"m sending the server my room,index,connID: '+CONFIG.room+','+myIndex+','+SESSION.connection.connectionId);
       socket.emit('associateMyConnIDwithMyIndex', CONFIG.room, myIndex, SESSION.connection.connectionId); // ot3. send game[index=connID]
 console.log('(3). I just published. Now gonna subscribe to #streams = ' + event.streams.length);
       subscribeToStreams(event.streams);
