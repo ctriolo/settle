@@ -259,6 +259,7 @@ window.onload = function() {
    */
   socket.on('joined', function(apiKey, sessionId, token, myIndex)
   {
+console.log('(1). I just joined. My index is ' + myIndex);
     MY_INDEX = myIndex;
 
     SESSION = TB.initSession(sessionId);
@@ -274,16 +275,20 @@ window.onload = function() {
       SESSION.publish('MY_VIDEO', {height:h, width:w, class:'MY_VIDEO'});
       PERMISSION_MODE = true;
       setTimeout(function() { window.onresize(); }, 1500);
+console.log('(2). I"m sending the server my room,index,connID: '+CONFIG.room+','+myIndex+','+session.connection.connectionId);
       socket.emit('associateMyConnIDwithMyIndex', CONFIG.room, myIndex, SESSION.connection.connectionId); // ot3. send game[index=connID]
+console.log('(3). I just published. Now gonna subscribe to #streams = ' + event.streams.length);
       subscribeToStreams(event.streams);
     }
 
     function streamCreatedHandler(event) { // when each person joins (usually one)
+console.log('(4). I just received a created stream. Now gonna subscribe to #streams = ' + event.streams.length);
       subscribeToStreams(event.streams);
     }
 
     function subscribeToStreams(streams)
     {
+console.log('(5). Subscribing to streams. #streams = ' + streams.length)
       if (typeof subscribeToStreams.nextPlayer == 'undefined')
         subscribeToStreams.nextPlayer = 1;
 
@@ -296,6 +301,7 @@ window.onload = function() {
           // EMIT CONNECTION ID TO SERVER, GET PLAYER #
           STREAMS.push(stream);
           // ot5. ask for index from game[connID]
+console.log('(6). Asking server for index of room,token,connID,streamINDEX : '+CONFIG.room+','+CONFIG.token+','+connId+','+(STREAMS.length-1))
           socket.emit('sendConnIDtoGetPlayerIndex',
                       CONFIG.room,
                       CONFIG.token,
@@ -315,12 +321,14 @@ window.onload = function() {
   // ot7. receive index and use to replace correct img
   socket.on('sendPlayerIndexFromConnID', function(index, streamINDEX)
   {
+console.log('(7). Just got word from the server. The player"s index is ' + index);
     var playerNo = index;
     if (playerNo < MY_INDEX) playerNo++;
     var replaceID = 'VIDEO' + playerNo;
 
     h = $('#' + replaceID).height();
     w = $('#' + replaceID).width();
+console.log('(8). Player no. and replacing tag #VIDEO'+playerNo);
     SESSION.subscribe(STREAMS[streamINDEX], replaceID, {height:h, width:w});
   });
 
