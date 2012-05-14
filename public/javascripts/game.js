@@ -554,8 +554,8 @@ console.log('(8). Player no. and replacing tag #VIDEO'+playerNo);
   });
 
   socket.on('disconnect', function() {
-    window.onbeforeunload = function() {};
-    window.location = 'http://www.cs.princeton.edu/~ctriolo/333.html';
+    //window.onbeforeunload = function() {};
+    //window.location = 'http://www.cs.princeton.edu/~ctriolo/333.html';
   });
 
   socket.on('updatePopup', function(playerCards) {
