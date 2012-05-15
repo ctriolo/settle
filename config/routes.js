@@ -3,7 +3,6 @@
  */
 
 var home = require('../controllers/home.js')
-  , user = require('../controllers/user.js')
   , game = require('../controllers/game.js')
   , gameIO = require('../controllers/game.io.js');
 
@@ -19,13 +18,16 @@ module.exports = function(app, io){
   app.get('/', home.title);
   app.get('/dashboard', requireAuth, home.dashboard);
 
-  // User
-  app.get('/user/:id', requireAuth, user.view);
-  app.get('/user', requireAuth, user.list);
-
   // Game
   app.get('/game/:id', requireAuth, game.view);
   app.get('/game', requireAuth, game.create);
+
+  // Any
+  app.get('*', function(req, res) {
+    res.redirect('/dashboard');
+  });
+
+  // Sockets
   gameIO(io.of('/game'), io.of('/dashboard'));
 
 };
