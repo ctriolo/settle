@@ -224,8 +224,8 @@ window.onload = function() {
   {
     for (var i = 1; i <= 6; i++) {
       for (var j = 1; j <= 6; j++) {
-        var pic = new Image(256,256); 
-        pic.src = "http://www.princeton.edu/~rgromero/dice-gif/a"+i+","+j+"_mod6.gif"; 
+        var pic = new Image(256,256);
+        pic.src = "http://www.princeton.edu/~rgromero/dice-gif/a"+i+","+j+"_mod6.gif";
         pics.push(pic);
       }
     }
@@ -265,7 +265,7 @@ window.onload = function() {
   var STREAMS = [];
   var SESSION = null;
   var PERMISSION_MODE = false;
-  
+
   var VID_WIDTH = -1, VID_HEIGHT = -1;
 
   /**
@@ -332,7 +332,7 @@ window.onload = function() {
     var playerNo = index;
     if (playerNo < MY_INDEX) playerNo++;
     var replaceID = 'VIDEO' + playerNo;
-    
+
     // check if no children; if not add one
     var pI_vidDiv = document.getElementById('player' + playerNo).firstChild.firstChild;
     var myid = '#' + pI_vidDiv.id;
@@ -343,7 +343,7 @@ window.onload = function() {
         htmlStr += ' height: ' + VID_HEIGHT + 'px; ">';
         $(myid).append(htmlStr);
     }
-    
+
     h = $('#' + replaceID).height();
     w = $('#' + replaceID).width();
     SESSION.subscribe(STREAMS[streamINDEX], replaceID, {height:h, width:w});
