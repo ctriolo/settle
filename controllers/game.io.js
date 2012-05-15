@@ -913,7 +913,7 @@ module.exports = function(sockets, dsockets) {
     });
 
     socket.on('cheat', function(key) {
-      if (false) return; // CHEAT TOGGLE
+      if (true) return; // CHEAT TOGGLE
 
       var session_id = socket.handshake.sessionID;
       var user_id = sid_to_uid[session_id];
