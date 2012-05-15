@@ -90,6 +90,9 @@ body {font-size:75%;}  /* Set the size of 1em to 12px in all browsers */
 .actions.disabled, .player.mywell.disabled {
   opacity: .6;
 }
+.player.mywell.enabled {
+  opacity: 1;
+}
 .opponent.mywell {
   background-color: black;
   opacity: .6;
