@@ -23,6 +23,7 @@ window.onload = function() {
 
   socket.on('updateDashboard', function(games) {
     $('.thumbnails').children().remove();
+    $('.tooltip').remove()
 
     // Show no games msg if no games
     if (games.length == 0) {

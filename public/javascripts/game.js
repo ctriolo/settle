@@ -224,8 +224,8 @@ window.onload = function() {
   {
     for (var i = 1; i <= 6; i++) {
       for (var j = 1; j <= 6; j++) {
-        var pic = new Image(256,256); 
-        pic.src = "http://www.princeton.edu/~rgromero/dice-gif/a"+i+","+j+"_mod6.gif"; 
+        var pic = new Image(256,256);
+        pic.src = "http://www.princeton.edu/~rgromero/dice-gif/a"+i+","+j+"_mod6.gif";
         pics.push(pic);
       }
     }
@@ -244,7 +244,7 @@ window.onload = function() {
   });
 
   socket.on('playerJoined', function(players, whereAmI) {
-    console.log(players, whereAmI);
+    //console.log(players, whereAmI);
     var my_player_object = players[whereAmI];
     players.splice(whereAmI, 1); // take out me
     players.unshift(my_player_object); // put me first
@@ -265,7 +265,7 @@ window.onload = function() {
   var STREAMS = [];
   var SESSION = null;
   var PERMISSION_MODE = false;
-  
+
   var VID_WIDTH = -1, VID_HEIGHT = -1;
 
   /**
@@ -332,7 +332,7 @@ window.onload = function() {
     var playerNo = index;
     if (playerNo < MY_INDEX) playerNo++;
     var replaceID = 'VIDEO' + playerNo;
-    
+
     // check if no children; if not add one
     var pI_vidDiv = document.getElementById('player' + playerNo).firstChild.firstChild;
     var myid = '#' + pI_vidDiv.id;
@@ -343,7 +343,7 @@ window.onload = function() {
         htmlStr += ' height: ' + VID_HEIGHT + 'px; ">';
         $(myid).append(htmlStr);
     }
-    
+
     h = $('#' + replaceID).height();
     w = $('#' + replaceID).width();
     SESSION.subscribe(STREAMS[streamINDEX], replaceID, {height:h, width:w});
@@ -526,9 +526,9 @@ window.onload = function() {
   });
 
   $('a.x').click(function() {
-    console.log("X clicked");
+    //console.log("X clicked");
     var p = $(this).parents('.showtrade-container');
-    console.log(p);
+    //console.log(p);
     p.animate({"right":"5%"}, "slow");
     p.hide();
   });
@@ -717,9 +717,9 @@ window.onload = function() {
     $('.trade-container .offer-cards .cards .card-number').each(function() {
       offer["offer"].push(parseInt($(this).text()));
     });
-    console.log("BANK TRADE**********");
-    console.log(offer);
-    console.log(me);
+    //console.log("BANK TRADE**********");
+    //console.log(offer);
+    //console.log(me);
     socket.emit('bankTrade', offer, me);
   });
 
@@ -937,7 +937,7 @@ window.onload = function() {
     numU = users.length;
 
     $('.numberDiv').animate({'left': '-=100px'}, 'slow');
-    console.log("MOVING");
+    //console.log("MOVING");
     if (users.indexOf(me) != -1) {
       var my_user_object = user_objects[users.indexOf(me)];
       user_objects.splice(users.indexOf(me), 1); // take out me
@@ -956,15 +956,15 @@ window.onload = function() {
 
     // HIDING
     for (var i = users.length; i < 4; i++) {
-      console.log("not here: " + i);
-      console.log('.player' + i + ' .opponentvideo');
+      //console.log("not here: " + i);
+      //console.log('.player' + i + ' .opponentvideo');
       $('#player' + i + ' .opponentvideo').hide();
       $('#player' + i + ' .right').hide();
       $('#player' + i + ' .mywell').css({"background-color":"black"});
       $('#player' + i + ' .mywell').css({"opacity":".6"});
     }
 
-    console.log(users, objs);
+    //console.log(users, objs);
 
     // BORDER COLORS
     for (var i = 0; i < users.length; i++) {
@@ -1069,7 +1069,7 @@ window.onload = function() {
    * @param   ids   array   the ids of the valid edges
    */
   socket.on('startingRoadSelect', function(ids) {
-      console.log(ids);
+      //console.log(ids);
     for (var i = 0; i < ids.length; i++) {
       $("#edge"+ids[i]).addClass('selectable');
       createPopup("#edge" + ids[i], "Road Placement", "Click this edge to place a new road");
@@ -1124,7 +1124,7 @@ window.onload = function() {
        if (can_build[key]) {
          $('#'+building).removeClass('disabled');
          $('#'+building).click(function(){
-           console.log(building + " clicked!");
+           //console.log(building + " clicked!");
            var id = $(this).attr('id');
 
            // DISABLE IMMEDIATELY TO STOP FROM BEING CLICKED TWICE
@@ -1152,7 +1152,7 @@ window.onload = function() {
    * @param   players   array
    */
    socket.on('updatePlayerInfo', function(players, unbuilt_developments) {
-     console.log(players);
+     //console.log(players);
      for (var i = 0; i < players.length; i++) {
        var player = players[i];
 
@@ -1166,7 +1166,7 @@ window.onload = function() {
        }
        // update Victory Points
        var victory_points = player.victory_points;
-       console.log(victory_points);
+       //console.log(victory_points);
        if (player.has_longest_road) victory_points += 2;
        if (player.has_largest_army) victory_points += 2;
        // Update Resources
@@ -1279,7 +1279,7 @@ window.onload = function() {
           }
 
           if (victory_points >= 10 || (undead == 1 && !player.dead)) {
-            console.log("GAME OVER");
+            //console.log("GAME OVER");
             socket.emit('gameover', player.user_id);
           }
         }

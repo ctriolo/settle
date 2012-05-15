@@ -58,9 +58,9 @@ module.exports = function(app, express, io){
     app.use(express.methodOverride());
     app.use(express.cookieParser());
     app.use(express.session({secret: 'secret', key: 'express.sid'}));
-    app.use(app.router);
     app.use(express.static(__dirname + '/../public'));
     app.use(everyauth.middleware());
+    app.use(app.router);
     DEBUG = true;
     app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
   });
