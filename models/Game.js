@@ -1266,6 +1266,8 @@ Game.prototype.updateRobber = function(user_id, move_id) {
   this._validatePhase(PHASE.ROBBER, PHASE.KNIGHT);
 
   var players = this.board.updateRobber(move_id);
+  console.log("PLAYERS");
+  console.log(players);
   var me = this._translate(user_id);
   this._validatePlayer(me);
   if (players.indexOf(me) >= 0)
@@ -1290,6 +1292,8 @@ Game.prototype.updateRobber = function(user_id, move_id) {
   // skip steal phase if no one to steal from
   if (final_players.length === 0)
     this._next();
+  console.log("FINAL_PLAYERS");
+  console.log(final_players);
   return final_players
 }
 

@@ -256,7 +256,7 @@ window.onload = function() {
       $('#player' + i + ' .opponentvideo').show();
       $('#player' + i + ' .right').show();
       $('#player' + i + ' .mywell').css({"background-color":"whiteSmoke"});
-      $('#player' + i + ' .mywell').css({"opacity":"1"});
+      $('#player' + i + ' .mywell').addClass('enabled');
     }
 
   });
@@ -1592,6 +1592,7 @@ window.onload = function() {
       $('.steal-phase').show();
       $('.actions').addClass("disabled");
       $('.player.mywell').addClass("disabled");
+      $('.player.mywell').removeClass("enabled");
       for (var i = 0; i < players.length; i++) {
         $('#player' + users.indexOf(players[i]) + " .player.mywell").removeClass("disabled");
         $('#player' + users.indexOf(players[i]) + " .player.mywell").addClass("enabled"); // enable stealing from these player mywells
@@ -1601,14 +1602,14 @@ window.onload = function() {
       showMainPhase();
       $('.actions').removeClass("disabled");
       $('.player.mywell').removeClass("disabled");
-      $('.player.mywell').removeClass("enabled");
+      $('.player.mywell').addClass("enabled");
     });
 
     socket.on('showDice', function() {
       showMainPhase();
       $('.actions').removeClass("disabled");
       $('.player.mywell').removeClass("disabled");
-      $('.player.mywell').removeClass("enabled");
+      $('.player.mywell').addClass("enabled");
       $('.main-phase').hide();
       $('.roll-phase').show();
     });
