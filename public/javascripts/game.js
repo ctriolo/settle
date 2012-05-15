@@ -219,6 +219,18 @@ window.onbeforeunload = function() {
 
 window.onload = function() {
 
+  var pics = [];
+  if (document.images)
+  {
+    for (var i = 1; i <= 6; i++) {
+      for (var j = 1; j <= 6; j++) {
+        var pic = new Image(256,256); 
+        pic.src = "http://www.princeton.edu/~rgromero/dice-gif/a"+i+","+j+"_mod6.gif"; 
+        pics.push(pic);
+      }
+    }
+  }
+
   /**
    * Socket IO Connection
    */
