@@ -500,12 +500,6 @@ window.onload = function() {
     case 86: socket.emit('cheat', 'v'); break;
     // END CHEATS
 
-    case 68:  // d
-    case 100: // D
-      if (debug) $('.debug').hide();
-      else $('.debug').show();
-      debug = !debug;
-      break;
     case 81: // q
     case 27: // escape
       if (popup) disablePopup();
